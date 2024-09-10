@@ -32,30 +32,34 @@ int main() {
 
 	}
 
-	//not allowed, pass by refrence variables are optimal for functions
+	//pass by refrence variables are optimal for functions
 	//If we do not want our variable to be modified we can use const but still use pass by refrence
 	int numbers[] = { 1,2,3,4,5 };
 	for (const auto &number : numbers) {
-		
+
+		//not allowed
 		number *= 2;
 	
 
 	}
 
-
+	*/
 	const int SIZE = 5;
 	int arr[SIZE] = { 1,5,2,18,3 };
 	cout << "Multiple of 2 of elements are: ";
-		for_each(arr, arr + SIZE, printx2);
+	for_each(arr, arr + SIZE, printx2);
+	cout << endl;
 		//first value is where to start, second is where to stop(excluded)
 		for_each(arr + 2, arr + 3, printx2);
 		cout << endl;
 
+		for_each(arr, arr + SIZE, arr);
+	/*
 	//objects and classes
 	//ctrl + f is find and replace, quick replace which allows you to replace multiple instances of a character
 	practicefornewfiles.h
 	practicefornewfiles.cpp
-		*/
+	*/
 
 
 	string messag = msg();
