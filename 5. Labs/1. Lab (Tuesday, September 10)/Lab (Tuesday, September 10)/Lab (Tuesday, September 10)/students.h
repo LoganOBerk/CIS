@@ -21,8 +21,9 @@ public:
 	string getMajor() { return major; }
 	int getHours() { return hours; }
 	void passByRefrence(string&, int&);
-	void setValues(string& major, int& hours) { this->major = major; this->hours = hours;};
+	void setValues(string& major, int& hours) { this->major = major; this->hours = hours; }
 	string printMe();
+	string validateFileName();
 	~Student();
 
 

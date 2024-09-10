@@ -1,12 +1,11 @@
-#include "students.cpp"
-
+#include "students.h"
 int main() {
 	Student student("CSC AI ");
 	cout << student.printMe() << endl;
 
 	string fileName;
 	cout << "Please enter a filename for output write: ";
-	cin >> fileName;
+	student.validateFileName();
 
 
 	return 0;
