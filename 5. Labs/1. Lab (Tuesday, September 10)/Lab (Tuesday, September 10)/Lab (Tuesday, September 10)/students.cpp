@@ -17,26 +17,32 @@ string Student::validateStringInput() {																								//Question f
 	return input;																													//
 }																																	//
 																																	//
-void Student::saveStudentData(vector<Student>& studentClass, string& fileName) {													//
+void Student::saveStudentData(vector<Student>& studentClass, string& fileName, const int& loadTime) {								//
 	ofstream file(fileName + ".txt");																								//
 	if (!file) {																													//
 		cout << "Unable to open file!" << endl;																						//
 	}																																//
-	for (int i = 0; i < 3; i++) {																									//
-		file << studentClass[i].printMe() << endl;																					//
+	else {																															//
+		for (int i = 0; i < 3; i++) {																								//
+			file << studentClass[i].printMe() << endl;																				//
+		}																															//
+		cout << "Saving student data..." << endl;																					//
+		this_thread::sleep_for(chrono::seconds(loadTime));																			//
+		cout << endl;																												//
 	}																																//
 	file.close(); //Question e																										//
 }																																	//
 																																	//
-void Student::readStudentData(string& fileName) {																					//
+void Student::readStudentData(string& fileName, const int& loadTime) {																//
 	ifstream file(fileName + ".txt");																								//
 	if (!file) {																													//
 		cout << "Unable to read file!" << endl;																						//
-	}																																//
-																																	//
+	}else																																//																																//
+	cout << "Reading File..." << endl;																								//
 	string line;																													//
 	while (getline(file, line)) {																									//
 		cout << line << endl;																										//
+		this_thread::sleep_for(chrono::seconds(loadTime));																			//
 	}																																//
 	file.close();																													//
 																																	//
@@ -54,5 +60,6 @@ int Student::validateIntInput() {																									//
 }
 
 Student::~Student() {															//Question b(vi)
+	this_thread::sleep_for(chrono::seconds(1));									//
 	cout << "\nDestructor called for " << major << " major.\n" << endl;			//
 }
