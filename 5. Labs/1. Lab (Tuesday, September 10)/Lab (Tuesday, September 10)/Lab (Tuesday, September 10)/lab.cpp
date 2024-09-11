@@ -11,7 +11,6 @@
 
 
 #include "students.h"
-#include <iostream>
 
 int main() {
 	cout << "-----------------------------------------------------------------------" << endl;
@@ -28,7 +27,7 @@ int main() {
 	string fileName;
 	cout << "Please enter a filename for output write: ";											//Question c
 	cin >> fileName;																				//
-	cout << "Your student data file will be named " + fileName + ".txt" << endl;								//
+	cout << "Your student data file will be named " + fileName + ".txt" << endl;					//
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');											//
 	cout << endl;
 

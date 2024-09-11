@@ -1,5 +1,4 @@
 #include "students.h"
-#include <iostream>
 void Student::passByRefrence(const string& major, const int& hours){} //Question b(iii)
 
 string Student::printMe() {																							//Question b(v)
@@ -37,7 +36,7 @@ void Student::readStudentData(string& fileName, const int& loadTime) {										
 	ifstream file(fileName + ".txt");																								//
 	if (!file) {																													//
 		cout << "Unable to read file!" << endl;																						//
-	}else																																//																																//
+	}else																															//																																//
 	cout << "Reading File..." << endl;																								//
 	string line;																													//
 	while (getline(file, line)) {																									//
