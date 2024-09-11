@@ -25,7 +25,7 @@ int main() {
 	cout << "Test fileName Input		                                            " << endl;
 	cout << "-----------------------------------------------------------------------" << endl;
 	string fileName;
-	cout << "Please enter a filename for output write: "; //Question c											
+	cout << "Please enter a filename you would like to use: "; //Question c											
 	cin >> fileName;																				
 	cout << "Your student data file will be named " + fileName + ".txt" << endl;					
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');											
