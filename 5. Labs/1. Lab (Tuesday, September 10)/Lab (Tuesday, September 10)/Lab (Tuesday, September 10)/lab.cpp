@@ -31,7 +31,7 @@ int main() {
 		major = student.validateStringInput();
 		studentClass.emplace_back(major);
 	}
-	
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	
 
 	int hours;
