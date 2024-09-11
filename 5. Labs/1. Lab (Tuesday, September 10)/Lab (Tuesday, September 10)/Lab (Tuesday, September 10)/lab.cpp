@@ -14,15 +14,26 @@
 #include <iostream>
 
 int main() {
+	cout << "-----------------------------------------------------------------------" << endl;
+	cout << "Test Constructor Initialization                                        " << endl;
+	cout << "-----------------------------------------------------------------------" << endl;
 	Student student("CSC AI ");          //Question a
 	cout << student.printMe() << endl;  //Question b
 
+	cout << endl;
+
+	cout << "-----------------------------------------------------------------------" << endl;
+	cout << "Test fileName Input		                                            " << endl;
+	cout << "-----------------------------------------------------------------------" << endl;
 	string fileName;
 	cout << "Please enter a filename for output write: ";											//Question c
 	cin >> fileName;																				//
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');											//
-	cout << "-----------------------------------------------------------------------" << endl;		//
-	
+	cout << endl;
+																									
+	cout << "-----------------------------------------------------------------------" << endl;	
+	cout << "Test Major Input                                                       " << endl;
+	cout << "-----------------------------------------------------------------------" << endl;
 	vector<Student> studentClass; //Question d 
 	studentClass.reserve(3);      //
 	string major;
@@ -31,21 +42,30 @@ int main() {
 		major = student.validateStringInput();															//
 		studentClass.emplace_back(major);																//
 	}																									//
-	cin.ignore(numeric_limits<streamsize>::max(), '\n');												//
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');												//																						//
+	cout << endl;																						//
 																										//
-																										//
+	cout << "-----------------------------------------------------------------------" << endl;			//
+	cout << "Test Credit Hours Input                                                " << endl;			//	
+	cout << "-----------------------------------------------------------------------" << endl;			//
 	int hours;																							//
 	cout << "Please enter 3 credit hours seperated by spaces (any extra will be discarded)";			//
 	for (auto &studentInfo : studentClass ) {															//
 		hours = student.validateIntInput();																//
 		studentInfo.setValues(studentInfo.getMajor(), hours);											//
-	}																									//
-																										//
-	cout << "---------------------------------------------------------" << endl;
-
+	}			
+	cout << endl;																							
+																										
+	cout << "-----------------------------------------------------------------------" << endl;
+	cout << "Test File Writing                                                      " << endl;
+	cout << "-----------------------------------------------------------------------" << endl;
 	student.saveStudentData(studentClass, fileName);  //Question(viii)
 	student.readStudentData(fileName);				  //Outputing file data
+	cout << endl;
 
+	cout << "-----------------------------------------------------------------------" << endl;
+	cout << "Test Destructor                                                        " << endl;
+	cout << "-----------------------------------------------------------------------" << endl;
 
 	return 0;
 }
