@@ -27,14 +27,14 @@ public:
 	
 	string getMajor() { return major; } //Question b(ii)
 	int getHours() { return hours; }   //Question b(ii)
-	void passByRefrence(const string&, const int&); //Question b(iii)
+	void getterPassByRefrence(string&, int&) const; //Question b(iii)
 	void setValues(const string& major, const int& hours) { this->major = major; this->hours = hours; } //Question b(iv)
 	string printMe();  //Question b(v)
 	~Student(); //Question b(vi)
 
 	
 	string validateStringInput(); //Extra Input validation and function logic, Question f
-	int validateIntInput();											
+	int validateIntInput();
 	void readStudentData(string&, const int&);						
 	void saveStudentData(vector<Student>&, string&, const int&);	
 	

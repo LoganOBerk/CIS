@@ -1,5 +1,9 @@
 #include "students.h"
-void Student::passByRefrence(const string& major, const int& hours){} //Question b(iii)
+void Student::getterPassByRefrence(string& major, int& hours) const{
+	major = this->major;
+	hours = this->hours;
+	cout << "You just got values student class values " + major + ", " + to_string(hours) + " by refrence!" << endl;
+} //Question b(iii)
 
 string Student::printMe() {																							//Question b(v)
 	string sentance = "I'm a " + major + " major and have completed " + to_string(hours) + " credit hours.";		//
@@ -7,12 +11,23 @@ string Student::printMe() {																							//Question b(v)
 }
 
 string Student::validateStringInput() { //Question f																								 
-	string input;																											
-	while (!(cin >> input)) {																										
-		cin.clear();																												
-		cin.ignore(numeric_limits<std::streamsize>::max(), '\n');																	
-		cout << "Please enter a valid input : ";																					
-	}																																
+	string input;
+	while (true) {
+		cin >> input;
+		if (!input.empty() && input.back() == ',') {
+			input.pop_back();
+		}
+		if (input == ",") {
+
+		}
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+			cout << "Please enter a valid input : ";
+		}else{ 
+			break; 
+		}
+	}
 	return input;																													
 }																																	
 																																
