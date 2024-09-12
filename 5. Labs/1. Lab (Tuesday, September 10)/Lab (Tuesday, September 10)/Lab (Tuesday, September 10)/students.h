@@ -20,12 +20,11 @@ class Student {	//Question a
 
 public:
 
-	Student(const string major = "Undeclaired", const int hours = -19) { //Question b(i)
-		this->major = major;													
-		this->hours = hours;													
+	Student(const string major = "Undeclaired", const int hours = -19){ //Question b(i)
+		this->major = major;
+		this->hours = hours;
+	} 
 	
-	}
-
 	string getMajor() { return major; } //Question b(ii)
 	int getHours() { return hours; }   //Question b(ii)
 	void passByRefrence(const string&, const int&); //Question b(iii)
