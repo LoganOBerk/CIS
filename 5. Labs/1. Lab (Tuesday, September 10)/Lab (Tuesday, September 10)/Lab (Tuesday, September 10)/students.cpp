@@ -2,7 +2,7 @@
 void Student::getterPassByRefrence(string& major, int& hours) const{
 	major = this->major;
 	hours = this->hours;
-	cout << "You just got values student class values " + major + ", " + to_string(hours) + " by refrence!" << endl;
+	cout << "You just got student class values " + major + ", " + to_string(hours) + " by refrence!" << endl;
 } //Question b(iii)
 
 string Student::printMe() {																							//Question b(v)
@@ -64,13 +64,15 @@ void Student::readStudentData(string& fileName, const int& loadTime) { //Questio
 																																	
 																																
 int Student::validateIntInput() { //Question f																									
-	int input;																														
-	while (!(cin >> input) || input <= 0) {																							
-		cin.clear();																												
-		cin.ignore(numeric_limits<std::streamsize>::max(), '\n');																	
-		cout << "Please enter a list of valid inputs (any integer greater than 0) seperated by spaces continuing from mistake: ";	
+	float input;			
+	cin >> input;
+	int roundedInput = static_cast<int>(round(input));
+	while (cin.fail() || roundedInput <= 0) {
+				cin.clear();
+				cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+				cout << "Please enter a list of valid inputs (any integer greater than 0) seperated by spaces continuing from mistake: ";
 	}																																
-	return input;																													
+	return roundedInput;																													
 }
 
 Student::~Student() { //Question b(vi)
