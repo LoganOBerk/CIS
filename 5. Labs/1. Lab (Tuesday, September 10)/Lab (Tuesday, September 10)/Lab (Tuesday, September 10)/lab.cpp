@@ -54,7 +54,7 @@ int main() {
 	cout << "-----------------------------------------------------------------------" << endl;				
 	int hours;																								
 	cout << "Please enter 3 credit hours seperated by spaces or commas(any extra will be discarded, decimals will be rounded): "; //Question d				
-	for (auto& studentInfo : studentClass) {																
+	for (auto& studentInfo : studentClass) {
 		hours = student.validateIntInput();
 		cin.ignore();
 		studentInfo.setValues(studentInfo.getMajor(), hours);												

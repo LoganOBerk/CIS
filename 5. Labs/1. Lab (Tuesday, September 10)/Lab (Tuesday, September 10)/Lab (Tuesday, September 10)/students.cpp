@@ -17,9 +17,6 @@ string Student::validateStringInput() { //Question f
 		if (!input.empty() && input.back() == ',') {
 			input.pop_back();
 		}
-		if (input == ",") {
-
-		}
 		if (cin.fail()) {
 			cin.clear();
 			cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
@@ -64,14 +61,19 @@ void Student::readStudentData(string& fileName, const int& loadTime) { //Questio
 																																	
 																																
 int Student::validateIntInput() { //Question f																									
-	float input;			
-	cin >> input;
-	int roundedInput = static_cast<int>(round(input));
-	while (cin.fail() || roundedInput <= 0) {
-				cin.clear();
-				cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
-				cout << "Please enter a list of valid inputs (any integer greater than 0) seperated by spaces continuing from mistake: ";
-	}																																
+	float input;
+	int roundedInput;
+	while (true) {
+		cin >> input;
+		roundedInput = static_cast<int>(round(input));
+		if (cin.fail() || roundedInput <= 0) {
+			cin.clear();
+			cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+			cout << "Please enter a list of valid inputs (any integer greater than 0) seperated by spaces continuing from mistake: ";
+		}
+		else
+			break;
+	}
 	return roundedInput;																													
 }
 
