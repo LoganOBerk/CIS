@@ -25,7 +25,7 @@ int main() {
 	cout << "Test fileName Input		                                            " << endl;
 	cout << "-----------------------------------------------------------------------" << endl;
 	string fileName;
-	cout << "Please enter a filename you would like to use: "; //Question c											
+	cout << "Please enter a filename you would like to use(if multiple words use a \"_\" to seperate them): "; //Question c											
 	cin >> fileName;
 	cout << "Your student data file will be named " + fileName + ".txt" << endl;
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -38,7 +38,7 @@ int main() {
 	vector<Student> studentClass; //Question d 
 	studentClass.reserve(3);
 	string major;
-		cout << "Please enter 3 majors seperated by spaces or commas(any extra will be discarded) "; //Question d(vii)
+		cout << "Please enter 3 majors seperated by spaces or commas(any extra will be discarded, if multiple words use a \"_\" to seperate them): "; //Question d(vii)
 		for (int i = 0; i < 3; i++) {
 			major = student.validateStringInput();
 			studentClass.emplace_back(major);
@@ -53,7 +53,7 @@ int main() {
 	cout << "Test Credit Hours Input                                                " << endl;					
 	cout << "-----------------------------------------------------------------------" << endl;				
 	int hours;																								
-	cout << "Please enter 3 credit hours seperated by spaces or commas(any extra will be discarded, decimals will be rounded)"; //Question d				
+	cout << "Please enter 3 credit hours seperated by spaces or commas(any extra will be discarded, decimals will be rounded): "; //Question d				
 	for (auto& studentInfo : studentClass) {																
 		hours = student.validateIntInput();
 		cin.ignore();
