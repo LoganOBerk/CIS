@@ -9,6 +9,7 @@
 #include <chrono>
 #include <iostream>
 #include <cmath>
+#include <memory>
 
 using namespace std;
 
@@ -16,14 +17,16 @@ using namespace std;
 class Student {	//Question a
 					
 	string major;	
-	int hours;		
+	int hours;
+	string objectName;
 
 
 public:
 
-	Student(const string major = "Undeclaired", const int hours = -19){ //Question b(i)
+	Student(const string& major = "Undeclaired", const int& hours = -19, const string& objectName = "student's") { //Question b(i)
 		this->major = major;
 		this->hours = hours;
+		this->objectName = objectName;
 	} 
 	
 	string getMajor() { return major; } //Question b(ii)
@@ -36,6 +39,7 @@ public:
 	
 	string validateStringInput(); //Extra Input validation and function logic, Question f
 	int validateIntInput();
+	bool validateCharInput(vector<Student>&, bool&);
 	void readStudentData(string&, const int&);						
 	void saveStudentData(vector<Student>&, string&, const int&);	
 	

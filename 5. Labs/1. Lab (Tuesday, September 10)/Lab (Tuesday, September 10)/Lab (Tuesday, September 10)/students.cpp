@@ -14,19 +14,43 @@ string Student::validateStringInput() { //Question f
 	string input;
 	while (true) {
 		cin >> input;
-		if (!input.empty() && input.back() == ',') {
+		while (!input.empty() && input.back() == ',') {
 			input.pop_back();
 		}
 		if (cin.fail()) {
 			cin.clear();
 			cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
 			cout << "Please enter a valid input : ";
-		}else{ 
+		}else
 			break; 
-		}
 	}
 	return input;																													
-}																																	
+}	
+
+bool Student::validateCharInput(vector<Student>& studentClass, bool& checking) {
+	char answer;
+	while (true) {
+		cin >> answer;
+		cout << endl;
+		if (answer == 'y') {
+			checking = false;
+			break;
+		}
+		else if (answer != 'n' && answer != 'y') {
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Enter a valid choice (y/n) : ";
+		}
+		else {
+			cout << "-----------------------------------------------------------------------" << endl;
+			cout << "REMOVING PREVIOUS ENTRIES!" << endl;
+			cout << "-----------------------------------------------------------------------" << endl;
+			studentClass.clear();
+			break;
+		}
+	}
+	return checking;
+}
+
 																																
 void Student::saveStudentData(vector<Student>& studentClass, string& fileName, const int& loadTime) { //Question f								
 	ofstream file(fileName + ".txt");																							
@@ -79,5 +103,5 @@ int Student::validateIntInput() { //Question f
 
 Student::~Student() { //Question b(vi)
 	this_thread::sleep_for(chrono::seconds(1));								
-	cout << "\nDestructor called for " << major << " major.\n" << endl;		
+	cout << "\nDestructor called for " << objectName << " " << major << " major.\n" << endl;
 }

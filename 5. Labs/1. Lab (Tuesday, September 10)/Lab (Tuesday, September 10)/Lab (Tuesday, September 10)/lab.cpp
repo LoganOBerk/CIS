@@ -38,6 +38,8 @@ int main() {
 	vector<Student> studentClass; //Question d 
 	studentClass.reserve(3);
 	string major;
+	bool checking = true;
+	while (checking) {
 		cout << "Please enter 3 majors seperated by spaces or commas(any extra will be discarded, if multiple words use a \"_\" to seperate them): "; //Question d(vii)
 		for (int i = 0; i < 3; i++) {
 			major = student.validateStringInput();
@@ -46,22 +48,46 @@ int main() {
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
 		cout << "The majors you entered were : " + studentClass[0].getMajor() +
 			", " + studentClass[1].getMajor() + ", " + studentClass[2].getMajor() << endl;
-		cout << endl;
-																											
-																											
-	cout << "-----------------------------------------------------------------------" << endl;				
-	cout << "Test Credit Hours Input                                                " << endl;					
-	cout << "-----------------------------------------------------------------------" << endl;				
-	int hours;																								
-	cout << "Please enter 3 credit hours seperated by spaces or commas(any extra will be discarded, decimals will be rounded): "; //Question d				
-	for (auto& studentInfo : studentClass) {
-		hours = student.validateIntInput();
-		cin.ignore();
-		studentInfo.setValues(studentInfo.getMajor(), hours);												
-	}																										
-	cout << "The credit hours you entered were : " + to_string(studentClass[0].getHours()) +				
-		", " + to_string(studentClass[1].getHours()) + ", " + to_string(studentClass[2].getHours()) << endl;
-	cout << endl;																																										
+		cout << "Does this look correct? (y/n) : ";
+		checking = student.validateCharInput(studentClass, checking);
+	}
+
+	cout << "-----------------------------------------------------------------------" << endl;
+	cout << "Test Credit Hours Input                                                " << endl;
+	cout << "-----------------------------------------------------------------------" << endl;
+	checking = true;
+	vector<Student> temp;
+	temp.reserve(3);
+	while (checking) {
+		int hours;
+		cout << "Please enter 3 credit hours seperated by spaces or commas(any extra will be discarded, decimals will be rounded): "; //Question d				
+		for (auto& studentInfo : studentClass) {
+			hours = student.validateIntInput();
+			cin.ignore();
+			studentInfo.setValues(studentInfo.getMajor(), hours);
+		}
+		cout << "The credit hours you entered were : " + to_string(studentClass[0].getHours()) +
+			", " + to_string(studentClass[1].getHours()) + ", " + to_string(studentClass[2].getHours()) << endl;
+		cout << "Does this look correct? (y/n) : ";
+		for (int i = 0; i < 3; i++) {
+			temp.emplace_back(studentClass[i].getMajor(), 0, "EXTRA ELEMENTS");
+		}
+		checking = student.validateCharInput(studentClass, checking);
+		if (checking) {
+			for (int i = 0; i < 3; i++) {
+				studentClass.emplace_back(temp[i].getMajor());
+			}
+			cout << "-----------------------------------------------------------------------" << endl;
+			cout << "REMOVING ADDITONAL ELEMENTS" << endl;
+			cout << "-----------------------------------------------------------------------" << endl;
+			temp.clear();
+			cout << "-----------------------------------------------------------------------" << endl;
+		}
+		
+	}
+
+	
+
 	
 
 	cout << "-----------------------------------------------------------------------" << endl;
