@@ -89,6 +89,9 @@ int Student::validateIntInput() { //Question f
 	int roundedInput;
 	while (true) {
 		cin >> input;
+			while (cin.peek() == ',') {
+				cin.ignore();
+			}
 		roundedInput = static_cast<int>(round(input));
 		if (cin.fail() || roundedInput <= 0) {
 			cin.clear();
