@@ -1,3 +1,13 @@
+/************************
+* Programer Name: Logan Berk
+*
+* Purpose: To show inheritance and how its constructors and destructors work
+*
+* Create Date: 9/17/2024
+*
+* Modified Date: 9/18/2024
+*************************/
+
 #include "firstclass.h"
 #include "secondclass.h"
 #include "thirdclass.h"
