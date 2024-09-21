@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FIRSTCLASS_H
+#define FIRSTCLASS_H
 #include <iostream>
 #include <string>
 
@@ -10,21 +11,20 @@ private:
 	int count;
 
 public:
-	FirstClass(){}
-	FirstClass(string, int);
+	FirstClass(string color = "Purple", int count = -17) {
+		this->color = color;
+		this->count = count;
+		cout << "Class created with color " << color << endl;
+		cout << "--------------------------------------------------------------------------------" << endl;
+	}
 	~FirstClass();
 
 	string getColor() { return color; }
 	void setColor(string& color) { this->color = color;}
+	int getCount() { return count; }
+	void setCount(int& count) { this->count = count; }
 
-	FirstClass(FirstClass& copy) {
-		color = copy.color;
-		count = copy.count++;
-		cout << "Class copied with color " + color + " and number " + to_string(count) << endl;
-	}
-
-	FirstClass operator=(FirstClass& overload) {
-		color = overload.color;
-		count = overload.count;
-	}
+	FirstClass(FirstClass&); //Copy Constructor
+	void operator=(FirstClass&); //Overloading equals
 };
+#endif FIRSTCLASS_H

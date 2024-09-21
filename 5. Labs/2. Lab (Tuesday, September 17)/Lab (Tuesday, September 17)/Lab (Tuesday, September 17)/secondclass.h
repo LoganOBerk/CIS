@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SECONDCLASS_H
+#define SECONDCLASS_H
 #include "firstclass.h"
 
 using namespace std;
@@ -9,19 +10,19 @@ private:
 	int width;
 
 public:
-	SecondClass(){}
 	SecondClass(int length = 2, int width = 7) {
-		cout << "Class created with " + getColor() + " length " + to_string(length) + " and width " + to_string(width) << endl;
-	}
-	~SecondClass() {
-		cout << "Class destroyed with " + getColor() + " length " + to_string(length) + " and width " + to_string(width) << endl;
+		this->length = length;
+		this->width = width;
+		cout << "Class created with " << getColor() << " length " << length << " and width " << width << endl;
+		cout << "--------------------------------------------------------------------------------" << endl;
 	}
 
-	int getLength() { return length;}
+	int getLength() { return length; }
 	void setLength(int& length) { this->length = length; }
 	int getWidth() { return width; }
 	int setWidth(int& width) { this->width = width; }
-	void printMe() {
-		cout << getColor() + " object with " + to_string(length) + "X" + to_string(width) + "(area = " + to_string(length * width) + ")" << endl;
-	}
+	void printMe();
+
+	~SecondClass();
 };
+#endif SECONDCLASS_H
