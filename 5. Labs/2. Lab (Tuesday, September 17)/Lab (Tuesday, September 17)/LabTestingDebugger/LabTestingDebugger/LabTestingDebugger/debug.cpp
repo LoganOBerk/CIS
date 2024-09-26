@@ -11,7 +11,7 @@ public:
 	}
 	int getSum()
 	{
-		int total = -1;
+		int total = 0;
 		for (vector<int>::iterator itr = _values.begin(), end = _values.end();
 			itr != end; ++itr)
 		{
