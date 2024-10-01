@@ -8,7 +8,7 @@ using namespace std;
 
 float Quotient(int numer, int denom) {
 	if (denom == 0) 
-		throw "Error";
+		throw (string)"ERROR";
 	return (float) numer / denom;
 	
 }
@@ -32,24 +32,22 @@ int main() {
 	
 	//can try and catch for allocation failure when using new keword by checking for NULL
 	int numer = 0;
-	int denom = 5;
-	bool assert;
-	assert = (numer == denom);
-	if (!assert) {
-		cout << "FAIL" << endl;
-	}
+	int denom = 0;
+
 
 	
 	try {
 		Quotient(numer, denom);
-		catch (string message) {
-
+	}
+	catch (string message) {
+		cout << message << endl;
 		}
-		catch (...) {
-
-		}
+	catch (...) {
+		
 	}
 	
+	cout << endl;
+
 	try {
 
 		//identifies datatype of error
@@ -63,7 +61,7 @@ int main() {
 	catch (...) { //default catch
 		cout << "Error occured in function; unknown type" << endl;
 	}
-
+	
 
 	//throws will exit function and look for a catch of same type can be used in functions
 	//throw without datatypes are used for classes and inheritance rethrows same error by default
