@@ -7,7 +7,9 @@ protected:
 	double weight;
 	int feetNumber;
 	string typeOfAnimal;
+
 public:
+
 	Animal(double const weight = 0, int const feetNumber = 0, string const typeOfAnimal = "Placeholder") {
 		this->weight = weight;
 		this->feetNumber = feetNumber;
