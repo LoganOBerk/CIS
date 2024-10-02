@@ -1,3 +1,5 @@
+
+
 #ifndef VECTOR_H
 #define VECTOR_H
 #include <iostream>
@@ -56,7 +58,7 @@ public:
 				entries[pos] = val;
 		}
 		else {
-				cout << "ERROR Invalid Position!" << endl;
+				cout << "Index out of bounds" << endl;
 		}
 
 	} 

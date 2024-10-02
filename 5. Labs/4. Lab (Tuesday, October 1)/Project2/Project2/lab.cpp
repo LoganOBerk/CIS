@@ -3,12 +3,12 @@
 #include <string>
 
 using namespace std;
-/*
+
 double squareRoot(double x) {
 	if (x == 0) {
 		return 0;
 	}
-	assert(x < 0);
+	assert(x >= 0);
 	double TOL = 0.0001;
 	double xNot = x / 2;
 	double xOne;
@@ -22,30 +22,7 @@ double squareRoot(double x) {
 
 	return xOne;
 }
-*/
 
-double squareRoot(double x) {
-	if (x == 0) {
-		return 0;
-	}
-	if (x < 0) {
-		throw domain_error("You cannot take square roots of negative numbers");
-	}
-	if (x > numeric_limits<double>::max()) {
-		throw overflow_error("Overflow Error : Input is too large");
-	}
-		double TOL = 0.0001;
-		double xNot = x / 2;
-		double xOne;
-		while (true) {
-			xOne = (xNot + x / xNot) / 2;
-			if (abs(xNot - xOne) < TOL) {
-				break;
-			}
-			xNot = xOne;
-		}
-	return xOne;
-}
 
 string getUserStringInput() {
 	string input;
@@ -80,22 +57,8 @@ int main() {
 		else {
 			cout << "Enter another number to take the square root of: ";
 		}
-
-		
-		try {
 			float x = getUserFloatInput();
 			cout << "The square root of " << x << " is approximately " << squareRoot(x) << endl;
-		}
-		catch (const domain_error& e) {
-		cout << e.what() << endl;
-		}
-		catch (const overflow_error& e) {
-			cout << e.what() << endl;
-		}
-		catch(...){
-			cout << "Unknown Exception Thrown" << endl;
-		}
-	
 
 		input = "y";
 		do {

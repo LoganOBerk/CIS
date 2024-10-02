@@ -1,3 +1,13 @@
+/************************
+* Programer Name: Logan Berk
+*
+* Purpose: to illistrate understanding of templating, copying, pointer arrays, and address accessing.
+*
+* Create Date: 10/1/2024
+*
+* Modified Date: 10/1/2024
+*************************/
+
 #include <iostream>
 #include "vector.h"
 #include <cassert>
