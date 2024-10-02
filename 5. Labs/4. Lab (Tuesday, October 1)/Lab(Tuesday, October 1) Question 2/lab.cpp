@@ -1,6 +1,17 @@
+/************************
+* Programer Name: Logan Berk
+*
+* Purpose: illistrate understanding of algorithmic thinking and assert function
+*
+* Create Date: 10/1/2024
+*
+* Modified Date: 10/1/2024
+*************************/
+
 #include <iostream>
 #include <cassert>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -14,7 +25,7 @@ double squareRoot(double x) {
 	double xOne;
 	while (true) {
 		xOne = (xNot + x / xNot) / 2;
-		if (abs(xNot - xOne) < TOL) {
+		if (fabs(xNot - xOne) < TOL) {
 			break;
 		}
 		xNot = xOne;
@@ -22,6 +33,7 @@ double squareRoot(double x) {
 
 	return xOne;
 }
+
 
 
 string getUserStringInput() {
@@ -39,12 +51,12 @@ string getUserStringInput() {
 float getUserFloatInput() {
 	float x;
 	while (!(cin >> x) || cin.peek() != '\n') {
-			cout << "Invalid Input try again!" << endl;
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cout << "Invalid Input try again!" << endl;
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	}
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');
-	
+
 	return x;
 }
 
@@ -57,8 +69,9 @@ int main() {
 		else {
 			cout << "Enter another number to take the square root of: ";
 		}
-			float x = getUserFloatInput();
-			cout << "The square root of " << x << " is approximately " << squareRoot(x) << endl;
+
+		float x = getUserFloatInput();
+		cout << "The square root of " << x << " is approximately " << fixed << setprecision(4) << squareRoot(x) << defaultfloat << endl;
 
 		input = "y";
 		do {
@@ -66,7 +79,9 @@ int main() {
 				cout << endl;
 				cout << "Enter a Valid y/n answer: ";
 			}
-			cout << "Would you like to enter another number? (y/n): ";
+			else {
+				cout << "Would you like to enter another number? (y/n): ";
+			}
 			input = getUserStringInput();
 			cout << endl;
 
