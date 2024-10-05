@@ -131,13 +131,21 @@
     <ClCompile Include="Cat.cpp" />
     <ClCompile Include="Cow.cpp" />
     <ClCompile Include="Dog.cpp" />
+    <ClCompile Include="Giraffe.cpp" />
+    <ClCompile Include="hybrid.cpp" />
+    <ClCompile Include="Owl.cpp" />
     <ClCompile Include="practice.cpp" />
+    <ClCompile Include="Skunk.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animal.h" />
     <ClInclude Include="Cat.h" />
     <ClInclude Include="Cow.h" />
     <ClInclude Include="Dog.h" />
+    <ClInclude Include="Giraffe.h" />
+    <ClInclude Include="hybrid.h" />
+    <ClInclude Include="Owl.h" />
+    <ClInclude Include="Skunk.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

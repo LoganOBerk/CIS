@@ -11,13 +11,6 @@ public:
 		this->feetNumber = feetNumber;
 		this->typeOfAnimal = typeOfAnimal;
 	}
-	void makeSound() override {
-		cout << "Meow" << endl;
-	}
-	void setFeetNumber(int& feetNumber) override {
-		this->feetNumber = feetNumber;
-	}
-	void setWeight(double& weight) override {
-		this->weight = weight;
-	}
+	void makeSound() override;
+
 };

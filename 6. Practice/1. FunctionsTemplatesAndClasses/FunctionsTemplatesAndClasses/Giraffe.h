@@ -1,9 +1,9 @@
 #pragma once
 #include "Animal.h"
 
-class Cow : public Animal {
+class Giraffe : public Animal {
 public:
-	Cow(double const weight = 250.0, int const feetNumber = 4, string const typeOfAnimal = "Cow") {
+	Giraffe(double const weight = 3000, int const feetNumber = 4, string const typeOfAnimal = "Giraffe") {
 		this->weight = weight;
 		this->feetNumber = feetNumber;
 		this->typeOfAnimal = typeOfAnimal;
