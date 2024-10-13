@@ -1,10 +1,10 @@
 #include "task.h"
 int main() {
 	bool testing = true;
+	float storeMonthlySales[NUM_STORES][NUM_MONTHS][NUM_DEPTS] =
+	{ { {1.1, 1.2}, {1.3, 1.4}, {1.5, 1.6}, {1.7, 1.8}, {1.9, 2.0}, {2.1, 2.2}, {2.1, 2.2}, {2.3, 2.4}, {2.5, 2.6},{2.7, 2.8}, {2.9, 3.0}, {3.1, 3.2} },
+	{ {3.1, 3.2}, {3.3, 3.4}, {3.5, 3.6}, {3.7, 3.8}, {3.9, 4.0}, {4.1, 4.2},{2.1, 2.2}, {2.3, 2.4}, {2.5, 2.6}, {2.7, 2.8}, {2.9, 3.0}, {3.1, 3.2} } };
 	if (!testing) {
-		float storeMonthlySales[NUM_STORES][NUM_MONTHS][NUM_DEPTS] =
-		{ { {1.1, 1.2}, {1.3, 1.4}, {1.5, 1.6}, {1.7, 1.8}, {1.9, 2.0}, {2.1, 2.2}, {2.1, 2.2}, {2.3, 2.4}, {2.5, 2.6},{2.7, 2.8}, {2.9, 3.0}, {3.1, 3.2} },
-		{ {3.1, 3.2}, {3.3, 3.4}, {3.5, 3.6}, {3.7, 3.8}, {3.9, 4.0}, {4.1, 4.2},{2.1, 2.2}, {2.3, 2.4}, {2.5, 2.6}, {2.7, 2.8}, {2.9, 3.0}, {3.1, 3.2} } };
 		while (true) {
 			int month = getUserMonthInput();
 			printMonthlySales(month, storeMonthlySales);
@@ -14,29 +14,31 @@ int main() {
 				collectArrayData(storeMonthlySales);
 			}
 		}
-	}else{
-		cout << "Which test would you like to run? : ";
+	}
+	while(testing){
 		string input;
 		string result;
 		int month;
-		float storeMonthlySales[NUM_STORES][NUM_MONTHS][NUM_DEPTS] =
-		{ { {1.1, 1.2}, {1.3, 1.4}, {1.5, 1.6}, {1.7, 1.8}, {1.9, 2.0}, {2.1, 2.2}, {2.1, 2.2}, {2.3, 2.4}, {2.5, 2.6},{2.7, 2.8}, {2.9, 3.0}, {3.1, 3.2} },
-		{ {3.1, 3.2}, {3.3, 3.4}, {3.5, 3.6}, {3.7, 3.8}, {3.9, 4.0}, {4.1, 4.2},{2.1, 2.2}, {2.3, 2.4}, {2.5, 2.6}, {2.7, 2.8}, {2.9, 3.0}, {3.1, 3.2} } };
+		cout << "Which test would you like to run? : ";
 		getline(cin, input);
+
 		int num = stoi(input);
+
 		switch (num) {
-		case 1: 
+		case 1:
 			cout << "TEST 1" << endl;
 			month = getUserMonthInput();
 			cout << "Expected Output : " << 1 << endl;
 			cout << "Actual Output : " << month << endl;
 			cout << endl;
+			break;
 		case 2:
 			cout << "TEST 2" << endl;
 			month = getUserMonthInput();
 			cout << "Expected Output : " << 5 << endl;
 			cout << "Actual Output : " << month << endl;
 			cout << endl;
+			break;
 		case 3:
 			cout << "TEST 3" << endl;
 			cout << "------------------------------------------------" << endl;
@@ -49,6 +51,7 @@ int main() {
 			cout << "------------------------------------------------" << endl;
 			getUserMonthInput();
 			cout << endl;
+			break;
 		case 4:
 			cout << "TEST 4" << endl;
 			collectArrayData(storeMonthlySales);
@@ -62,6 +65,7 @@ int main() {
 			cout << "------------------------------------------------" << endl;
 			printArray(storeMonthlySales);
 			cout << endl;
+			break;
 		case 5:
 			cout << "TEST 5" << endl;
 			cout << "------------------------------------------------" << endl;
@@ -73,6 +77,8 @@ int main() {
 			cout << "Actual Output" << endl;
 			cout << "------------------------------------------------" << endl;
 			collectArrayData(storeMonthlySales);
+			cout << endl;
+			break;
 		case 6:
 			cout << "TEST 6" << endl;
 			cout << "------------------------------------------------" << endl;
@@ -84,13 +90,15 @@ int main() {
 			cout << "Actual Output" << endl;
 			cout << "------------------------------------------------" << endl;
 			collectArrayData(storeMonthlySales);
+			cout << endl;
+			break;
 		case 7:
 			cout << "TEST 7" << endl;
 			cout << "------------------------------------------------" << endl;
 			cout << "Expected Output" << endl;
 			cout << "------------------------------------------------" << endl;
 			cout << "Please enter a month by number or name : 1" << endl;
-			cout << "			   Dept 1          Dept 2          Store Total" << endl;
+			cout << "              Dept 1          Dept 2          Store Total" << endl;
 			cout << "Store 1       1.1             1.2             sum of row value" << endl;
 			cout << "Store 2       3.1             3.2             sum of row value" << endl;
 			cout << "Dept Total    col value sum   col value sum   total overall sales" << endl;
@@ -99,11 +107,15 @@ int main() {
 			cout << "------------------------------------------------" << endl;
 			month = getUserMonthInput();
 			printMonthlySales(month, storeMonthlySales);
+			cout << endl;
+			break;
 		case 8:
 			cout << "TEST 8" << endl;
 			result = validateStringInput();
 			cout << "Expected Output : " << "y" << endl;
 			cout << "Actual Output : " << result << endl;
+			cout << endl;
+			break;
 		case 9:
 			cout << "TEST 9" << endl;
 			cout << "------------------------------------------------" << endl;
@@ -112,7 +124,13 @@ int main() {
 			cout << "------------------------------------------------" << endl;
 			cout << "Actual Output ";
 			validateStringInput();
+			cout << endl;
+			break;
+		default:
+			testing = false;
+			break;
 		}
+
 	}
 
 	return 0;

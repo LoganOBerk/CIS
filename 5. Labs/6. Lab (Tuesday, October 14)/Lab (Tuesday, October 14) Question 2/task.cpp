@@ -5,9 +5,7 @@ float collectFloatInput() {
 	while (!isfloat) {
 		getline(cin, input);
 		input.erase(remove(input.begin(), input.end(), ' '), input.end());
-
 		try {
-			stof(input);
 			if (stof(input) > 1e+6) {
 				throw out_of_range("That is out of range try again : ");
 			}
