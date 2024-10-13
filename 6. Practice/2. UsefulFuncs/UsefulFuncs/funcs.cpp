@@ -120,19 +120,21 @@ T userInput(string& input, T param1, T param2) {
 		
 	//TODO FIX THIS	
 	
-	} /*else if (is_same< T, string >::value) {
+	} else if (is_same< T, string >::value) {
+		string p1 = static_cast<string>(param1);
+		string p2 = static_cast<string>(param2);
 		for (auto ch : input) {
-			if (param1 == "alpha" && param2 == "numeric") {
+			if (p1 == "alpha" && p2 == "numeric") {
 				if (!isdigit(ch) && !isalpha(ch)) {
 					throw invalid_argument("This is not an alpha-numeric value!");
 				}
 			}
-			else if (param1 == "alpha") {
+			else if (p1 == "alpha") {
 				if (!isalpha(ch)) {
 					throw invalid_argument("You entered a non-alphebetic word!");
 				}
 			}
-			else if (param1 == "file") {
+			else if (p1 == "file") {
 				if (!isFileChar(ch)) {
 					throw invalid_argument("You entered an improper filename!");
 				}
@@ -140,7 +142,9 @@ T userInput(string& input, T param1, T param2) {
 		}
 		return input;
 	}
-	*/
+	
+	
+	
 
 	
 	
