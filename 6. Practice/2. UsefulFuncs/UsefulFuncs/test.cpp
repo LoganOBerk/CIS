@@ -1,18 +1,20 @@
 #include "funcs.h"
 
 int main() {
-    string input;
+	string input;
+	
+	getline(cin, input);
+			try {
+				cout << userInput(input, "alpha", "numeric", false, false);
+			}
+			catch (invalid_argument& e) {
+				cout << e.what() << endl;
 
-    try {
-        getline(cin, input);
-        cout << userInput(input, "alpha", "null", false) << endl;
-    }
-    catch (invalid_argument& e) {
-        cout << e.what() << endl;
-    }
-    catch (out_of_range& e) {
-        cout << e.what() << endl;
-    }
+			}
+			catch (out_of_range& e) {
+				cout << e.what() << endl;
 
-    return 0;
+			}
+	
+	return 0;
 }
