@@ -88,13 +88,16 @@ inline float userInput<float>(string& input, const float& param1, const float& p
             if (ch == '.') {
                 decimal++;
             }
+            else if (ch == ' ') {
+                throw invalid_argument("Please only enter one number at a time.");
+            }
             else {
                 throw invalid_argument("You entered a non-numerical value!");
             }
-
             if (decimal > 1) {
                 throw invalid_argument("You entered too many decimals!");
             }
+
 
             length = static_cast<int>(input.size()) - decimal;
         }
@@ -132,6 +135,9 @@ inline double userInput<double>(string& input, const double& param1, const doubl
         if (!isdigit(ch)) {
             if (ch == '.') {
                 decimal++;
+            }
+            else if (ch == ' ') {
+                throw invalid_argument("Please only enter one number at a time.");
             }
             else {
                 throw invalid_argument("You entered a non-numerical value!");
