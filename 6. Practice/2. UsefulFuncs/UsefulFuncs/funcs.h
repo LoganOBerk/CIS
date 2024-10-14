@@ -1,5 +1,12 @@
 #ifndef FUNCS_H
 #define FUNCS_H
+#define MAX_INT
+#define MIN_INT
+#define MAX_FLOAT
+#define MIN_FLOAT
+#define MAX_DOUBLE
+#define MIN_DOUBLE
+
 #include <algorithm>
 #include <cctype>
 #include <iomanip>
@@ -10,20 +17,42 @@
 
 using namespace std;
 
+const string alpha = "alpha";
+const string numeric = "numeric";
+const string file = "file";
+const string character = "character";
+const string null = "null";
 
 // Helper functions
 bool isFileChar(const char);
 string formatAndTrim(string&);
 
-string userInput(string&, const string&, const string&, const bool&, const bool&);
 
-template<typename T>
-T handleInt(const string& input, const T& param1, const T& param2) {
+template<typename T, typename Enable = void>
+T userInput(string&, const T&, const T&, const bool&) {
+    static_assert(std::is_same<T, void>::value, "Invalid type for userInput");
+}
+
+
+template<typename T, typename Enable = void>
+T userInput(string&, const T&, const T&, const bool&, const bool&) {
+    static_assert(std::is_same<T, void>::value, "Invalid type for userInput");
+}
+
+
+//Specialization for int
+template<>
+inline int userInput<int>(string& input, const int& param1, const int& param2, const bool& isClearBuffer) {
     if (input.empty()) {
         throw invalid_argument("Input cannot be empty.");
     }
+    input = formatAndTrim(input);
 
-    T numConvert;
+    if (isClearBuffer) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    int numConvert;
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
@@ -40,19 +69,26 @@ T handleInt(const string& input, const T& param1, const T& param2) {
 
     if (numConvert < param1 || numConvert > param2) {
         throw out_of_range("You entered a number outside of the range ( "
-                    + to_string(param1) + ", " + to_string(param2) + " )");
+            + to_string(param1) + ", " + to_string(param2) + " )");
     }
 
     return numConvert;
 }
 
-template<typename T>
-T handleFloat(const string& input, const T& param1, const T& param2) {
+
+//Specialization for float
+template<>
+inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& isClearBuffer) {
     if (input.empty()) {
         throw invalid_argument("Input cannot be empty.");
     }
+    input = formatAndTrim(input);
 
-    T numConvert;
+    if (isClearBuffer) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    float numConvert;
     int decimal = 0;
     int length = 0;
 
@@ -73,8 +109,8 @@ T handleFloat(const string& input, const T& param1, const T& param2) {
         }
     }
 
-    try{
-    numConvert = stof(input);
+    try {
+        numConvert = stof(input);
     }
     catch (const out_of_range&) {
         throw out_of_range("You entered a float much too large or small!");
@@ -91,13 +127,20 @@ T handleFloat(const string& input, const T& param1, const T& param2) {
     return numConvert;
 }
 
-template<typename T>
-T handleDouble(const string& input, const T& param1, const T& param2) {
+
+//Specialization for double
+template<>
+inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& isClearBuffer) {
     if (input.empty()) {
         throw invalid_argument("Input cannot be empty.");
     }
+    input = formatAndTrim(input);
 
-    T numConvert;
+    if (isClearBuffer) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    double numConvert;
     int decimal = 0;
     int length = 0;
 
@@ -138,8 +181,63 @@ T handleDouble(const string& input, const T& param1, const T& param2) {
     return numConvert;
 }
 
-template<typename T>
-T handleBool(const string& input, const T& param1, const T& param2) {
+
+//Specialization for string
+template<>
+inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& canHaveSpaces, const bool& isClearBuffer) {
+    if (input.empty()) {
+        throw invalid_argument("Input cannot be empty.");
+    }
+    input = formatAndTrim(input);
+    if (isClearBuffer && canHaveSpaces) {
+        throw invalid_argument("It is not typical to have spaces and need to clear the buffer.");
+    }
+    if (isClearBuffer) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+   
+    for (auto ch : input) {
+        if (param1 == "character") {
+            if (input.size() != 1 || !isalpha(ch)) {
+                throw invalid_argument("This is not a character input!");
+            }
+            else {
+                return input;
+            }
+        }
+        if (ch == ' ' && !canHaveSpaces) {
+            throw invalid_argument("There can be no spaces in the word!");
+        }
+        if (param1 == "alpha" && param2 == "numeric" && !(isdigit(ch) || isalpha(ch)) && ch != ' ') {
+            if (canHaveSpaces) {
+                throw invalid_argument("This is not an alpha-numeric list!");
+            }
+            throw invalid_argument("This is not an alpha-numeric value!");
+        }
+        else if (param1 == "alpha" && param2 == "null" && !isalpha(ch) && ch != ' ') {
+            if (canHaveSpaces) {
+                throw invalid_argument("You entered a non-alphabetic sentence!");
+            }
+            throw invalid_argument("You entered a non-alphabetic word!");
+        }
+        else if (param1 == "file" && param2 == "null" && !isFileChar(ch)) {
+            throw invalid_argument("You entered an improper filename!");
+        }
+
+    }
+
+    return input;
+}
+
+
+//Specialization for bool
+template<>
+inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& isClearBuffer) {
+    input = formatAndTrim(input);
+
+    if (isClearBuffer) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
     if (param1 != param2) {
         return false;
     }
@@ -154,30 +252,5 @@ T handleBool(const string& input, const T& param1, const T& param2) {
     }
 }
 
-template<typename T>
-T userInput(string& input, const T& param1, const T& param2, const bool& isClearBuffer) {
-    const bool same1 = is_same<T, int>::value;
-    const bool same2 = is_same<T, float>::value;
-    const bool same3 = is_same<T, double>::value;
-    const bool same4 = is_same<T, bool>::value;
-
-    input = formatAndTrim(input);
-    
-    if (isClearBuffer) {
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    }
-    if (same1) {
-        return handleInt(input, param1, param2);
-    }
-    else if (same2) {
-        return handleFloat(input, param1, param2);
-    }
-    else if (same3) {
-        return handleDouble(input, param1, param2);
-    }
-    else if (same4) {
-        return handleBool(input, param1, param2);
-    }
-}
 
 #endif // FUNCS_H
