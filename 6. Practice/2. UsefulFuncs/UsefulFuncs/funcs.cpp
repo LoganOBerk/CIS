@@ -22,5 +22,15 @@ string formatAndTrim(string& str) {
 
     return string(start, end);
 }
-
-
+void initialInputHandling(string& input, const bool& canHaveSpaces, const bool& isClearBuffer) {
+    if (input.empty()) {
+        throw invalid_argument("Input cannot be empty.");
+    }
+    if (isClearBuffer && canHaveSpaces) {
+        throw invalid_argument("Clearing the buffer while allowing spaces is inconsistent.");
+    }
+    input = formatAndTrim(input);
+    if (isClearBuffer) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}

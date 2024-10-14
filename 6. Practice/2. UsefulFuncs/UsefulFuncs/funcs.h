@@ -27,6 +27,9 @@ const string null = "null";
 //Helper functions
 bool isFileChar(const char);
 string formatAndTrim(string&);
+void initialInputHandling(string&, const bool&, const bool&);
+
+
 
 //Default template if no type is matched
 template<typename T, typename Enable = void>
@@ -35,34 +38,23 @@ T userInput(string&, const T&, const T&, const bool&, const bool&) {
 }
 
 //Initial input checking
-template<typename T>
-T initialInputHandling(string& input, const T& param1, const T& param2, const bool& canHaveSpaces, const bool& isClearBuffer){
-    if (input.empty()) {
-        throw invalid_argument("Input cannot be empty.");
-    }
-    if (isClearBuffer && canHaveSpaces) {
-        throw invalid_argument("Clearing the buffer while allowing spaces is inconsistent.");
-    }
-    input = formatAndTrim(input);
-    if (isClearBuffer) {
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    }
 
-    return {};
-}
 
 
 
 //Specialization for int
 template<>
 inline int userInput<int>(string& input, const int& param1, const int& param2, const bool& canHaveSpaces, const bool& isClearBuffer) {
-    initialInputHandling(input, param1, param2, canHaveSpaces, isClearBuffer);
+    initialInputHandling(input, canHaveSpaces, isClearBuffer);
 
     int numConvert;
 
     for (const auto ch : input) {
-        if (!isdigit(ch)) {
+        if (!isdigit(ch) && ch != ' ') {
             throw invalid_argument("You entered a non-integer value!");
+        }
+        else if(ch == ' ') {
+            throw invalid_argument("Please only enter one number at a time.");
         }
     }
 
@@ -85,7 +77,7 @@ inline int userInput<int>(string& input, const int& param1, const int& param2, c
 //Specialization for float
 template<>
 inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& canHaveSpaces, const bool& isClearBuffer) {
-    initialInputHandling(input, param1, param2, canHaveSpaces, isClearBuffer);
+    initialInputHandling(input, canHaveSpaces, isClearBuffer);
 
     float numConvert;
     int decimal = 0;
@@ -130,7 +122,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 //Specialization for double
 template<>
 inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& canHaveSpaces, const bool& isClearBuffer) {
-    initialInputHandling(input, param1, param2, canHaveSpaces, isClearBuffer);
+    initialInputHandling(input, canHaveSpaces, isClearBuffer);
 
     double numConvert;
     int decimal = 0;
@@ -177,7 +169,7 @@ inline double userInput<double>(string& input, const double& param1, const doubl
 //Specialization for string
 template<>
 inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& canHaveSpaces, const bool& isClearBuffer) {
-    initialInputHandling(input, param1, param2, canHaveSpaces, isClearBuffer);
+    initialInputHandling(input, canHaveSpaces, isClearBuffer);
 
     for (auto ch : input) {
         if (param1 == "character") {
@@ -216,7 +208,7 @@ inline string userInput<string>(string& input, const string& param1, const strin
 //Specialization for bool
 template<>
 inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& canHaveSpaces, const bool& isClearBuffer) {
-    initialInputHandling(input, param1, param2, canHaveSpaces, isClearBuffer);
+    initialInputHandling(input, canHaveSpaces, isClearBuffer);
 
     if (param1 != param2) {
         return false;
