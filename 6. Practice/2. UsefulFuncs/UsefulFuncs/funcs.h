@@ -37,10 +37,6 @@ T userInput(string&, const T&, const T&, const bool&, const bool&) {
     static_assert(std::is_same<T, void>::value, "Invalid type for userInput");
 }
 
-//Initial input checking
-
-
-
 
 //Specialization for int
 template<>
@@ -48,16 +44,21 @@ inline int userInput<int>(string& input, const int& param1, const int& param2, c
     initialInputHandling(input, canHaveSpaces, isClearBuffer);
 
     int numConvert;
+   
 
     for (const auto ch : input) {
-        if (!isdigit(ch) && ch != ' ') {
-            throw invalid_argument("You entered a non-integer value!");
-        }
-        else if(ch == ' ') {
-            throw invalid_argument("Please only enter one number at a time.");
+        
+        if (!isdigit(ch)) {
+            if (ch == ' ') {
+                throw invalid_argument("You entered more than one input.");
+            }
+            else{
+                throw invalid_argument("You entered a non-integer value!");
+            }
         }
     }
-
+    
+    
     try {
         numConvert = stoi(input);
     }
@@ -85,20 +86,23 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (ch == '.') {
-                decimal++;
+            if (ch == ' ') {
+                throw invalid_argument("You entered more than one input.");
             }
-            else {
+            else if (ch == '.') {
+                decimal++;
+                if (decimal > 1) {
+                    throw invalid_argument("You entered too many decimals!");
+                }
+            }
+            else{
                 throw invalid_argument("You entered a non-numerical value!");
             }
 
-            if (decimal > 1) {
-                throw invalid_argument("You entered too many decimals!");
-            }
-
-            length = static_cast<int>(input.size()) - decimal;
         }
     }
+    length = static_cast<int>(input.size()) - decimal;
+
 
     try {
         numConvert = stof(input);
@@ -130,22 +134,21 @@ inline double userInput<double>(string& input, const double& param1, const doubl
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (ch == '.') {
+            if (ch == ' ') {
+                throw invalid_argument("You entered more than one input.");
+            }else if (ch == '.') {
                 decimal++;
+                if (decimal > 1) {
+                    throw invalid_argument("You entered too many decimals!");
+                }
             }
             else {
                 throw invalid_argument("You entered a non-numerical value!");
             }
-
-            if (decimal > 1) {
-                throw invalid_argument("You entered too many decimals!");
-            }
-
-            if (decimal == 1) {
-                length = static_cast<int>(input.size()) - decimal;
-            }
         }
     }
+    length = static_cast<int>(input.size()) - decimal;
+   
 
     try {
         numConvert = stod(input);
@@ -172,14 +175,6 @@ inline string userInput<string>(string& input, const string& param1, const strin
     initialInputHandling(input, canHaveSpaces, isClearBuffer);
 
     for (auto ch : input) {
-        if (param1 == "character") {
-            if (input.size() != 1 || !isalpha(ch)) {
-                throw invalid_argument("This is not a character input!");
-            }
-            else {
-                return input;
-            }
-        }
         if (ch == ' ' && !canHaveSpaces) {
             throw invalid_argument("There can be no spaces in the word!");
         }
@@ -197,6 +192,11 @@ inline string userInput<string>(string& input, const string& param1, const strin
         }
         else if (param1 == "file" && param2 == "null" && !isFileChar(ch)) {
             throw invalid_argument("You entered an improper filename!");
+        }
+        else if (param1 == "character" && param2 == "null") {
+            if (input.size() != 1 || !isalpha(ch)) {
+                throw invalid_argument("This is not a character input!");
+            }
         }
 
     }

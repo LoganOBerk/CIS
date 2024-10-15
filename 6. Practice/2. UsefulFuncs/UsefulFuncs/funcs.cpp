@@ -22,6 +22,8 @@ string formatAndTrim(string& str) {
 
     return string(start, end);
 }
+
+//Initial input checking
 void initialInputHandling(string& input, const bool& canHaveSpaces, const bool& isClearBuffer) {
     if (input.empty()) {
         throw invalid_argument("Input cannot be empty.");
