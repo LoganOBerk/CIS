@@ -142,6 +142,9 @@ inline double userInput<double>(string& input, const double& param1, const doubl
                     throw invalid_argument("You entered too many decimals!");
                 }
             }
+            else if (ch == ' ') {
+                throw invalid_argument("Please only enter one number at a time.");
+            }
             else {
                 throw invalid_argument("You entered a non-numerical value!");
             }

@@ -14,9 +14,7 @@ string formatAndTrim(string& str) {
     for (auto& ch : str) {
         ch = tolower(ch);
     }
-    while (str[str.size() - 1] == ',') {
-        str.pop_back();
-    }
+    str.erase(remove(str.begin(), str.end(), ','), str.end());
     auto start = find_if_not(str.begin(), str.end(), ::isspace);
     auto end = find_if_not(str.rbegin(), str.rend(), ::isspace).base();
 
