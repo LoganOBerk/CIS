@@ -53,7 +53,7 @@ inline int userInput<int>(string& input, const int& param1, const int& param2, c
     for (const auto ch : input) {
         
         if (!isdigit(ch)) {
-            if (input.find(' ') != string::npos) {
+            if (input.find(' ') != string::npos && !isalpha(ch)) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if((isScientific && (ch != 'e' && ch != '+' && ch != '-')) || !isScientific) {
@@ -92,7 +92,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (input.find(' ') != string::npos) {
+            if (input.find(' ') != string::npos && !isalpha(ch)) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if (ch == '.') {
@@ -141,7 +141,7 @@ inline double userInput<double>(string& input, const double& param1, const doubl
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (input.find(' ') != string::npos) {
+            if (input.find(' ') != string::npos && !isalpha(ch)) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if (ch == '.') {
