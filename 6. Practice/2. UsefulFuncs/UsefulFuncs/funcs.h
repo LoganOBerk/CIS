@@ -16,6 +16,7 @@
 #include <string>
 #include <type_traits>
 #include <regex>
+#include <sstream>
 
 
 using namespace std;
@@ -32,6 +33,7 @@ const string null = "null";
 bool isFileChar(const char);
 string formatAndTrim(string&);
 void initialInputHandling(string&, const bool&, const bool&);
+bool validateSegments(const string&, const regex&);
 
 
 
@@ -41,6 +43,20 @@ T userInput(string&, const T&, const T&, const bool&, const bool&) {
     static_assert(std::is_same<T, void>::value, "Invalid type for userInput");
 }
 
+template<typename T>
+void validateUserInput(string& input, const T& param1, const T& param2, const bool& notSingleWord, const bool& isClearBuffer) {
+    try {
+        cout << userInput(input, param1, param2, notSingleWord, isClearBuffer);
+    }
+    catch (invalid_argument& e) {
+        cout << e.what() << endl;
+
+    }
+    catch (out_of_range& e) {
+        cout << e.what() << endl;
+
+    }
+}
 
 //Specialization for int
 template<>
@@ -48,10 +64,11 @@ inline int userInput<int>(string& input, const int& param1, const int& param2, c
     initialInputHandling(input, notSingleWord, isClearBuffer);
 
     int numConvert;
-    bool isScientific = regex_match(input, scientificNotation);
+    bool isScientific = validateSegments(input, scientificNotation);
+    
+       
 
     for (const auto ch : input) {
-        
         if (!isdigit(ch)) {
             if (input.find(' ') != string::npos && !isalpha(ch)) {
                 throw invalid_argument("You entered more than one input.");
@@ -60,11 +77,11 @@ inline int userInput<int>(string& input, const int& param1, const int& param2, c
                 throw invalid_argument("You entered a non-integer value!");
             }
         }
-
+      
     }
     
-    
     try {
+
         numConvert = static_cast<int>(stod(input));
     }
     catch (const out_of_range&) {
@@ -88,7 +105,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
     float numConvert;
     int decimal = 0;
     int length = 0;
-    bool isScientific = regex_match(input, scientificNotation);
+    bool isScientific = validateSegments(input, scientificNotation);
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
@@ -137,7 +154,7 @@ inline double userInput<double>(string& input, const double& param1, const doubl
     double numConvert;
     int decimal = 0;
     int length = 0;
-    bool isScientific = regex_match(input, scientificNotation);
+    bool isScientific = validateSegments(input, scientificNotation);
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {

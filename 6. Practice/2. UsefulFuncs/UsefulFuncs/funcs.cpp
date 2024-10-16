@@ -50,3 +50,17 @@ void initialInputHandling(string& input, const bool& notSingleWord, const bool& 
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 }
+
+
+bool validateSegments(const string& input, const regex& pattern) {
+    istringstream iss(input);
+    string segment;
+
+    while (iss >> segment) {  
+        if (!regex_match(segment, pattern)) {
+            return false;  
+        }
+    }
+
+    return true;  
+}
