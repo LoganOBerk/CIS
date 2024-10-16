@@ -38,11 +38,11 @@ string formatAndTrim(string& str) {
 }
 
 //Initial input checking
-void initialInputHandling(string& input, const bool& notSingleWord, const bool& isClearBuffer) {
+void initialInputHandling(string& input, const bool& singleWord, const bool& isClearBuffer) {
     if (input.empty()) {
         throw invalid_argument("Input cannot be empty.");
     }
-    if (isClearBuffer && notSingleWord) {
+    if (isClearBuffer && !singleWord) {
         throw invalid_argument("Clearing the buffer while allowing spaces is inconsistent.");
     }
     input = formatAndTrim(input);

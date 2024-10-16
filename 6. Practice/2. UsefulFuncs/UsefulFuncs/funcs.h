@@ -44,9 +44,9 @@ T userInput(string&, const T&, const T&, const bool&, const bool&) {
 }
 
 template<typename T>
-void validateUserInput(string& input, const T& param1, const T& param2, const bool& notSingleWord, const bool& isClearBuffer) {
+void validateUserInput(string& input, const T& param1, const T& param2, const bool& singleWord, const bool& isClearBuffer) {
     try {
-        cout << userInput(input, param1, param2, notSingleWord, isClearBuffer);
+        cout << userInput(input, param1, param2, singleWord, isClearBuffer);
     }
     catch (invalid_argument& e) {
         cout << e.what() << endl;
@@ -60,20 +60,21 @@ void validateUserInput(string& input, const T& param1, const T& param2, const bo
 
 //Specialization for int
 template<>
-inline int userInput<int>(string& input, const int& param1, const int& param2, const bool& notSingleWord, const bool& isClearBuffer) {
-    initialInputHandling(input, notSingleWord, isClearBuffer);
-
+inline int userInput<int>(string& input, const int& param1, const int& param2, const bool& singleWord, const bool& isClearBuffer) {
+    initialInputHandling(input, singleWord, isClearBuffer);
+    if (!singleWord) {
+        throw invalid_argument("Numerical values cannot accept spaces!");
+    }
     int numConvert;
     bool isScientific = validateSegments(input, scientificNotation);
-    
        
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (input.find(' ') != string::npos && !isalpha(ch)) {
+            if (input.find(' ') != string::npos && isScientific) {
                 throw invalid_argument("You entered more than one input.");
             }
-            else if((isScientific && (ch != 'e' && ch != '+' && ch != '-')) || !isScientific) {
+            else if (!isScientific) {
                 throw invalid_argument("You entered a non-integer value!");
             }
         }
@@ -99,9 +100,11 @@ inline int userInput<int>(string& input, const int& param1, const int& param2, c
 
 //Specialization for float
 template<>
-inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& notSingleWord, const bool& isClearBuffer) {
-    initialInputHandling(input, notSingleWord, isClearBuffer);
-
+inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleWord, const bool& isClearBuffer) {
+    initialInputHandling(input, singleWord, isClearBuffer);
+    if (!singleWord) {
+        throw invalid_argument("Numerical values cannot accept spaces!");
+    }
     float numConvert;
     int decimal = 0;
     int length = 0;
@@ -109,7 +112,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (input.find(' ') != string::npos && !isalpha(ch)) {
+            if (input.find(' ') != string::npos && isScientific) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if (ch == '.') {
@@ -118,7 +121,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
                     throw invalid_argument("You entered too many decimals!");
                 }
             }
-            else if ((isScientific && (ch != 'e' && ch != '+' && ch != '-')) || !isScientific) {
+            else if (!isScientific) {
                 throw invalid_argument("You entered a non-numerical value!");
             }
 
@@ -148,9 +151,11 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 
 //Specialization for double
 template<>
-inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& notSingleWord, const bool& isClearBuffer) {
-    initialInputHandling(input, notSingleWord, isClearBuffer);
-
+inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleWord, const bool& isClearBuffer) {
+    initialInputHandling(input, singleWord, isClearBuffer);
+    if (!singleWord) {
+        throw invalid_argument("Numerical values cannot accept spaces!");
+    }
     double numConvert;
     int decimal = 0;
     int length = 0;
@@ -158,7 +163,7 @@ inline double userInput<double>(string& input, const double& param1, const doubl
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (input.find(' ') != string::npos && !isalpha(ch)) {
+            if (input.find(' ') != string::npos && isScientific) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if (ch == '.') {
@@ -167,7 +172,7 @@ inline double userInput<double>(string& input, const double& param1, const doubl
                     throw invalid_argument("You entered too many decimals!");
                 }
             }
-            else if ((isScientific && (ch != 'e' && ch != '+' && ch != '-')) || !isScientific) {
+            else if (!isScientific) {
                 throw invalid_argument("You entered a non-numerical value!");
             }
         }
@@ -196,22 +201,22 @@ inline double userInput<double>(string& input, const double& param1, const doubl
 
 //Specialization for string
 template<>
-inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& notSingleWord, const bool& isClearBuffer) {
-    initialInputHandling(input, notSingleWord, isClearBuffer);
+inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleWord, const bool& isClearBuffer) {
+    initialInputHandling(input, singleWord, isClearBuffer);
 
     for (auto ch : input) {
         if (ch != '\0') {
-            if (ch == ' ' && !notSingleWord) {
+            if (ch == ' ' && singleWord) {
                 throw invalid_argument("You entered more than one word!");
             }
             if (param1 == "alpha" && param2 == "numeric" && !(isdigit(ch) || isalpha(ch)) && ch != ' ') {
-                if (notSingleWord) {
+                if (!singleWord) {
                     throw invalid_argument("This is not an alpha-numeric list!");
                 }
                 throw invalid_argument("This is not an alpha-numeric value!");
             }
             else if (param1 == "alpha" && param2 == "null" && !isalpha(ch) && ch != ' ') {
-                if (notSingleWord) {
+                if (!singleWord) {
                     throw invalid_argument("You entered a non-alphabetic sentence!");
                 }
                 throw invalid_argument("You entered a non-alphabetic word!");
@@ -234,8 +239,8 @@ inline string userInput<string>(string& input, const string& param1, const strin
 
 //Specialization for bool
 template<>
-inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& notSingleWord, const bool& isClearBuffer) {
-    initialInputHandling(input, notSingleWord, isClearBuffer);
+inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& singleWord, const bool& isClearBuffer) {
+    initialInputHandling(input, singleWord, isClearBuffer);
 
     if (param1 != param2) {
         return false;
