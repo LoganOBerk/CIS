@@ -17,14 +17,16 @@
 #include <type_traits>
 #include <regex>
 
+
 using namespace std;
+namespace { const regex scientificNotation(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)"); }
 
 const string alpha = "alpha";
 const string numeric = "numeric";
 const string file = "file";
 const string character = "character";
 const string null = "null";
-const regex scientificNotation(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)");
+
 
 //Helper functions
 bool isFileChar(const char);

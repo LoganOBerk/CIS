@@ -5,7 +5,7 @@ int main() {
 	
 	getline(cin, input);
 			try {
-				cout << userInput(input, 1, 100, false, false);
+				cout << userInput(input, null, null, false, false);
 			}
 			catch (invalid_argument& e) {
 				cout << e.what() << endl;
