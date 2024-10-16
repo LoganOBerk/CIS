@@ -45,14 +45,16 @@ inline int userInput<int>(string& input, const int& param1, const int& param2, c
     initialInputHandling(input, notSingleWord, isClearBuffer);
 
     int numConvert;
+    regex pat(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)");
+    bool isScientific = regex_match(input, pat);
 
     for (const auto ch : input) {
         
         if (!isdigit(ch)) {
-            if (ch == ' ') {
+            if (input.find(' ') != string::npos) {
                 throw invalid_argument("You entered more than one input.");
             }
-            else {
+            else if((isScientific && (ch != 'e' && ch != '+' && ch != '-')) || !isScientific) {
                 throw invalid_argument("You entered a non-integer value!");
             }
         }
@@ -84,10 +86,12 @@ inline float userInput<float>(string& input, const float& param1, const float& p
     float numConvert;
     int decimal = 0;
     int length = 0;
+    regex pat(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)");
+    bool isScientific = regex_match(input, pat);
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (ch == ' ') {
+            if (input.find(' ') != string::npos) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if (ch == '.') {
@@ -96,7 +100,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
                     throw invalid_argument("You entered too many decimals!");
                 }
             }
-            else{
+            else if ((isScientific && (ch != 'e' && ch != '+' && ch != '-')) || !isScientific) {
                 throw invalid_argument("You entered a non-numerical value!");
             }
 
@@ -132,21 +136,21 @@ inline double userInput<double>(string& input, const double& param1, const doubl
     double numConvert;
     int decimal = 0;
     int length = 0;
+    regex pat(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)");
+    bool isScientific = regex_match(input, pat);
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (ch == ' ') {
+            if (input.find(' ') != string::npos) {
                 throw invalid_argument("You entered more than one input.");
-            }else if (ch == '.') {
+            }
+            else if (ch == '.') {
                 decimal++;
                 if (decimal > 1) {
                     throw invalid_argument("You entered too many decimals!");
                 }
             }
-            else if (ch == ' ') {
-                throw invalid_argument("Please only enter one number at a time.");
-            }
-            else {
+            else if ((isScientific && (ch != 'e' && ch != '+' && ch != '-')) || !isScientific) {
                 throw invalid_argument("You entered a non-numerical value!");
             }
         }
