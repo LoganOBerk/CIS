@@ -24,6 +24,7 @@ const string numeric = "numeric";
 const string file = "file";
 const string character = "character";
 const string null = "null";
+const regex scientificNotation(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)");
 
 //Helper functions
 bool isFileChar(const char);
@@ -45,8 +46,7 @@ inline int userInput<int>(string& input, const int& param1, const int& param2, c
     initialInputHandling(input, notSingleWord, isClearBuffer);
 
     int numConvert;
-    regex pat(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)");
-    bool isScientific = regex_match(input, pat);
+    bool isScientific = regex_match(input, scientificNotation);
 
     for (const auto ch : input) {
         
@@ -86,8 +86,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
     float numConvert;
     int decimal = 0;
     int length = 0;
-    regex pat(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)");
-    bool isScientific = regex_match(input, pat);
+    bool isScientific = regex_match(input, scientificNotation);
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
@@ -136,8 +135,7 @@ inline double userInput<double>(string& input, const double& param1, const doubl
     double numConvert;
     int decimal = 0;
     int length = 0;
-    regex pat(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)");
-    bool isScientific = regex_match(input, pat);
+    bool isScientific = regex_match(input, scientificNotation);
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
