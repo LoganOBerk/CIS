@@ -38,12 +38,12 @@ string formatAndTrim(string& str) {
 }
 
 //Initial input checking
-void initialInputHandling(string& input, const bool& singleWord, const bool& isClearBuffer) {
+void initialInputHandling(string& input, const bool& singleInput, const bool& isClearBuffer) {
     if (input.empty()) {
         throw invalid_argument("Input cannot be empty.");
     }
-    if (isClearBuffer && !singleWord) {
-        throw invalid_argument("Clearing the buffer while allowing spaces is inconsistent.");
+    if (isClearBuffer && !singleInput) {
+        throw invalid_argument("WARNING ATTEMPTING TO CLEAR BUFFER AND ALLOW MULTIPLE INPUTS POTENTIAL DATA LOSS!");
     }
     input = formatAndTrim(input);
     if (isClearBuffer) {

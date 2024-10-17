@@ -22,12 +22,16 @@
 using namespace std;
 namespace { const regex scientificNotation(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)"); }
 
-const string alpha = "alpha";
-const string numeric = "numeric";
-const string file = "file";
-const string character = "character";
-const string null = "null";
+const string IS_ALPHA = "alpha";
+const string IS_NUMERIC = "numeric";
+const string IS_FILE = "file";
+const string IS_CHARACTER = "character";
+const string IS_NULL = "null";
+const bool ONE_VALUE = true;
+const bool MULTI_VALUE = false;
 
+const bool CLEAR_BUFFER = true;
+const bool DONT_CLEAR_BUFFER = false;
 
 //Helper functions
 bool isFileChar(const char);
@@ -40,38 +44,24 @@ bool validateSegments(const string&, const regex&);
 //Default template if no type is matched
 template<typename T, typename Enable = void>
 T userInput(string&, const T&, const T&, const bool&, const bool&) {
-    static_assert(std::is_same<T, void>::value, "Invalid type for userInput");
-}
-
-template<typename T>
-void validateUserInput(string& input, const T& param1, const T& param2, const bool& singleWord, const bool& isClearBuffer) {
-    try {
-        cout << userInput(input, param1, param2, singleWord, isClearBuffer);
-    }
-    catch (invalid_argument& e) {
-        cout << e.what() << endl;
-
-    }
-    catch (out_of_range& e) {
-        cout << e.what() << endl;
-
-    }
+    static_assert(is_same<T, void>::value, "Invalid type for userInput");
 }
 
 //Specialization for int
 template<>
-inline int userInput<int>(string& input, const int& param1, const int& param2, const bool& singleWord, const bool& isClearBuffer) {
-    initialInputHandling(input, singleWord, isClearBuffer);
-    if (!singleWord) {
-        throw invalid_argument("Numerical values cannot accept spaces!");
+inline int userInput<int>(string& input, const int& param1, const int& param2, const bool& singleInput, const bool& isClearBuffer) {
+    initialInputHandling(input, singleInput, isClearBuffer);
+    if (!singleInput) {
+        throw invalid_argument("ARGUMENT singleInput MUST BE FALSE FOR NUMBERS!");
     }
     int numConvert;
     bool isScientific = validateSegments(input, scientificNotation);
+    bool hasSpaces = (input.find(' ') != string::npos);
        
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (input.find(' ') != string::npos && isScientific) {
+            if (hasSpaces && isScientific) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if (!isScientific) {
@@ -100,19 +90,20 @@ inline int userInput<int>(string& input, const int& param1, const int& param2, c
 
 //Specialization for float
 template<>
-inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleWord, const bool& isClearBuffer) {
-    initialInputHandling(input, singleWord, isClearBuffer);
-    if (!singleWord) {
-        throw invalid_argument("Numerical values cannot accept spaces!");
+inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleInput, const bool& isClearBuffer) {
+    initialInputHandling(input, singleInput, isClearBuffer);
+    if (!singleInput) {
+        throw invalid_argument("ARGUMENT singleInput MUST BE FALSE FOR NUMBERS!");
     }
     float numConvert;
     int decimal = 0;
     int length = 0;
     bool isScientific = validateSegments(input, scientificNotation);
+    bool hasSpaces = (input.find(' ') != string::npos);
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (input.find(' ') != string::npos && isScientific) {
+            if (hasSpaces && isScientific) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if (ch == '.') {
@@ -151,19 +142,20 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 
 //Specialization for double
 template<>
-inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleWord, const bool& isClearBuffer) {
-    initialInputHandling(input, singleWord, isClearBuffer);
-    if (!singleWord) {
-        throw invalid_argument("Numerical values cannot accept spaces!");
+inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleInput, const bool& isClearBuffer) {
+    initialInputHandling(input, singleInput, isClearBuffer);
+    if (!singleInput) {
+        throw invalid_argument("ARGUMENT singleInput MUST BE FALSE FOR NUMBERS!");
     }
     double numConvert;
     int decimal = 0;
     int length = 0;
     bool isScientific = validateSegments(input, scientificNotation);
+    bool hasSpaces = (input.find(' ') != string::npos);
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (input.find(' ') != string::npos && isScientific) {
+            if (hasSpaces && isScientific) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if (ch == '.') {
@@ -201,30 +193,30 @@ inline double userInput<double>(string& input, const double& param1, const doubl
 
 //Specialization for string
 template<>
-inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleWord, const bool& isClearBuffer) {
-    initialInputHandling(input, singleWord, isClearBuffer);
+inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleInput, const bool& isClearBuffer) {
+    initialInputHandling(input, singleInput, isClearBuffer);
 
     for (auto ch : input) {
         if (ch != '\0') {
-            if (ch == ' ' && singleWord) {
+            if (ch == ' ' && singleInput) {
                 throw invalid_argument("You entered more than one word!");
             }
-            if (param1 == "alpha" && param2 == "numeric" && !(isdigit(ch) || isalpha(ch)) && ch != ' ') {
-                if (!singleWord) {
+            if (param1 == IS_ALPHA && param2 == IS_NUMERIC && !(isdigit(ch) || isalpha(ch)) && ch != ' ') {
+                if (!singleInput) {
                     throw invalid_argument("This is not an alpha-numeric list!");
                 }
                 throw invalid_argument("This is not an alpha-numeric value!");
             }
-            else if (param1 == "alpha" && param2 == "null" && !isalpha(ch) && ch != ' ') {
-                if (!singleWord) {
+            else if (param1 == IS_ALPHA && param2 == IS_NULL && !isalpha(ch) && ch != ' ') {
+                if (!singleInput) {
                     throw invalid_argument("You entered a non-alphabetic sentence!");
                 }
                 throw invalid_argument("You entered a non-alphabetic word!");
             }
-            else if (param1 == "file" && param2 == "null" && !isFileChar(ch)) {
+            else if (param1 == IS_FILE && param2 == IS_NULL && !isFileChar(ch)) {
                 throw invalid_argument("You entered an improper filename!");
             }
-            else if (param1 == "character" && param2 == "null") {
+            else if (param1 == IS_CHARACTER && param2 == IS_NULL) {
                 if (input.size() != 1 || !isalpha(ch)) {
                     throw invalid_argument("This is not a character input!");
                 }
@@ -239,8 +231,8 @@ inline string userInput<string>(string& input, const string& param1, const strin
 
 //Specialization for bool
 template<>
-inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& singleWord, const bool& isClearBuffer) {
-    initialInputHandling(input, singleWord, isClearBuffer);
+inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& singleInput, const bool& isClearBuffer) {
+    initialInputHandling(input, singleInput, isClearBuffer);
 
     if (param1 != param2) {
         return false;
@@ -257,4 +249,5 @@ inline bool userInput<bool>(string& input, const bool& param1, const bool& param
 }
 
 
-#endif FUNCS_H
+
+#endif

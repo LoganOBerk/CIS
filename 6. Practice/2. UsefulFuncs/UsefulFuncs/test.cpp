@@ -4,7 +4,15 @@ int main() {
 	string input;
 	
 	getline(cin, input);
-	validateUserInput(input, 1, 100, true, false);
-	
+	try {
+		cout << userInput(input, 1, 100, ONE_VALUE, DONT_CLEAR_BUFFER);
+	}
+	catch (const invalid_argument& e) {
+		cout << e.what() << endl;
+	}
+	catch (const out_of_range& e) {
+		cout << e.what() << endl;
+	}
+
 	return 0;
 }
