@@ -51,20 +51,19 @@ bool validateSegments(const string&, const regex&);
 
 
 //Default template if no type is matched
-
 template<typename T, typename Enable = void>
-typename enable_if<!is_integral<T>::value, T>::type
+inline typename enable_if<!is_integral<T>::value, T>::type
 userInput(string&, const T&, const T&, const bool&, const bool&) {
     static_assert(is_same<T, void>::value, "Invalid type for userInput");
 }
 
 //Specialization for int
 template<typename T>
-typename enable_if<is_integral<T>::value, T>::type
+inline typename enable_if<is_integral<T>::value, T>::type
 userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer) {
     initialInputHandling(input, singleInput, isClearBuffer);
     if (!singleInput) {
-        throw invalid_argument("ARGUMENT singleInput MUST BE FALSE FOR NUMBERS!");
+        throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
     }
     T numConvert;
     bool isScientific = validateSegments(input, scientificNotation);
@@ -103,7 +102,7 @@ template<>
 inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleInput, const bool& isClearBuffer) {
     initialInputHandling(input, singleInput, isClearBuffer);
     if (!singleInput) {
-        throw invalid_argument("ARGUMENT singleInput MUST BE FALSE FOR NUMBERS!");
+        throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
     }
     float numConvert;
     int decimal = 0;
@@ -155,7 +154,7 @@ template<>
 inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleInput, const bool& isClearBuffer) {
     initialInputHandling(input, singleInput, isClearBuffer);
     if (!singleInput) {
-        throw invalid_argument("ARGUMENT singleInput MUST BE FALSE FOR NUMBERS!");
+        throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
     }
     double numConvert;
     int decimal = 0;
