@@ -1,12 +1,6 @@
 #ifndef FUNCS_H
 #define FUNCS_H
 
-#define MAX_INT
-#define MIN_INT
-#define MAX_FLOAT
-#define MIN_FLOAT
-#define MAX_DOUBLE
-#define MIN_DOUBLE
 
 #include <algorithm>
 #include <cctype>
@@ -17,21 +11,36 @@
 #include <type_traits>
 #include <regex>
 #include <sstream>
+#include <limits>
 
 
 using namespace std;
 namespace { const regex scientificNotation(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)"); }
 
+//string consts
 const string IS_ALPHA = "alpha";
 const string IS_NUMERIC = "numeric";
 const string IS_FILE = "file";
 const string IS_CHARACTER = "character";
 const string IS_NULL = "null";
-const bool ONE_VALUE = true;
-const bool MULTI_VALUE = false;
 
-const bool CLEAR_BUFFER = true;
-const bool DONT_CLEAR_BUFFER = false;
+//numeric consts
+const int      MAX_INT = numeric_limits<int>::max();
+const int      MIN_INT = numeric_limits<int>::min();
+const long     MAX_LONG = numeric_limits<long>::max();
+const long     MIN_LONG = numeric_limits<long>::min();
+const unsigned MAX_UNSIGNED = numeric_limits<unsigned>::max();
+const unsigned MIN_UNSIGNED = numeric_limits<unsigned>::min();
+const float    MAX_FLOAT = numeric_limits<float>::max();
+const float    MIN_FLOAT = numeric_limits<float>::min();
+const double   MAX_DOUBLE = numeric_limits<double>::max();
+const double   MIN_DOUBLE = numeric_limits<double>::min();
+
+//boolean consts
+const bool   ONE_VALUE = true;
+const bool   MULTI_VALUE = false;
+const bool   CLEAR_BUFFER = true;
+const bool   DONT_CLEAR_BUFFER = false;
 
 //Helper functions
 bool isFileChar(const char);
@@ -42,19 +51,22 @@ bool validateSegments(const string&, const regex&);
 
 
 //Default template if no type is matched
+
 template<typename T, typename Enable = void>
-T userInput(string&, const T&, const T&, const bool&, const bool&) {
+typename enable_if<!is_integral<T>::value, T>::type
+userInput(string&, const T&, const T&, const bool&, const bool&) {
     static_assert(is_same<T, void>::value, "Invalid type for userInput");
 }
 
 //Specialization for int
-template<>
-inline int userInput<int>(string& input, const int& param1, const int& param2, const bool& singleInput, const bool& isClearBuffer) {
+template<typename T>
+typename enable_if<is_integral<T>::value, T>::type
+userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer) {
     initialInputHandling(input, singleInput, isClearBuffer);
     if (!singleInput) {
         throw invalid_argument("ARGUMENT singleInput MUST BE FALSE FOR NUMBERS!");
     }
-    int numConvert;
+    T numConvert;
     bool isScientific = validateSegments(input, scientificNotation);
     bool hasSpaces = (input.find(' ') != string::npos);
        
@@ -71,11 +83,9 @@ inline int userInput<int>(string& input, const int& param1, const int& param2, c
       
     }
     
-    try {
-
-        numConvert = static_cast<int>(stod(input));
-    }
-    catch (const out_of_range&) {
+    numConvert = static_cast<T>(stold(input));
+    
+    if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) {
         throw out_of_range("You entered an integer much too large or small!");
     }
 
@@ -132,7 +142,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
         throw out_of_range("You entered a number outside of the range ( "
             + to_string(param1) + ", " + to_string(param2) + " )");
     }
-    else if (length > 7) {
+    else if (length > 7 && decimal > 0) {
         throw out_of_range("You entered a decimal number with more than 7 significant figures!");
     }
 
@@ -183,7 +193,7 @@ inline double userInput<double>(string& input, const double& param1, const doubl
         throw out_of_range("You entered a number outside of the range ( "
             + to_string(param1) + ", " + to_string(param2) + " )");
     }
-    else if (length > 16) {
+    else if (length > 16 && decimal > 0) {
         throw out_of_range("You entered a decimal number with more than 16 significant figures!");
     }
 
