@@ -64,3 +64,31 @@ bool validateSegments(const string& input, const regex& pattern) {
 
     return true;  
 }
+
+//removes trailing zeros from sig fig calculation and removes the decimal if there is one when calculating
+int findSigFigLength(const string& input, const bool& isScientific, int& decimal) {
+    int numZeros = 0;
+    if (isScientific) {
+        string nums = input.substr(0, input.find('e'));
+        for (int i = nums.size() - 1; i > 0; i--) {
+            if (nums[i] == '0') {
+                numZeros++;
+            }
+            else {
+                break;
+            }
+        }
+        return static_cast<int>(input.find('e')) - decimal - numZeros;
+    }
+    else {
+        for (int i = input.size() - 1; i > 0; i--) {
+            if (input[i] == '0') {
+                numZeros++;
+            }
+            else {
+                break;
+            }
+        }
+        return static_cast<int>(input.size()) - decimal - numZeros;
+    }
+}

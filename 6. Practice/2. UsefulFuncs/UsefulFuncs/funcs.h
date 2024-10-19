@@ -53,6 +53,7 @@ bool isFileChar(const char);
 string formatAndTrim(string&);
 void initialInputHandling(string&, const bool&, const bool&);
 bool validateSegments(const string&, const regex&);
+int findSigFigLength(const string&, const bool&, int&);
 
 //validates floats
 template<typename T>
@@ -180,32 +181,8 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 
         }
     }
-    int numZeros = 0;
-    if (isScientific) {
-        string nums = input.substr(0, input.find('e'));
-        for (int i = nums.size() - 1; i > 0; i--) {
-            if (nums[i] == '0') {
-                numZeros++;
-            }
-            else {
-                break;
-            }
-        }
-        length = static_cast<int>(input.find('e')) - decimal - numZeros;
-    }
-    else {
-        for (int i = input.size() - 1; i > 0; i--) {
-            if (input[i] == '0') {
-                numZeros++;
-            }
-            else {
-                break;
-            }
-        }
-        length = static_cast<int>(input.size()) - decimal - numZeros;
-    }
-   
-    
+    length = findSigFigLength(input, isScientific, decimal);
+
 
     return validatedFloatingPoint(input, param1, param2, decimal, length);
 }
@@ -240,30 +217,7 @@ inline double userInput<double>(string& input, const double& param1, const doubl
             }
         }
     }
-    int numZeros = 0;
-    if (isScientific) {
-        string nums = input.substr(0, input.find('e'));
-        for (int i = nums.size() - 1; i > 0; i--) {
-            if (nums[i] == '0') {
-                numZeros++;
-            }
-            else {
-                break;
-            }
-        }
-        length = static_cast<int>(input.find('e')) - decimal - numZeros;
-    }
-    else {
-        for (int i = input.size() - 1; i > 0; i--) {
-            if (input[i] == '0') {
-                numZeros++;
-            }
-            else {
-                break;
-            }
-        }
-        length = static_cast<int>(input.size()) - decimal - numZeros;
-    }
+    length = findSigFigLength(input, isScientific, decimal);
 
     return validatedFloatingPoint(input, param1, param2, decimal, length);
 }
