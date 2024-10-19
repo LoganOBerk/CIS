@@ -78,10 +78,26 @@ int findSigFigLength(const string& input, const bool& isScientific, int& decimal
                 break;
             }
         }
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] == '0') {
+                numZeros++;
+            }
+            else {
+                break;
+            }
+        }
         return static_cast<int>(input.find('e')) - decimal - numZeros;
     }
     else {
         for (int i = input.size() - 1; i > 0; i--) {
+            if (input[i] == '0') {
+                numZeros++;
+            }
+            else {
+                break;
+            }
+        }
+        for (int i = 0; i < input.size(); i++) {
             if (input[i] == '0') {
                 numZeros++;
             }
