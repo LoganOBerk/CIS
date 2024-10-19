@@ -1,7 +1,7 @@
 #ifndef FUNCS_H
 #define FUNCS_H
 
-//TODO deal with significant figure issue with scientific notation
+//TODO create function for length determination
 
 #include <algorithm>
 #include <cctype>
@@ -71,8 +71,8 @@ validatedFloatingPoint(string& input, const T& param1, const T& param2, int& dec
         throw out_of_range("You entered a number outside of the range ( "
             + to_string(param1) + ", " + to_string(param2) + " )");
     }
-    else if (length > sigFig && decimal > 0) {
-        throw out_of_range("You entered a decimal number with more than " + to_string(sigFig) + " significant figures!");
+    else if (length > sigFig) {
+        throw out_of_range("You entered a number with more than " + to_string(sigFig) + " significant figures!");
     }
     return numConvert;
 }
@@ -94,8 +94,8 @@ validatedFloatingPoint(string& input, const T& param1, const T& param2, int& dec
         throw out_of_range("You entered a number outside of the range ( "
             + to_string(param1) + ", " + to_string(param2) + " )");
     }
-    else if (length > sigFig && decimal > 0) {
-        throw out_of_range("You entered a decimal number with more than " + to_string(sigFig) + " significant figures!");
+    else if (length > sigFig) {
+        throw out_of_range("You entered a number with more than " + to_string(sigFig) + " significant figures!");
     }
     return numConvert;
 }
@@ -180,7 +180,32 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 
         }
     }
-    length = static_cast<int>(input.size()) - decimal;
+    int numZeros = 0;
+    if (isScientific) {
+        string nums = input.substr(0, input.find('e'));
+        for (int i = nums.size() - 1; i > 0; i--) {
+            if (nums[i] == '0') {
+                numZeros++;
+            }
+            else {
+                break;
+            }
+        }
+        length = static_cast<int>(input.find('e')) - decimal - numZeros;
+    }
+    else {
+        for (int i = input.size() - 1; i > 0; i--) {
+            if (input[i] == '0') {
+                numZeros++;
+            }
+            else {
+                break;
+            }
+        }
+        length = static_cast<int>(input.size()) - decimal - numZeros;
+    }
+   
+    
 
     return validatedFloatingPoint(input, param1, param2, decimal, length);
 }
@@ -215,7 +240,30 @@ inline double userInput<double>(string& input, const double& param1, const doubl
             }
         }
     }
-    length = static_cast<int>(input.size()) - decimal;
+    int numZeros = 0;
+    if (isScientific) {
+        string nums = input.substr(0, input.find('e'));
+        for (int i = nums.size() - 1; i > 0; i--) {
+            if (nums[i] == '0') {
+                numZeros++;
+            }
+            else {
+                break;
+            }
+        }
+        length = static_cast<int>(input.find('e')) - decimal - numZeros;
+    }
+    else {
+        for (int i = input.size() - 1; i > 0; i--) {
+            if (input[i] == '0') {
+                numZeros++;
+            }
+            else {
+                break;
+            }
+        }
+        length = static_cast<int>(input.size()) - decimal - numZeros;
+    }
 
     return validatedFloatingPoint(input, param1, param2, decimal, length);
 }
