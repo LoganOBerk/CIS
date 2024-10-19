@@ -19,7 +19,7 @@ using namespace std;
 namespace { 
     const regex scientificNotation(R"(^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)$)");
     const regex floatingPoint(R"(^[+-]?(\d*\.\d+|\d+(\.\d*)?|\d+)([eE][+-]?\d+)?$)");
-    const regex integral(R"(^[+-]?\d+$)");
+    const regex integral(R"([+-]?\d+(\.\d+)?([eE][+-]?\d+)?)");
 
 }
 
@@ -54,6 +54,51 @@ string formatAndTrim(string&);
 void initialInputHandling(string&, const bool&, const bool&);
 bool validateSegments(const string&, const regex&);
 
+//validates floats
+template<typename T>
+typename enable_if<is_same<T, float>::value, T>::type
+validatedFloatingPoint(string& input, const T& param1, const T& param2, int& decimal, int& length) {
+    const int sigFig = numeric_limits<T>::digits10;
+    T numConvert = 0;
+    try {
+        numConvert = stof(input);
+    }
+    catch (const out_of_range&) {
+        throw out_of_range("You entered a float much too large or small!");
+    }
+
+    if (numConvert < param1 || numConvert > param2) {
+        throw out_of_range("You entered a number outside of the range ( "
+            + to_string(param1) + ", " + to_string(param2) + " )");
+    }
+    else if (length > sigFig && decimal > 0) {
+        throw out_of_range("You entered a decimal number with more than " + to_string(sigFig) + " significant figures!");
+    }
+    return numConvert;
+}
+
+//validates doubles
+template<typename T>
+typename enable_if<is_same<T, double>::value, T>::type
+validatedFloatingPoint(string& input, const T& param1, const T& param2, int& decimal, int& length) {
+    const int sigFig = numeric_limits<T>::digits10;
+    T numConvert = 0;
+    try {
+        numConvert = stod(input);
+    }
+    catch (const out_of_range&) {
+        throw out_of_range("You entered a double much too large or small!");
+    }
+
+    if (numConvert < param1 || numConvert > param2) {
+        throw out_of_range("You entered a number outside of the range ( "
+            + to_string(param1) + ", " + to_string(param2) + " )");
+    }
+    else if (length > sigFig && decimal > 0) {
+        throw out_of_range("You entered a decimal number with more than " + to_string(sigFig) + " significant figures!");
+    }
+    return numConvert;
+}
 
 
 //Default template if no type is matched
@@ -62,6 +107,7 @@ inline typename enable_if<!is_integral<T>::value, T>::type
 userInput(string&, const T&, const T&, const bool&, const bool&) {
     static_assert(is_same<T, void>::value, "Invalid type for userInput");
 }
+
 
 //Specialization for int
 template<typename T>
@@ -79,10 +125,10 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (hasSpaces && allIntegers || hasSpaces && isScientific) {
+            if (hasSpaces && allIntegers) {
                 throw invalid_argument("You entered more than one input.");
             }
-            else if (!isScientific || !allIntegers && !isScientific) {
+            else if (!isScientific) {
                 throw invalid_argument("You entered a non-integer value!");
             }
         }
@@ -111,7 +157,6 @@ inline float userInput<float>(string& input, const float& param1, const float& p
     if (!singleInput) {
         throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
     }
-    float numConvert;
     int decimal = 0;
     int length = 0;
     bool isScientific = validateSegments(input, scientificNotation);
@@ -137,23 +182,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
     }
     length = static_cast<int>(input.size()) - decimal;
 
-
-    try {
-        numConvert = stof(input);
-    }
-    catch (const out_of_range&) {
-        throw out_of_range("You entered a float much too large or small!");
-    }
-
-    if (numConvert < param1 || numConvert > param2) {
-        throw out_of_range("You entered a number outside of the range ( "
-            + to_string(param1) + ", " + to_string(param2) + " )");
-    }
-    else if (length > 7 && decimal > 0) {
-        throw out_of_range("You entered a decimal number with more than 7 significant figures!");
-    }
-
-    return numConvert;
+    return validatedFloatingPoint(input, param1, param2, decimal, length);
 }
 
 
@@ -164,7 +193,6 @@ inline double userInput<double>(string& input, const double& param1, const doubl
     if (!singleInput) {
         throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
     }
-    double numConvert;
     int decimal = 0;
     int length = 0;
     bool isScientific = validateSegments(input, scientificNotation);
@@ -188,24 +216,8 @@ inline double userInput<double>(string& input, const double& param1, const doubl
         }
     }
     length = static_cast<int>(input.size()) - decimal;
-   
 
-    try {
-        numConvert = stod(input);
-    }
-    catch (const out_of_range&) {
-        throw out_of_range("You entered a double much too large or small!");
-    }
-
-    if (numConvert < param1 || numConvert > param2) {
-        throw out_of_range("You entered a number outside of the range ( "
-            + to_string(param1) + ", " + to_string(param2) + " )");
-    }
-    else if (length > 16 && decimal > 0) {
-        throw out_of_range("You entered a decimal number with more than 16 significant figures!");
-    }
-
-    return numConvert;
+    return validatedFloatingPoint(input, param1, param2, decimal, length);
 }
 
 
