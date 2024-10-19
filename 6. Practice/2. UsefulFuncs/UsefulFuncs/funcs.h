@@ -1,6 +1,7 @@
 #ifndef FUNCS_H
 #define FUNCS_H
 
+//TODO deal with significant figure issue with scientific notation
 
 #include <algorithm>
 #include <cctype>
@@ -15,7 +16,12 @@
 
 
 using namespace std;
-namespace { const regex scientificNotation(R"([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)"); }
+namespace { 
+    const regex scientificNotation(R"(^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)$)");
+    const regex floatingPoint(R"(^[+-]?(\d*\.\d+|\d+(\.\d*)?|\d+)([eE][+-]?\d+)?$)");
+    const regex integral(R"(^[+-]?\d+$)");
+
+}
 
 //string consts
 const string IS_ALPHA = "alpha";
@@ -67,15 +73,16 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     }
     T numConvert;
     bool isScientific = validateSegments(input, scientificNotation);
+    bool allIntegers = validateSegments(input, integral);
     bool hasSpaces = (input.find(' ') != string::npos);
        
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (hasSpaces && isScientific) {
+            if (hasSpaces && allIntegers || hasSpaces && isScientific) {
                 throw invalid_argument("You entered more than one input.");
             }
-            else if (!isScientific) {
+            else if (!isScientific || !allIntegers && !isScientific) {
                 throw invalid_argument("You entered a non-integer value!");
             }
         }
@@ -108,11 +115,12 @@ inline float userInput<float>(string& input, const float& param1, const float& p
     int decimal = 0;
     int length = 0;
     bool isScientific = validateSegments(input, scientificNotation);
+    bool allFloatingPointNums = validateSegments(input, floatingPoint);
     bool hasSpaces = (input.find(' ') != string::npos);
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (hasSpaces && isScientific) {
+            if (hasSpaces && allFloatingPointNums) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if (ch == '.') {
@@ -160,11 +168,12 @@ inline double userInput<double>(string& input, const double& param1, const doubl
     int decimal = 0;
     int length = 0;
     bool isScientific = validateSegments(input, scientificNotation);
+    bool allFloatingPointNums = validateSegments(input, floatingPoint);
     bool hasSpaces = (input.find(' ') != string::npos);
 
     for (const auto ch : input) {
         if (!isdigit(ch)) {
-            if (hasSpaces && isScientific) {
+            if (hasSpaces && allFloatingPointNums) {
                 throw invalid_argument("You entered more than one input.");
             }
             else if (ch == '.') {
