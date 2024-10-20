@@ -1,9 +1,9 @@
 #include "funcs.h"
 
 namespace RegexPatterns {
-    extern const regex scientificNotation(R"(^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)$)");
-    extern const regex floatingPoint(R"(^[+-]?(\d*\.\d+|\d+(\.\d*)?|\d+)([eE][+-]?\d+)?$)");
-    extern const regex integral(R"([+-]?\d+(\.\d+)?([eE][+-]?\d+)?)");
+    const regex scientificNotation(R"(^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)$)");
+    const regex floatingPoint(R"(^[+-]?(\d*\.\d+|\d+(\.\d*)?|\d+)([eE][+-]?\d+)?$)");
+    const regex integral(R"([+-]?\d+(\.\d+)?([eE][+-]?\d+)?)");
 
 }
 
