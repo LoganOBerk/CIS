@@ -1,7 +1,6 @@
 #ifndef FUNCS_H
 #define FUNCS_H
 
-//TODO create function for length determination
 
 #include <algorithm>
 #include <cctype>
@@ -13,42 +12,47 @@
 #include <regex>
 #include <sstream>
 #include <limits>
-
+#include <regex>
 
 using namespace std;
-namespace { 
-    const regex scientificNotation(R"(^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)$)");
-    const regex floatingPoint(R"(^[+-]?(\d*\.\d+|\d+(\.\d*)?|\d+)([eE][+-]?\d+)?$)");
-    const regex integral(R"([+-]?\d+(\.\d+)?([eE][+-]?\d+)?)");
+
+namespace RegexPatterns{
+    extern const regex scientificNotation;
+    extern const regex floatingPoint;
+    extern const regex integral;
 
 }
 
+
+
 //string consts
-const string IS_ALPHA = "alpha";
-const string IS_NUMERIC = "numeric";
-const string IS_FILE = "file";
-const string IS_CHARACTER = "character";
-const string IS_NULL = "null";
+extern const string IS_ALPHA;
+extern const string IS_NUMERIC;
+extern const string IS_FILE;
+extern const string IS_CHARACTER;
+extern const string IS_NULL;
 
 //numeric consts
-const int      MAX_INT = numeric_limits<int>::max();
-const int      MIN_INT = numeric_limits<int>::min();
-const long     MAX_LONG = numeric_limits<long>::max();
-const long     MIN_LONG = numeric_limits<long>::min();
-const unsigned MAX_UNSIGNED = numeric_limits<unsigned>::max();
-const unsigned MIN_UNSIGNED = numeric_limits<unsigned>::min();
-const float    MAX_FLOAT = numeric_limits<float>::max();
-const float    MIN_FLOAT = numeric_limits<float>::min();
-const double   MAX_DOUBLE = numeric_limits<double>::max();
-const double   MIN_DOUBLE = numeric_limits<double>::min();
+extern const int      MAX_INT;
+extern const int      MIN_INT;
+extern const long     MAX_LONG;
+extern const long     MIN_LONG;
+extern const unsigned MAX_UNSIGNED;
+extern const unsigned MIN_UNSIGNED;
+extern const float    MAX_FLOAT;
+extern const float    MIN_FLOAT;
+extern const double   MAX_DOUBLE;
+extern const double   MIN_DOUBLE;
+
 
 //boolean consts
-const bool   ONE_VALUE = true;
-const bool   MULTI_VALUE = false;
-const bool   CLEAR_BUFFER = true;
-const bool   DONT_CLEAR_BUFFER = false;
-const bool   CASE_SENSITIVE = true;
-const bool   NOT_CASE_SENSITIVE = false;
+extern const bool   ONE_VALUE;
+extern const bool   MULTI_VALUE;
+extern const bool   CLEAR_BUFFER;
+extern const bool   DONT_CLEAR_BUFFER;
+extern const bool   CASE_SENSITIVE;
+extern const bool   NOT_CASE_SENSITIVE;
+
 
 //Helper functions
 bool isFileChar(const char);
@@ -56,6 +60,8 @@ string formatAndTrim(string&);
 void initialInputHandling(string&, const bool&, const bool&, const bool&);
 bool validateSegments(const string&, const regex&);
 int findSigFigLength(const string&, const bool&, int&);
+void checkForValidBools(const bool&, const bool&);
+
 
 //validates floats
 template<typename T>
@@ -112,20 +118,16 @@ userInput(string&, const T&, const T&, const bool&, const bool&, const bool&) {
 }
 
 
-//Specialization for int
+//Specialization for integral types
 template<typename T>
 inline typename enable_if<is_integral<T>::value, T>::type
 userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
-    if (!singleInput) {
-        throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
-    }
-    if (caseSensitive) {
-        throw invalid_argument("ARGUMENT: caseSensitive MUST BE FALSE FOR NUMBERS!");
-    }
+    checkForValidBools(singleInput, caseSensitive);
+
     T numConvert;
-    bool isScientific = validateSegments(input, scientificNotation);
-    bool allIntegers = validateSegments(input, integral);
+    bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
+    bool allIntegers = validateSegments(input, RegexPatterns::integral);
     bool hasSpaces = (input.find(' ') != string::npos);
        
 
@@ -160,16 +162,12 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 template<>
 inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
-    if (!singleInput) {
-        throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
-    }
-    if (caseSensitive) {
-        throw invalid_argument("ARGUMENT: caseSensitive MUST BE FALSE FOR NUMBERS!");
-    }
+    checkForValidBools(singleInput, caseSensitive);
+
     int decimal = 0;
     int length = 0;
-    bool isScientific = validateSegments(input, scientificNotation);
-    bool allFloatingPointNums = validateSegments(input, floatingPoint);
+    bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
+    bool allFloatingPointNums = validateSegments(input, RegexPatterns::floatingPoint);
     bool hasSpaces = (input.find(' ') != string::npos);
 
     for (const auto ch : input) {
@@ -200,16 +198,12 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 template<>
 inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
-    if (!singleInput) {
-        throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
-    }
-    if (caseSensitive) {
-        throw invalid_argument("ARGUMENT: caseSensitive MUST BE FALSE FOR NUMBERS!");
-    }
+    checkForValidBools(singleInput, caseSensitive);
+
     int decimal = 0;
     int length = 0;
-    bool isScientific = validateSegments(input, scientificNotation);
-    bool allFloatingPointNums = validateSegments(input, floatingPoint);
+    bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
+    bool allFloatingPointNums = validateSegments(input, RegexPatterns::floatingPoint);
     bool hasSpaces = (input.find(' ') != string::npos);
 
     for (const auto ch : input) {
