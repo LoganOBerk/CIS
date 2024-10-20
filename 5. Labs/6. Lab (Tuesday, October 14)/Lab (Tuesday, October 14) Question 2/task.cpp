@@ -1,4 +1,5 @@
 #include "task.h"
+
 float collectFloatInput() {
 	string input;
 	bool isfloat = false;
@@ -30,6 +31,10 @@ float collectFloatInput() {
 }
 
 void printMonthlySales(int& month, float arr[NUM_STORES][NUM_MONTHS][NUM_DEPTS]) {
+	float dept1 = arr[0][month - 1][0] + arr[1][month - 1][0];
+	float dept2 = arr[0][month - 1][1] + arr[1][month - 1][1];
+	float store1 = arr[0][month - 1][0] + arr[0][month - 1][1];
+	float store2 = arr[1][month - 1][0] + arr[1][month - 1][1];
 	for (int i = 0; i < NUM_STORES + 2; i++) {
 		cout << left << setw(14);
 		if (i == 0) {
@@ -47,7 +52,12 @@ void printMonthlySales(int& month, float arr[NUM_STORES][NUM_MONTHS][NUM_DEPTS])
 			cout << "Dept " + to_string(j + 1);
 			}
 			else if (i == NUM_STORES + 1) {
-				cout << "col value sum";
+				if (j == 0) {
+					cout << dept1;
+				}
+				else {
+					cout << dept2;
+				}
 			}
 			else {
 				cout << arr[i - 1][month - 1][j];
@@ -57,9 +67,14 @@ void printMonthlySales(int& month, float arr[NUM_STORES][NUM_MONTHS][NUM_DEPTS])
 			cout << "Store Total";
 		}
 		else if (i == NUM_STORES + 1) {
-			cout << "total overall sales";
+			cout << store1 + store2 + dept1 + dept2 << endl;
 		}else{
-			cout << "sum of row value";
+			if (i == 1) {
+				cout << store1;
+			}
+			else {
+				cout << store2;
+			}
 		}
 		cout << endl;
 	}
@@ -169,4 +184,5 @@ void printArray(float arr[NUM_STORES][NUM_MONTHS][NUM_DEPTS]) {
 		cout << endl;
 }
 }
+
 

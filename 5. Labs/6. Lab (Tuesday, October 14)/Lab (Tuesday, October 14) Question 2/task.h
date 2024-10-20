@@ -15,5 +15,4 @@ int getUserMonthInput();
 string validateStringInput();
 void collectArrayData(float arr[NUM_STORES][NUM_MONTHS][NUM_DEPTS]);
 void printArray(float arr[NUM_STORES][NUM_MONTHS][NUM_DEPTS]);
-
 #endif TASK_H

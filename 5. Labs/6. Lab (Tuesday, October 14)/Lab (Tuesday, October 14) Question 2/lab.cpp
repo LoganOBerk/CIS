@@ -4,6 +4,7 @@ int main() {
 	float storeMonthlySales[NUM_STORES][NUM_MONTHS][NUM_DEPTS] =
 	{ { {1.1, 1.2}, {1.3, 1.4}, {1.5, 1.6}, {1.7, 1.8}, {1.9, 2.0}, {2.1, 2.2}, {2.1, 2.2}, {2.3, 2.4}, {2.5, 2.6},{2.7, 2.8}, {2.9, 3.0}, {3.1, 3.2} },
 	{ {3.1, 3.2}, {3.3, 3.4}, {3.5, 3.6}, {3.7, 3.8}, {3.9, 4.0}, {4.1, 4.2},{2.1, 2.2}, {2.3, 2.4}, {2.5, 2.6}, {2.7, 2.8}, {2.9, 3.0}, {3.1, 3.2} } };
+		
 	if (!testing) {
 		while (true) {
 			int month = getUserMonthInput();
@@ -98,10 +99,10 @@ int main() {
 			cout << "Expected Output" << endl;
 			cout << "------------------------------------------------" << endl;
 			cout << "Please enter a month by number or name : 1" << endl;
-			cout << "              Dept 1          Dept 2          Store Total" << endl;
-			cout << "Store 1       1.1             1.2             sum of row value" << endl;
-			cout << "Store 2       3.1             3.2             sum of row value" << endl;
-			cout << "Dept Total    col value sum   col value sum   total overall sales" << endl;
+			cout << left << setw(15) << "Dept 1" << setw(15) << "Dept 2" << "Store Total" << endl;
+			cout << left << setw(15) << "Store 1" << setw(15) << "1.1" << setw(15) << "1.2" << "2.3" << endl;
+			cout << left << setw(15) << "Store 2" << setw(15) << "3.1" << setw(15) << "3.2" << "6.3" << endl;
+			cout << left << setw(15) << "Dept Total" << setw(15) << "4.2" << setw(15) << "4.4" << "17.2" << endl;
 			cout << "------------------------------------------------" << endl;
 			cout << "Actual Output" << endl;
 			cout << "------------------------------------------------" << endl;

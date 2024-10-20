@@ -47,11 +47,13 @@ const bool   ONE_VALUE = true;
 const bool   MULTI_VALUE = false;
 const bool   CLEAR_BUFFER = true;
 const bool   DONT_CLEAR_BUFFER = false;
+const bool   CASE_SENSITIVE = true;
+const bool   NOT_CASE_SENSITIVE = false;
 
 //Helper functions
 bool isFileChar(const char);
 string formatAndTrim(string&);
-void initialInputHandling(string&, const bool&, const bool&);
+void initialInputHandling(string&, const bool&, const bool&, const bool&);
 bool validateSegments(const string&, const regex&);
 int findSigFigLength(const string&, const bool&, int&);
 
@@ -105,7 +107,7 @@ validatedFloatingPoint(string& input, const T& param1, const T& param2, int& dec
 //Default template if no type is matched
 template<typename T, typename Enable = void>
 inline typename enable_if<!is_integral<T>::value, T>::type
-userInput(string&, const T&, const T&, const bool&, const bool&) {
+userInput(string&, const T&, const T&, const bool&, const bool&, const bool&) {
     static_assert(is_same<T, void>::value, "Invalid type for userInput");
 }
 
@@ -113,10 +115,13 @@ userInput(string&, const T&, const T&, const bool&, const bool&) {
 //Specialization for int
 template<typename T>
 inline typename enable_if<is_integral<T>::value, T>::type
-userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer) {
-    initialInputHandling(input, singleInput, isClearBuffer);
+userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
     if (!singleInput) {
         throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
+    }
+    if (caseSensitive) {
+        throw invalid_argument("ARGUMENT: caseSensitive MUST BE FALSE FOR NUMBERS!");
     }
     T numConvert;
     bool isScientific = validateSegments(input, scientificNotation);
@@ -153,10 +158,13 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 
 //Specialization for float
 template<>
-inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleInput, const bool& isClearBuffer) {
-    initialInputHandling(input, singleInput, isClearBuffer);
+inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
     if (!singleInput) {
         throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
+    }
+    if (caseSensitive) {
+        throw invalid_argument("ARGUMENT: caseSensitive MUST BE FALSE FOR NUMBERS!");
     }
     int decimal = 0;
     int length = 0;
@@ -190,10 +198,13 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 
 //Specialization for double
 template<>
-inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleInput, const bool& isClearBuffer) {
-    initialInputHandling(input, singleInput, isClearBuffer);
+inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
     if (!singleInput) {
         throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
+    }
+    if (caseSensitive) {
+        throw invalid_argument("ARGUMENT: caseSensitive MUST BE FALSE FOR NUMBERS!");
     }
     int decimal = 0;
     int length = 0;
@@ -225,8 +236,8 @@ inline double userInput<double>(string& input, const double& param1, const doubl
 
 //Specialization for string
 template<>
-inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleInput, const bool& isClearBuffer) {
-    initialInputHandling(input, singleInput, isClearBuffer);
+inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     for (auto ch : input) {
         if (ch != '\0') {
@@ -263,9 +274,11 @@ inline string userInput<string>(string& input, const string& param1, const strin
 
 //Specialization for bool
 template<>
-inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& singleInput, const bool& isClearBuffer) {
-    initialInputHandling(input, singleInput, isClearBuffer);
-
+inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
+    if (caseSensitive) {
+        throw invalid_argument("ARGUMENT: caseSensitive MUST BE FALSE FOR BOOLEANS!");
+    }
     if (param1 != param2) {
         return false;
     }

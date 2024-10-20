@@ -5,6 +5,8 @@ bool isFileChar(const char ch) {
     static const string unallowedChars = "<>:\"/\\|?*";
     return unallowedChars.find(ch) == string::npos;
 }
+
+
 string removeCharAtIndex(string& str, const char chToRemove) {
     string replacement;
     for (int i = 0; i < str.size(); i++) {
@@ -21,14 +23,19 @@ string removeCharAtIndex(string& str, const char chToRemove) {
     }
     return replacement;
 }
-// Convert string to lowercase and trim whitespace, and remove trailingcommas
-string formatAndTrim(string& str) {
+
+
+// Convert string to lowercase and trim whitespace, and remove commas
+string formatAndTrim(string& str, const bool& caseSensitive) {
     if (str.empty()) {
         return str;
     }
-    for (auto& ch : str) {
-        ch = tolower(ch);
+    if (!caseSensitive) {
+        for (auto& ch : str) {
+            ch = tolower(ch);
+        }
     }
+
     str = removeCharAtIndex(str, ',');
     
     auto start = find_if_not(str.begin(), str.end(), ::isspace);
@@ -37,15 +44,16 @@ string formatAndTrim(string& str) {
     return string(start, end);
 }
 
+
 //Initial input checking
-void initialInputHandling(string& input, const bool& singleInput, const bool& isClearBuffer) {
+void initialInputHandling(string& input, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     if (input.empty()) {
         throw invalid_argument("Input cannot be empty.");
     }
     if (isClearBuffer && !singleInput) {
         throw invalid_argument("WARNING ATTEMPTING TO CLEAR BUFFER AND ALLOW MULTIPLE INPUTS POTENTIAL DATA LOSS!");
     }
-    input = formatAndTrim(input);
+    input = formatAndTrim(input, caseSensitive);
     if (isClearBuffer) {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
@@ -64,6 +72,7 @@ bool validateSegments(const string& input, const regex& pattern) {
 
     return true;  
 }
+
 
 //removes trailing zeros from sig fig calculation and removes the decimal if there is one when calculating
 int findSigFigLength(const string& input, const bool& isScientific, int& decimal) {
