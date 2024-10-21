@@ -6,7 +6,7 @@ int main() {
 	
 	try {
 		cout << userInput(input, IS_ALPHA, IS_NUMERIC, MULTI_VALUE, DONT_CLEAR_BUFFER, CASE_SENSITIVE) << endl;
-		cout << pullWord(input, 1);
+		cout << pullWord(input, 8);
 	}
 	catch (const invalid_argument& e) {
 		cerr << e.what() << endl;

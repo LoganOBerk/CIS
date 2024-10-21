@@ -179,13 +179,13 @@ string pullWord(string& input, int wordNumber) {
             words.push_back(input.substr(i + 1, input.substr(i + 1).find(' ')));
             numWords++;
         }
-        if (input[i] == input[input.size() - 1]) {
-            words.push_back(input.substr(input.rfind(' ') - 1, input.size() - 1));
-            numWords++;
+        if (i == input.size() - 1) {
+            words.push_back(input.substr(input.rfind(' ') + 1, input.size() - 1));
+            break;
         }
     }
-    if (wordNumber >= words.size()) {
-        throw out_of_range("Trying to access word number " + to_string(wordNumber) + " when there are only " + to_string(numWords) + " words!");
+    if (wordNumber >= numWords) {
+        throw out_of_range("Trying to access word number " + to_string(wordNumber + 1) + " when there are only " + to_string(numWords) + " words!");
     }
     return words[wordNumber];
 }
