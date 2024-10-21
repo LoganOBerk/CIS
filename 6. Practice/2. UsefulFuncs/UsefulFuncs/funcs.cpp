@@ -67,16 +67,16 @@ void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
 }
 
 
-static string removeCharAtIndex(string& str, const char chToRemove) {
+static string delimitedInput(string& input, const char delimiterToConvert) {
     string replacement;
-    for (int i = 0; i < str.size(); i++) {
-        if (str[i] == chToRemove) {
-            str[i] = ' ';
+    for (int i = 0; i < input.size(); i++) {
+        if (input[i] == delimiterToConvert) {
+            input[i] = ' ';
         }
-        if (str[i] != ' ') {
-            replacement += str[i];
+        if (input[i] != ' ') {
+            replacement += input[i];
         }
-        if (str[i] == ' ' && str[i + 1] != ' ' && str[i + 1] != chToRemove) {
+        if (input[i] == ' ' && input[i + 1] != ' ' && input[i + 1] != delimiterToConvert) {
             replacement += ' ';
         }
     }
@@ -85,20 +85,20 @@ static string removeCharAtIndex(string& str, const char chToRemove) {
 
 
 // Convert string to lowercase and trim whitespace, and remove commas
-static string formatAndTrim(string& str, const bool& caseSensitive) {
-    if (str.empty()) {
-        return str;
+static string formatAndTrim(string& input, const bool& caseSensitive) {
+    if (input.empty()) {
+        return input;
     }
     if (!caseSensitive) {
-        for (auto& ch : str) {
+        for (auto& ch : input){
             ch = tolower(ch);
         }
     }
 
-    str = removeCharAtIndex(str, ',');
+    input = delimitedInput(input, ',');
     
-    auto start = find_if_not(str.begin(), str.end(), ::isspace);
-    auto end = find_if_not(str.rbegin(), str.rend(), ::isspace).base();
+    auto start = find_if_not(input.begin(), input.end(), ::isspace);
+    auto end = find_if_not(input.rbegin(), input.rend(), ::isspace).base();
 
     return string(start, end);
 }
