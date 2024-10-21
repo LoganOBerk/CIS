@@ -162,3 +162,30 @@ int findSigFigLength(const string& input, const bool& isScientific, int& decimal
         return static_cast<int>(input.size()) - decimal - numZeros;
     }
 }
+
+string pullWord(string& input, int wordNumber) {
+    wordNumber--;
+    if (wordNumber < 0) {
+        throw out_of_range("You cannot access less than 1 word!");
+    }
+    vector<string> words;
+    int numWords = 0;
+    for (int i = 0; i < input.size(); i++) {
+        if (numWords == 0) {
+            words.push_back(input.substr(0, input.find(' ')));
+            numWords++;
+        }
+        if (input[i] == ' ') {
+            words.push_back(input.substr(i + 1, input.substr(i + 1).find(' ')));
+            numWords++;
+        }
+        if (input[i] == input[input.size() - 1]) {
+            words.push_back(input.substr(input.rfind(' ') - 1, input.size() - 1));
+            numWords++;
+        }
+    }
+    if (wordNumber >= words.size()) {
+        throw out_of_range("Trying to access word number " + to_string(wordNumber) + " when there are only " + to_string(numWords) + " words!");
+    }
+    return words[wordNumber];
+}

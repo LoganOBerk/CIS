@@ -62,6 +62,8 @@ bool validateSegments(const string&, const regex&);
 int findSigFigLength(const string&, const bool&, int&);
 void checkForValidBools(const bool&, const bool&);
 
+//Usefull funcs
+string pullWord(string&, const int);
 
 //validates floats
 template<typename T>
