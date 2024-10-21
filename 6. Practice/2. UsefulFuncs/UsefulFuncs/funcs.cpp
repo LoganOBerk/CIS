@@ -70,14 +70,12 @@ void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
 static string removeCharAtIndex(string& str, const char chToRemove) {
     string replacement;
     for (int i = 0; i < str.size(); i++) {
-        while (str[i] == chToRemove) {
-            if (str[i + 1] == ' ') {
-                i++;
-            }
-            else if(chToRemove == ',') {
+        while (str[i] == chToRemove || str[i] == ' ') {
+            if (str[i + 1] != chToRemove && str[i + 1] != ' ') {
                 str[i] = ' ';
+                break;
             }
-            
+            i++;
         }
         replacement += str[i];
     }
