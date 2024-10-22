@@ -16,15 +16,15 @@ const string IS_NULL = "null";
 
 //numeric consts
 const int      MAX_INT = numeric_limits<int>::max();
-const int      MIN_INT = numeric_limits<int>::min();
+const int      MIN_INT = numeric_limits<int>::lowest();
 const long     MAX_LONG = numeric_limits<long>::max();
-const long     MIN_LONG = numeric_limits<long>::min();
+const long     MIN_LONG = numeric_limits<long>::lowest();
 const unsigned MAX_UNSIGNED = numeric_limits<unsigned>::max();
-const unsigned MIN_UNSIGNED = numeric_limits<unsigned>::min();
+const unsigned MIN_UNSIGNED = numeric_limits<unsigned>::lowest();
 const float    MAX_FLOAT = numeric_limits<float>::max();
-const float    MIN_FLOAT = numeric_limits<float>::min();
+const float    MIN_FLOAT = numeric_limits<float>::lowest();
 const double   MAX_DOUBLE = numeric_limits<double>::max();
-const double   MIN_DOUBLE = numeric_limits<double>::min();
+const double   MIN_DOUBLE = numeric_limits<double>::lowest();
 
 
 //boolean consts

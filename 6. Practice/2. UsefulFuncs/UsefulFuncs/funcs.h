@@ -124,8 +124,8 @@ userInput(string&, const T&, const T&, const bool&, const bool&, const bool&) {
 template<typename T>
 inline typename enable_if<is_integral<T>::value, T>::type
 userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
     checkForValidBools(singleInput, caseSensitive);
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     T numConvert;
     bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
@@ -138,7 +138,7 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
             if (hasSpaces && allIntegers) {
                 throw invalid_argument("You entered more than one input.");
             }
-            else if (!isScientific) {
+            else if (!isScientific || stold(input) != static_cast<T>(stold(input))) {
                 throw invalid_argument("You entered a non-integer value!");
             }
         }
@@ -163,8 +163,8 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 //Specialization for float
 template<>
 inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
     checkForValidBools(singleInput, caseSensitive);
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     int decimal = 0;
     int length = 0;
@@ -199,8 +199,8 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 //Specialization for double
 template<>
 inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
     checkForValidBools(singleInput, caseSensitive);
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     int decimal = 0;
     int length = 0;
