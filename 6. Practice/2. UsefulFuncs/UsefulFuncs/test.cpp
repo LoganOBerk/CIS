@@ -5,8 +5,7 @@ int main() {
 	getline(cin, input);
 	
 	try {
-		cout << userInput(input, IS_ALPHA, IS_NUMERIC, MULTI_VALUE, DONT_CLEAR_BUFFER, CASE_SENSITIVE) << endl;
-		cout << pullWord(input, 4);
+		cout << userInput(input, 1, 100, ONE_VALUE, DONT_CLEAR_BUFFER, NOT_CASE_SENSITIVE) << endl;
 	}
 	catch (const invalid_argument& e) {
 		cerr << e.what() << endl;
