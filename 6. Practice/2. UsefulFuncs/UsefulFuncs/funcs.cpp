@@ -1,5 +1,6 @@
 #include "funcs.h"
 
+//Regex namespace to avoid naming conflicts
 namespace RegexPatterns {
     const regex scientificNotation(R"(^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)$)");
     const regex floatingPoint(R"(^[+-]?(\d*\.\d+|\d+(\.\d*)?|\d+)([eE][+-]?\d+)?$)");
@@ -7,14 +8,14 @@ namespace RegexPatterns {
 
 }
 
-//string consts
+//String consts
 const string IS_ALPHA = "alpha";
 const string IS_NUMERIC = "numeric";
 const string IS_FILE = "file";
 const string IS_CHARACTER = "character";
 const string IS_NULL = "null";
 
-//numeric consts
+//Numeric consts
 const int      MAX_INT = numeric_limits<int>::max();
 const int      MIN_INT = numeric_limits<int>::lowest();
 const long     MAX_LONG = numeric_limits<long>::max();
@@ -27,7 +28,7 @@ const double   MAX_DOUBLE = numeric_limits<double>::max();
 const double   MIN_DOUBLE = numeric_limits<double>::lowest();
 
 
-//boolean consts
+//Boolean consts
 const bool   ONE_VALUE = true;
 const bool   MULTI_VALUE = false;
 const bool   CLEAR_BUFFER = true;
@@ -36,13 +37,13 @@ const bool   CASE_SENSITIVE = true;
 const bool   NOT_CASE_SENSITIVE = false;
 
 
-// Check if a character is valid for filenames
+//Check if a character is valid for filenames
 bool isFileChar(const char ch) {
     static const string unallowedChars = "<>:\"/\\|?*";
     return unallowedChars.find(ch) == string::npos;
 }
 
-
+//Compare each input segment with istringstream to identify if they match specific regex pattern
 bool validateSegments(const string& input, const regex& pattern) {
     istringstream iss(input);
     string segment;
@@ -56,7 +57,7 @@ bool validateSegments(const string& input, const regex& pattern) {
     return true;
 }
 
-
+//Insure programmer does not input incorrect booleans with certain data
 void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
     if (!singleInput) {
         throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
@@ -66,7 +67,7 @@ void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
     }
 }
 
-
+//Identifies a valid delimeter that will be converted to spaces and multiple occurances will be removed (helper to formatAndTrim)
 static string delimitedInput(string& input, const char delimiterToConvert) {
     string replacement;
     for (int i = 0; i < input.size(); i++) {
@@ -84,7 +85,7 @@ static string delimitedInput(string& input, const char delimiterToConvert) {
 }
 
 
-// Convert string to lowercase and trim whitespace, and remove commas
+// Convert string to lowercase and trim whitespace, and replace valid delimiters with spaces (helper to initialInputHandling)
 static string formatAndTrim(string& input, const bool& caseSensitive) {
     if (input.empty()) {
         return input;
@@ -104,7 +105,7 @@ static string formatAndTrim(string& input, const bool& caseSensitive) {
 }
 
 
-//Initial input checking
+//Default input handling for all datatypes
 void initialInputHandling(string& input, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     if (input.empty()) {
         throw invalid_argument("Input cannot be empty.");
@@ -114,12 +115,14 @@ void initialInputHandling(string& input, const bool& singleInput, const bool& is
     }
     input = formatAndTrim(input, caseSensitive);
     if (isClearBuffer) {
+        cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
+   
     }
 }
 
 
-//removes trailing zeros from sig fig calculation and removes the decimal if there is one when calculating
+//Removes trailing zeros from sig fig calculation and removes the decimal if there is one when calculating
 int findSigFigLength(const string& input, const bool& isScientific, int& decimal) {
     int numZeros = 0;
     if (isScientific) {
@@ -163,6 +166,7 @@ int findSigFigLength(const string& input, const bool& isScientific, int& decimal
     }
 }
 
+//Takes an input identifies words and allows accessing words in sentances by word number
 string pullWord(string& input, int wordNumber) {
     wordNumber--;
     if (wordNumber < 0) {

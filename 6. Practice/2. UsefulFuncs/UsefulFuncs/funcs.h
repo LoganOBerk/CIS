@@ -16,6 +16,7 @@
 
 using namespace std;
 
+//Regex namespace initialization
 namespace RegexPatterns{
     extern const regex scientificNotation;
     extern const regex floatingPoint;
@@ -25,14 +26,14 @@ namespace RegexPatterns{
 
 
 
-//string consts
+//String consts initialization
 extern const string IS_ALPHA;
 extern const string IS_NUMERIC;
 extern const string IS_FILE;
 extern const string IS_CHARACTER;
 extern const string IS_NULL;
 
-//numeric consts
+//Numeric consts initialization
 extern const int      MAX_INT;
 extern const int      MIN_INT;
 extern const long     MAX_LONG;
@@ -45,7 +46,7 @@ extern const double   MAX_DOUBLE;
 extern const double   MIN_DOUBLE;
 
 
-//boolean consts
+//Boolean consts initialization
 extern const bool   ONE_VALUE;
 extern const bool   MULTI_VALUE;
 extern const bool   CLEAR_BUFFER;
@@ -54,7 +55,7 @@ extern const bool   CASE_SENSITIVE;
 extern const bool   NOT_CASE_SENSITIVE;
 
 
-//Helper functions
+//Helper function prototypes
 bool isFileChar(const char);
 string formatAndTrim(string&);
 void initialInputHandling(string&, const bool&, const bool&, const bool&);
@@ -62,10 +63,10 @@ bool validateSegments(const string&, const regex&);
 int findSigFigLength(const string&, const bool&, int&);
 void checkForValidBools(const bool&, const bool&);
 
-//Usefull funcs
+//Usefull func prototypes
 string pullWord(string&, const int);
 
-//validates floats
+//Validates floats
 template<typename T>
 typename enable_if<is_same<T, float>::value, T>::type
 validatedFloatingPoint(string& input, const T& param1, const T& param2, int& decimal, int& length) {
@@ -88,7 +89,7 @@ validatedFloatingPoint(string& input, const T& param1, const T& param2, int& dec
     return numConvert;
 }
 
-//validates doubles
+//Validates doubles
 template<typename T>
 typename enable_if<is_same<T, double>::value, T>::type
 validatedFloatingPoint(string& input, const T& param1, const T& param2, int& decimal, int& length) {
