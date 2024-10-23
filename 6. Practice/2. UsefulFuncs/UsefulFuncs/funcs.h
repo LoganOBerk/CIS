@@ -99,7 +99,7 @@ validatedFloatingPoint(string& input, const T& param1, const T& param2, int& dec
         numConvert = stod(input);
     }
     catch (const out_of_range&) {
-        throw out_of_range("You entered a double much too large or small!");
+        throw out_of_range("You entered a number much too large or small!");
     }
 
     if (numConvert < param1 || numConvert > param2) {
@@ -120,7 +120,10 @@ userInput(string&, const T&, const T&, const bool&, const bool&, const bool&) {
     static_assert(is_same<T, void>::value, "Invalid type for userInput");
 }
 
-
+template<typename T>
+string typeName() {
+    return typeid(T).name();
+}
 //Specialization for integral types
 template<typename T>
 inline typename enable_if<is_integral<T>::value, T>::type
@@ -133,25 +136,34 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     bool allIntegers = validateSegments(input, RegexPatterns::integral);
     bool hasSpaces = (input.find(' ') != string::npos);
        
-
+    
     for (const auto ch : input) {
         if (!isdigit(ch)) {
             if (hasSpaces && allIntegers) {
                 throw invalid_argument("You entered more than one input.");
             }
-            else if (!isScientific || stold(input) != static_cast<T>(stold(input))) {
+            else if (!isScientific && !allIntegers 
+                    || stold(input) != static_cast<T>(stold(input)) 
+                    && stold(input) < numeric_limits<T>::max() 
+                    && stold(input) > numeric_limits<T>::min()) {
                 throw invalid_argument("You entered a non-integer value!");
             }
         }
       
     }
+
+    try {
+        numConvert = static_cast<T>(stold(input));
+    }
+    catch (const out_of_range&) {
+        throw out_of_range("You entered a number much too large or small!");
+    }
     
-    numConvert = static_cast<T>(stold(input));
     
     if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) {
-        throw out_of_range("You entered an integer much too large or small!");
+        throw out_of_range("You entered a number much too large or small!");
     }
-
+    
     if (numConvert < param1 || numConvert > param2) {
         throw out_of_range("You entered a number outside of the range ( "
             + to_string(param1) + ", " + to_string(param2) + " )");
