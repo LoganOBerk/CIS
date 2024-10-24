@@ -135,32 +135,23 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
     bool allIntegers = validateSegments(input, RegexPatterns::integral);
     bool hasSpaces = (input.find(' ') != string::npos);
-       
-    
-    for (const auto ch : input) {
-        if (!isdigit(ch)) {
-            if (hasSpaces && allIntegers) {
-                throw invalid_argument("You entered more than one input.");
-            }
-            else if (!isScientific && !allIntegers 
-                    || stold(input) != static_cast<T>(stold(input)) 
-                    && stold(input) < numeric_limits<T>::max() 
-                    && stold(input) > numeric_limits<T>::min()) {
-                throw invalid_argument("You entered a non-integer value!");
-            }
-        }
-      
-    }
-
-    bool outOfRange = false;
+    bool outsideLimits = false;
+   
     try {
-        stold(input);
+        if (hasSpaces && allIntegers && stold(input) == static_cast<T>(stold(input))) {
+            throw invalid_argument("You entered more than one input.");
+        }
+        else if (!isScientific && !allIntegers
+            || stold(input) != static_cast<T>(stold(input))
+            && stold(input) < numeric_limits<T>::max()
+            && stold(input) > numeric_limits<T>::min()) {
+            throw invalid_argument("You entered a non-integer value!");
+        }
+        if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) {
+            throw out_of_range("");
+        }
     }
     catch (const out_of_range&) {
-        outOfRange = true;
-    }
-
-    if (outOfRange || (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min())) {
         throw out_of_range("You entered a number much too large or small!");
     }
 

@@ -4,7 +4,7 @@
 namespace RegexPatterns {
     const regex scientificNotation(R"(^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)$)");
     const regex floatingPoint(R"(^[+-]?(\d*\.\d+|\d+(\.\d*)?|\d+)([eE][+-]?\d+)?$)");
-    const regex integral(R"([+-]?\d+(\.\d+)?([eE][+-]?\d+)?)");
+    const regex integral(R"(^[+-]?(\d+|(\d+(\.\d+)?[eE][+-]?\d+))$)");
 
 }
 
@@ -45,6 +45,9 @@ bool isFileChar(const char ch) {
 
 //Compare each input segment with istringstream to identify if they match specific regex pattern
 bool validateSegments(const string& input, const regex& pattern) {
+    if (input == " ") {
+        throw invalid_argument("Input cannot be empty.");
+    }
     istringstream iss(input);
     string segment;
 
@@ -100,7 +103,6 @@ static string formatAndTrim(string& input, const bool& caseSensitive) {
     
     auto start = find_if_not(input.begin(), input.end(), ::isspace);
     auto end = find_if_not(input.rbegin(), input.rend(), ::isspace).base();
-
     return string(start, end);
 }
 
