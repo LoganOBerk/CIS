@@ -152,18 +152,19 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
       
     }
 
+    bool outOfRange = false;
     try {
-        numConvert = static_cast<T>(stold(input));
+        stold(input);
     }
     catch (const out_of_range&) {
+        outOfRange = true;
+    }
+
+    if (outOfRange || (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min())) {
         throw out_of_range("You entered a number much too large or small!");
     }
-    
-    
-    if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) {
-        throw out_of_range("You entered a number much too large or small!");
-    }
-    
+
+    numConvert = static_cast<T>(stold(input));
     if (numConvert < param1 || numConvert > param2) {
         throw out_of_range("You entered a number outside of the range ( "
             + to_string(param1) + ", " + to_string(param2) + " )");

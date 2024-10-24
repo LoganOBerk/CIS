@@ -125,28 +125,35 @@ void initialInputHandling(string& input, const bool& singleInput, const bool& is
 //Removes trailing zeros from sig fig calculation and removes the decimal if there is one when calculating
 int findSigFigLength(const string& input, const bool& isScientific, int& decimal) {
     int numZeros = 0;
+    int significantLength;
+   
+    string leadingNums;
     if (isScientific) {
-        string nums = input.substr(0, input.find('e'));
-        for (int i = nums.size() - 1; i > 0; i--) {
-            if (nums[i] == '0') {
+        leadingNums = input.substr(0, input.find('e'));
+        significantLength = static_cast<int>(leadingNums.size());
+        for (int i = significantLength - 1; i > 0; i--) {
+            if (leadingNums[i] == '0') {
                 numZeros++;
             }
             else {
                 break;
             }
         }
-        for (int i = 0; i < nums.size(); i++) {
-            if (nums[i] == '0') {
+        for (int i = 0; i < significantLength; i++) {
+            if (leadingNums[i] == '0') {
                 numZeros++;
             }
             else {
                 break;
             }
         }
-        return static_cast<int>(input.find('e')) - decimal - numZeros;
+        significantLength -= decimal + numZeros;
+        return significantLength;
     }
+    
     else {
-        for (int i = input.size() - 1; i > 0; i--) {
+        significantLength = static_cast<int>(input.size());
+        for (int i = significantLength - 1; i > 0; i--) {
             if (input[i] == '0') {
                 numZeros++;
             }
@@ -162,7 +169,8 @@ int findSigFigLength(const string& input, const bool& isScientific, int& decimal
                 break;
             }
         }
-        return static_cast<int>(input.size()) - decimal - numZeros;
+        significantLength -= decimal + numZeros;
+        return significantLength;
     }
 }
 
