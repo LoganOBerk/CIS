@@ -103,6 +103,9 @@ static string formatAndTrim(string& input, const bool& caseSensitive) {
     
     auto start = find_if_not(input.begin(), input.end(), ::isspace);
     auto end = find_if_not(input.rbegin(), input.rend(), ::isspace).base();
+    if (start >= end) {
+        return input;
+    }
     return string(start, end);
 }
 
