@@ -133,4 +133,27 @@ validatedFloatingPoint(string& input, const T& param1, const T& param2, int& dec
     return numConvert;
 }
 
+
+//Validates long doubles
+template<typename T>
+typename enable_if<is_same<T, long double>::value, T>::type
+validatedFloatingPoint(string& input, const T& param1, const T& param2, int& decimal, int& length) {
+    const int sigFig = numeric_limits<T>::digits10;
+    T numConvert = 0;
+    try {
+        numConvert = stold(input);
+    }
+    catch (const out_of_range&) {
+        throw out_of_range("You entered a number much too large or small!");
+    }
+
+    if (numConvert < param1 || numConvert > param2) {
+        throw out_of_range("You entered a number outside of the range ( "
+            + to_string(param1) + ", " + to_string(param2) + " )");
+    }
+    else if (length > sigFig) {
+        throw out_of_range("You entered a number with more than " + to_string(sigFig) + " significant figures!");
+    }
+    return numConvert;
+}
 #endif

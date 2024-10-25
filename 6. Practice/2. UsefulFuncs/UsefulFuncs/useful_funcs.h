@@ -1,19 +1,20 @@
+#include "userInput_utils.h"
+
 #ifndef USEFUL_FUNCS_H
 #define USEFUL_FUNCS_H
-#include "userInput_utils.h"
 
 //Usefull func prototypes
 string pullWord(string&, const int);
 
-//USERINPUT
+//**userInput template function**
 //Default template if no type is matched
 template<typename T, typename Enable = void>
-inline typename enable_if<!is_integral<T>::value, T>::type
+inline typename enable_if<!is_arithmetic<T>::value, T>::type
 userInput(string&, const T&, const T&, const bool&, const bool&, const bool&) {
     static_assert(is_same<T, void>::value, "Invalid type for userInput!");
 }
 
-//USERINPUT
+//**userInput template function**
 //Specialization for integral types
 template<typename T>
 inline typename enable_if<is_integral<T>::value, T>::type
@@ -54,11 +55,12 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 }
 
 
-//USERINPUT
-//Specialization for float
-template<>
-inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    checkForValidBools<float>(singleInput, caseSensitive);
+//**userInput template function**
+//Specialization for floating point types
+template<typename T>
+inline typename enable_if<is_floating_point<T>::value, T>::type
+userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
+    checkForValidBools<T>(singleInput, caseSensitive);
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     int decimal = 0;
@@ -87,46 +89,11 @@ inline float userInput<float>(string& input, const float& param1, const float& p
     length = findSigFigLength(input, isScientific, decimal);
 
 
-    return validatedFloatingPoint(input, param1, param2, decimal, length);
+    return validatedFloatingPoint<T>(input, param1, param2, decimal, length);
 }
 
 
-//USERINPUT
-//Specialization for double
-template<>
-inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    checkForValidBools<double>(singleInput, caseSensitive);
-    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
-
-    int decimal = 0;
-    int length = 0;
-    bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
-    bool allFloatingPointNums = validateSegments(input, RegexPatterns::floatingPoint);
-    bool hasSpaces = (input.find(' ') != string::npos);
-
-    for (const auto ch : input) {
-        if (!isDigit(ch)) {
-            if (hasSpaces && allFloatingPointNums) {
-                throw invalid_argument("You entered more than one input!");
-            }
-            else if (ch == '.') {
-                decimal++;
-                if (decimal > 1) {
-                    throw invalid_argument("You entered too many decimals!");
-                }
-            }
-            else if (!isScientific) {
-                throw invalid_argument("You entered a non-numerical value!");
-            }
-        }
-    }
-    length = findSigFigLength(input, isScientific, decimal);
-
-    return validatedFloatingPoint(input, param1, param2, decimal, length);
-}
-
-
-//USERINPUT
+//**userInput template function**
 //Specialization for string
 template<>
 inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {

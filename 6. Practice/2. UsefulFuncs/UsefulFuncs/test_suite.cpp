@@ -6,7 +6,7 @@ int main() {
 	while (invalid) {
 		getline(cin, input);
 		try {
-			cout << userInput(input, IS_ALPHA, IS_NUMERIC, ONE_VALUE, DONT_CLEAR_BUFFER, NOT_CASE_SENSITIVE) << endl;
+			cout << userInput(input, IS_ALPHA, IS_NULL, ONE_VALUE, DONT_CLEAR_BUFFER, NOT_CASE_SENSITIVE) << endl;
 			invalid = true;
 		}
 		catch (const invalid_argument& e) {
