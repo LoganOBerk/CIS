@@ -26,16 +26,20 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
     bool allIntegers = validateSegments(input, RegexPatterns::integral);
     bool hasSpaces = (input.find(' ') != string::npos);
-   
+
+
+    if (!isScientific && !allIntegers) {  //checks if input is not scientific or not a proper integer
+        throw invalid_argument("You entered a non-integer value!");
+    }
     try {
-        if (hasSpaces && allIntegers && stold(input) == static_cast<T>(stold(input))) {
-            throw invalid_argument("You entered more than one input!");
-        }
-        else if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { //checks if input is outside of max range
+        if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { //checks if input is outside of max range
             throw out_of_range("");
         }
-        else if (!isScientific && !allIntegers || stold(input) != static_cast<T>(stold(input))){  //checks if input is not scientific not an integer or if its not convertable to an int
+        else if (stold(input) != static_cast<T>(stold(input))) { //checks if inputs conversion is an integer (primarily useful for determining scientific notation)
             throw invalid_argument("You entered a non-integer value!");
+        }
+        else if (hasSpaces && allIntegers && stold(input) == static_cast<T>(stold(input))) {
+            throw invalid_argument("You entered more than one input!");
         }
     }
     catch (const out_of_range&) { //catches all out of range errors including potential stold out of range errors

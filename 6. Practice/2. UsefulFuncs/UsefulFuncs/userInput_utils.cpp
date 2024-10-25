@@ -4,7 +4,7 @@
 namespace RegexPatterns {
     const regex scientificNotation(R"(^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)$)");
     const regex floatingPoint(R"(^[+-]?(\d*\.\d+|\d+(\.\d*)?|\d+)([eE][+-]?\d+)?$)");
-    const regex integral(R"(^[+-]?(\d+|(\d+(\.\d+)?[eE][+-]?\d+))$)");
+    const regex integral(R"(^[+-]?\d+$)");
 
 }
 
