@@ -66,7 +66,7 @@ int findSigFigLength(const string&, const bool&, int&);
 
 
 
-
+//Returns type as a string if data type is float returns "float" etc...
 template<typename T>
 string typeName() {
     return typeid(T).name();
