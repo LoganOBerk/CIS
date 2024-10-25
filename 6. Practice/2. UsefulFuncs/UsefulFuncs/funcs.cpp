@@ -45,9 +45,6 @@ bool isFileChar(const char ch) {
 
 //Compare each input segment with istringstream to identify if they match specific regex pattern
 bool validateSegments(const string& input, const regex& pattern) {
-    if (input == " ") {
-        throw invalid_argument("Input cannot be empty.");
-    }
     istringstream iss(input);
     string segment;
 
@@ -76,9 +73,16 @@ static string delimitedInput(string& input, const char delimiterToConvert) {
     
     int i = 0;
     int inputSize = static_cast<int>(input.size());
-    while (input[i++] == ' ');
-    while (input[inputSize--] == ' ');
-    for (i -= 1; i < inputSize; i++) {
+    while (input[i] == ' ' || input[i] == delimiterToConvert || input[inputSize - 1] == ' ' || input[inputSize - 1] == delimiterToConvert) {
+        if (input[i] == ' ' || input[i] == delimiterToConvert) {
+            i++;
+        }
+        if (input[inputSize - 1] == ' ' || input[inputSize - 1] == delimiterToConvert) {
+            inputSize--;
+        }
+    }
+
+    for (i; i < inputSize; i++) {
         if (input[i] == delimiterToConvert) {
             input[i] = ' ';
         }
