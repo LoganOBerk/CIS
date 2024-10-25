@@ -4,22 +4,20 @@
 
 using namespace std;
 
-int i = 0;
 int recursiveLinearSearch(const int arr[], const int key, const int size, bool& searchStatus) {
-	if (i == size) {
-		return i;
+	if (size == 0) {
+		return size;
 	}
-	if (arr[i] == key) {
+	if (arr[size - 1] == key) {
 		searchStatus = true;
-		return i;
+		return size;
 	}
-	i++;
-	return recursiveLinearSearch(arr, key, size, searchStatus);
+	return recursiveLinearSearch(arr, key, size - 1, searchStatus);
 }
 
 
 int main() {
-	const int SIZE = 8000;
+	const int SIZE = 7000;
 	bool searchStatus = false;
 	int myArray[SIZE];
 	for (int i = 0; i < SIZE; i++) {
@@ -37,14 +35,14 @@ int main() {
 	}
 	const int key = input;
 
-	recursiveLinearSearch(myArray, key, SIZE, searchStatus);
+	int numsearches = sizeof(myArray)/sizeof(myArray[0]) - recursiveLinearSearch(myArray, key, SIZE, searchStatus);
 	if (searchStatus) {
-		cout << "Found " << key << " after " << i + 1 << " searches" << endl;
-		i = 0;
+		cout << "Found " << key << " after " << numsearches + 1 << " searches" << endl;
+		
 	}
 	else {
-		cout << "Not found after " << i << " searches";
-		i = 0;
+		cout << "Not found after " << numsearches << " searches";
+		
 	}
 	return 0;
 }

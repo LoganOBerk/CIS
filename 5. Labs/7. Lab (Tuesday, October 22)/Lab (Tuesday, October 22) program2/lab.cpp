@@ -4,20 +4,15 @@
 
 using namespace std;
 
-int a = 1;
 int factorial(int x) {
 	if (x < 0) {
 		return -1;
 	}
-	if (x == 0) {
+	if (x <= 1) {
 		return 1;
 	}
-	a *= x;
-	x = x - 1;
-	if (x - 1 == 0) {
-		return a;
-	}
-	return factorial(x);
+	
+	return x * factorial(x - 1);
 }
 
 int main() {
