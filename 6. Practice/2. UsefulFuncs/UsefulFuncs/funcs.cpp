@@ -73,7 +73,12 @@ void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
 //Identifies a valid delimeter that will be converted to spaces and multiple occurances will be removed (helper to formatAndTrim)
 static string delimitedInput(string& input, const char delimiterToConvert) {
     string replacement;
-    for (int i = 0; i < input.size(); i++) {
+    
+    int i = 0;
+    int inputSize = static_cast<int>(input.size());
+    while (input[i++] == ' ');
+    while (input[inputSize--] == ' ');
+    for (i -= 1; i < inputSize; i++) {
         if (input[i] == delimiterToConvert) {
             input[i] = ' ';
         }
@@ -98,15 +103,9 @@ static string formatAndTrim(string& input, const bool& caseSensitive) {
             ch = tolower(ch);
         }
     }
-
     input = delimitedInput(input, ',');
     
-    auto start = find_if_not(input.begin(), input.end(), ::isspace);
-    auto end = find_if_not(input.rbegin(), input.rend(), ::isspace).base();
-    if (start >= end) {
-        return input;
-    }
-    return string(start, end);
+    return input;
 }
 
 
