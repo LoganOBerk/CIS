@@ -57,13 +57,13 @@ extern const bool   NOT_CASE_SENSITIVE;
 
 //Helper function prototypes
 bool isFileChar(const char);
+bool isDigit(const char);
+bool isAlpha(const char);
 string formatAndTrim(string&);
 void initialInputHandling(string&, const bool&, const bool&, const bool&);
 bool validateSegments(const string&, const regex&);
 int findSigFigLength(const string&, const bool&, int&);
 void checkForValidNumericalBools(const bool&, const bool&);
-bool isDigit(const char);
-bool isAlpha(const char);
 
 //Usefull func prototypes
 string pullWord(string&, const int);

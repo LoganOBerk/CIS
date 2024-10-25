@@ -154,7 +154,7 @@ int findSigFigLength(const string& input, const bool& isScientific, int& decimal
         leadingNums = input.substr(0, input.find('e'));
         significantLength = static_cast<int>(leadingNums.size());
         for (int i = significantLength - 1; i > 0; i--) {
-            if (leadingNums[i] == '0') {
+            if (leadingNums[i] == '0' ) {
                 numZeros++;
             }
             else {
@@ -162,8 +162,11 @@ int findSigFigLength(const string& input, const bool& isScientific, int& decimal
             }
         }
         for (int i = 0; i < significantLength; i++) {
-            if (leadingNums[i] == '0') {
+            if (leadingNums[i] == '0' || leadingNums[i] == '.') {
                 numZeros++;
+                if (leadingNums[i] == '.') {
+                    numZeros--;
+                }
             }
             else {
                 break;
@@ -184,8 +187,11 @@ int findSigFigLength(const string& input, const bool& isScientific, int& decimal
             }
         }
         for (int i = 0; i < input.size(); i++) {
-            if (input[i] == '0') {
+            if (input[i] == '0' || input[i] == '.') {
                 numZeros++;
+                if (input[i] == '.') {
+                    numZeros--;
+                }
             }
             else {
                 break;
