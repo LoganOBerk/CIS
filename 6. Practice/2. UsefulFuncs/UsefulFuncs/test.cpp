@@ -1,6 +1,5 @@
 #include "funcs.h"
 //TODO allow numbers to be handled if they contain proper commas
-//STOLD argument out of range with just commas or spaces with ints
 int main() {
 	string input;
 	bool invalid = true;

@@ -121,7 +121,12 @@ void initialInputHandling(string& input, const bool& singleInput, const bool& is
     if (isClearBuffer && !singleInput) {
         throw invalid_argument("WARNING ATTEMPTING TO CLEAR BUFFER AND ALLOW MULTIPLE INPUTS POTENTIAL DATA LOSS!");
     }
+
     input = formatAndTrim(input, caseSensitive);
+
+    if (input == "\0") {
+        throw invalid_argument("Input cannot be empty.");
+    }
     if (isClearBuffer) {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
