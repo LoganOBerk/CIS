@@ -43,6 +43,16 @@ bool isFileChar(const char ch) {
     return unallowedChars.find(ch) == string::npos;
 }
 
+bool isAlpha(const char ch) {
+    int asciiValue = static_cast<int>(ch);
+    return (asciiValue >= 65 && asciiValue <= 90) || (asciiValue >= 97 && asciiValue <= 122);
+}
+
+bool isDigit(const char ch) {
+    int asciiValue = static_cast<int>(ch);
+    return (ch >= 48 && ch <= 57);
+}
+
 //Compare each input segment with istringstream to identify if they match specific regex pattern
 bool validateSegments(const string& input, const regex& pattern) {
     istringstream iss(input);
@@ -58,7 +68,7 @@ bool validateSegments(const string& input, const regex& pattern) {
 }
 
 //Insure programmer does not input incorrect booleans with certain data
-void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
+void checkForValidNumericalBools(const bool& singleInput, const bool& caseSensitive) {
     if (!singleInput) {
         throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
     }
@@ -70,7 +80,6 @@ void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
 //Identifies a valid delimeter that will be converted to spaces and multiple occurances will be removed (helper to formatAndTrim)
 static string delimitedInput(string& input, const char delimiterToConvert) {
     string replacement;
-    
     int i = 0;
     int inputSize = static_cast<int>(input.size());
     while (input[i] == ' ' || input[i] == delimiterToConvert || input[inputSize - 1] == ' ' || input[inputSize - 1] == delimiterToConvert) {
@@ -79,6 +88,9 @@ static string delimitedInput(string& input, const char delimiterToConvert) {
         }
         if (input[inputSize - 1] == ' ' || input[inputSize - 1] == delimiterToConvert) {
             inputSize--;
+        }
+        if (i > inputSize) {
+            break;
         }
     }
 
@@ -99,9 +111,6 @@ static string delimitedInput(string& input, const char delimiterToConvert) {
 
 // Convert string to lowercase and trim whitespace, and replace valid delimiters with spaces (helper to initialInputHandling)
 static string formatAndTrim(string& input, const bool& caseSensitive) {
-    if (input.empty()) {
-        return input;
-    }
     if (!caseSensitive) {
         for (auto& ch : input){
             ch = tolower(ch);

@@ -61,7 +61,9 @@ string formatAndTrim(string&);
 void initialInputHandling(string&, const bool&, const bool&, const bool&);
 bool validateSegments(const string&, const regex&);
 int findSigFigLength(const string&, const bool&, int&);
-void checkForValidBools(const bool&, const bool&);
+void checkForValidNumericalBools(const bool&, const bool&);
+bool isDigit(const char);
+bool isAlpha(const char);
 
 //Usefull func prototypes
 string pullWord(string&, const int);
@@ -128,7 +130,7 @@ string typeName() {
 template<typename T>
 inline typename enable_if<is_integral<T>::value, T>::type
 userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    checkForValidBools(singleInput, caseSensitive);
+    checkForValidNumericalBools(singleInput, caseSensitive);
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     T numConvert;
@@ -167,7 +169,7 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 //Specialization for float
 template<>
 inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    checkForValidBools(singleInput, caseSensitive);
+    checkForValidNumericalBools(singleInput, caseSensitive);
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     int decimal = 0;
@@ -177,7 +179,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
     bool hasSpaces = (input.find(' ') != string::npos);
 
     for (const auto ch : input) {
-        if (!isdigit(ch)) {
+        if (!isDigit(ch)) {
             if (hasSpaces && allFloatingPointNums) {
                 throw invalid_argument("You entered more than one input.");
             }
@@ -203,7 +205,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 //Specialization for double
 template<>
 inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    checkForValidBools(singleInput, caseSensitive);
+    checkForValidNumericalBools(singleInput, caseSensitive);
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     int decimal = 0;
@@ -213,7 +215,7 @@ inline double userInput<double>(string& input, const double& param1, const doubl
     bool hasSpaces = (input.find(' ') != string::npos);
 
     for (const auto ch : input) {
-        if (!isdigit(ch)) {
+        if (!isDigit(ch)) {
             if (hasSpaces && allFloatingPointNums) {
                 throw invalid_argument("You entered more than one input.");
             }
@@ -238,19 +240,23 @@ inline double userInput<double>(string& input, const double& param1, const doubl
 template<>
 inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
+    bool hasSpaces = (input.find(' ') != string::npos);
 
     for (auto ch : input) {
         if (ch != '\0') {
-            if (ch == ' ' && singleInput) {
-                throw invalid_argument("You entered more than one word!");
+            if (hasSpaces && singleInput) {
+                if (param1 != IS_CHARACTER) {
+                    throw invalid_argument("You entered more than one word!");
+                }
+                throw invalid_argument("You entered more than one character!");
             }
-            if (param1 == IS_ALPHA && param2 == IS_NUMERIC && !(isdigit(ch) || isalpha(ch)) && ch != ' ') {
+            if (param1 == IS_ALPHA && param2 == IS_NUMERIC && !(isDigit(ch) || isAlpha(ch)) && ch != ' ') {
                 if (!singleInput) {
                     throw invalid_argument("This is not an alpha-numeric list!");
                 }
                 throw invalid_argument("This is not an alpha-numeric value!");
             }
-            else if (param1 == IS_ALPHA && param2 == IS_NULL && !isalpha(ch) && ch != ' ') {
+            else if (param1 == IS_ALPHA && param2 == IS_NULL && !isAlpha(ch) && ch != ' ') {
                 if (!singleInput) {
                     throw invalid_argument("You entered a non-alphabetic sentence!");
                 }
@@ -260,7 +266,10 @@ inline string userInput<string>(string& input, const string& param1, const strin
                 throw invalid_argument("You entered an improper filename!");
             }
             else if (param1 == IS_CHARACTER && param2 == IS_NULL) {
-                if (input.size() != 1 || !isalpha(ch)) {
+                if (!singleInput) {
+                    throw invalid_argument("ARGUMENT: singleInput MUST BE TRUE FOR CHARACTERS!");
+                }
+                if (input.size() != 1) {
                     throw invalid_argument("This is not a character input!");
                 }
             }
