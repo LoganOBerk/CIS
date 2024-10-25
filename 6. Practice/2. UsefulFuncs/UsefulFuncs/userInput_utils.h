@@ -25,6 +25,8 @@ namespace RegexPatterns {
 }
 
 
+//Char consts initialization
+extern const char DEFAULT_DELIMITER;
 
 //String consts initialization
 extern const string IS_ALPHA;
@@ -60,7 +62,7 @@ bool isFileChar(const char);
 bool isDigit(const char);
 bool isAlpha(const char);
 string formatAndTrim(string&);
-void initialInputHandling(string&, const bool&, const bool&, const bool&);
+void initialInputHandling(string&, const bool&, const bool&, const bool&, const char&);
 bool validateSegments(const string&, const regex&);
 int findSigFigLength(const string&, const bool&, int&);
 

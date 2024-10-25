@@ -20,7 +20,7 @@ template<typename T>
 inline typename enable_if<is_integral<T>::value, T>::type
 userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     checkForValidBools<T>(singleInput, caseSensitive);
-    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
 
     T numConvert;
     bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
@@ -62,7 +62,7 @@ template<typename T>
 inline typename enable_if<is_floating_point<T>::value, T>::type
 userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     checkForValidBools<T>(singleInput, caseSensitive);
-    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
 
     int decimal = 0;
     int length = 0;
@@ -98,7 +98,12 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 //Specialization for string
 template<>
 inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
+    if (param1 == IS_CHARACTER) {
+        initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, ' ');  //changes delimeter handled to allow every char accept spaces
+    }
+    else {
+        initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
+    }
     bool hasSpaces = (input.find(' ') != string::npos);
 
     for (auto ch : input) {
@@ -143,7 +148,7 @@ inline string userInput<string>(string& input, const string& param1, const strin
 template<>
 inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     checkForValidBools<bool>(singleInput, caseSensitive);
-    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
+    initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
     if (param1 != param2) {
         return false;
     }

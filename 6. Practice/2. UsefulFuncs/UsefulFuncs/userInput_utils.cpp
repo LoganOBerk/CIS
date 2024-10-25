@@ -8,6 +8,9 @@ namespace RegexPatterns {
 
 }
 
+//Char consts
+const char DEFAULT_DELIMITER = ',';
+
 //String consts
 const string IS_ALPHA = "alpha";
 const string IS_NUMERIC = "numeric";
@@ -38,8 +41,8 @@ const bool   NOT_CASE_SENSITIVE = false;
 
 
 //Helper funcs to initalInputHandling
-static string formatAndTrim(string&, const bool&);
-static string delimitedInput(string&, const char);
+static string formatAndTrim(string&, const bool&, const char&);
+static string delimitedInput(string&, const char&);
 
 
 //Check if a character is valid for filenames
@@ -132,8 +135,8 @@ int findSigFigLength(const string& input, const bool& isScientific, int& decimal
 }
 
 
-//Default input handling for all datatypes
-void initialInputHandling(string& input, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
+//Default input handling for all datatypes, includes delimeter which inputs can be seperated by default delimiter is ','
+void initialInputHandling(string& input, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive, const char& delimiterToConvert) {
     if (input.empty()) {
         throw invalid_argument("Input cannot be empty.");
     }
@@ -141,7 +144,7 @@ void initialInputHandling(string& input, const bool& singleInput, const bool& is
         throw invalid_argument("WARNING ATTEMPTING TO CLEAR BUFFER AND ALLOW MULTIPLE INPUTS POTENTIAL DATA LOSS!");
     }
 
-    input = formatAndTrim(input, caseSensitive);
+    input = formatAndTrim(input, caseSensitive, delimiterToConvert);
 
     if (input == "\0") {
         throw invalid_argument("Input cannot be empty.");
@@ -155,20 +158,21 @@ void initialInputHandling(string& input, const bool& singleInput, const bool& is
 
 
 // Convert string to lowercase and trim whitespace, and replace valid delimiters with spaces (helper to initialInputHandling)
-static string formatAndTrim(string& input, const bool& caseSensitive) {
+static string formatAndTrim(string& input, const bool& caseSensitive, const char& delimiterToConvert) {
     if (!caseSensitive) {
         for (auto& ch : input) {
             ch = tolower(ch);
         }
     }
-    input = delimitedInput(input, ',');
+    input = delimitedInput(input, delimiterToConvert);
 
     return input;
 }
 
 
 //Identifies a valid delimeter that will be converted to spaces and multiple occurances will be removed (helper to formatAndTrim)
-static string delimitedInput(string& input, const char delimiterToConvert) {
+//Automatically handles spaces no matter what
+static string delimitedInput(string& input, const char& delimiterToConvert) {
     string replacement;
     int i = 0;
     int inputSize = static_cast<int>(input.size());
