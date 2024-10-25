@@ -31,17 +31,14 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
         if (hasSpaces && allIntegers && stold(input) == static_cast<T>(stold(input))) {
             throw invalid_argument("You entered more than one input!");
         }
-        else if (!isScientific && !allIntegers                //evaluates true if the data isnt scientific or isnt an int
-            || stold(input) != static_cast<T>(stold(input))   //checks for scientific data thats non-int
-            && stold(input) < numeric_limits<T>::max()        //insures input is within max range
-            && stold(input) > numeric_limits<T>::min()) {     //*avoids incorrect thrown error when input is too large or too small*
-            throw invalid_argument("You entered a non-integer value!");
-        }
-        if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { //checks if input is outside of max range
+        else if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { //checks if input is outside of max range
             throw out_of_range("");
         }
+        else if (!isScientific && !allIntegers || stold(input) != static_cast<T>(stold(input))){  //checks if input is not scientific not an integer or if its not convertable to an int
+            throw invalid_argument("You entered a non-integer value!");
+        }
     }
-    catch (const out_of_range&) {
+    catch (const out_of_range&) { //catches all out of range errors including potential stold out of range errors
         throw out_of_range("You entered a number much too large or small!");
     }
 
