@@ -1,5 +1,5 @@
-#ifndef FUNCS_H
-#define FUNCS_H
+#ifndef USEFUL_FUNCS_H
+#define USEFUL_FUNCS_H
 
 
 #include <algorithm>
@@ -63,10 +63,30 @@ string formatAndTrim(string&);
 void initialInputHandling(string&, const bool&, const bool&, const bool&);
 bool validateSegments(const string&, const regex&);
 int findSigFigLength(const string&, const bool&, int&);
-void checkForValidNumericalBools(const bool&, const bool&);
+//void checkForValidNumericalBools(const bool&, const bool&);
 
 //Usefull func prototypes
 string pullWord(string&, const int);
+
+
+template<typename T>
+string typeName() {
+    return typeid(T).name();
+}
+
+
+//Insure programmer does not input incorrect booleans with certain data
+template <typename T>
+void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
+    if (!singleInput) {
+        throw invalid_argument("ARGUMENT: singleInput MUST BE TRUE FOR: " + typeName<T>() + "!");
+    }
+    if (caseSensitive) {
+        throw invalid_argument("ARGUMENT: caseSensitive MUST BE FALSE FOR: " + typeName<T>() + "!");
+    }
+}
+
+
 
 //Validates floats
 template<typename T>
@@ -115,6 +135,8 @@ validatedFloatingPoint(string& input, const T& param1, const T& param2, int& dec
 }
 
 
+
+
 //Default template if no type is matched
 template<typename T, typename Enable = void>
 inline typename enable_if<!is_integral<T>::value, T>::type
@@ -122,15 +144,12 @@ userInput(string&, const T&, const T&, const bool&, const bool&, const bool&) {
     static_assert(is_same<T, void>::value, "Invalid type for userInput");
 }
 
-template<typename T>
-string typeName() {
-    return typeid(T).name();
-}
+
 //Specialization for integral types
 template<typename T>
 inline typename enable_if<is_integral<T>::value, T>::type
 userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    checkForValidNumericalBools(singleInput, caseSensitive);
+    checkForValidBools<T>(singleInput, caseSensitive);
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     T numConvert;
@@ -169,7 +188,7 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 //Specialization for float
 template<>
 inline float userInput<float>(string& input, const float& param1, const float& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    checkForValidNumericalBools(singleInput, caseSensitive);
+    checkForValidBools<float>(singleInput, caseSensitive);
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     int decimal = 0;
@@ -205,7 +224,7 @@ inline float userInput<float>(string& input, const float& param1, const float& p
 //Specialization for double
 template<>
 inline double userInput<double>(string& input, const double& param1, const double& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    checkForValidNumericalBools(singleInput, caseSensitive);
+    checkForValidBools<double>(singleInput, caseSensitive);
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
 
     int decimal = 0;
@@ -284,18 +303,16 @@ inline string userInput<string>(string& input, const string& param1, const strin
 //Specialization for bool
 template<>
 inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
+    checkForValidBools<bool>(singleInput, caseSensitive);
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive);
-    if (caseSensitive) {
-        throw invalid_argument("ARGUMENT: caseSensitive MUST BE FALSE FOR BOOLEANS!");
-    }
     if (param1 != param2) {
         return false;
     }
-    else if (input == "true" || input == "1") {
+    else if (input == "true" || input == "1" || input == "yes" || input == "y") {
         return true;
     }
-    else if (input == "false" || input == "0") {
-        return true;
+    else if (input == "false" || input == "0" || input == "no" || input == "n") {
+        return false;
     }
     else {
         throw invalid_argument("Not a true/false value!");

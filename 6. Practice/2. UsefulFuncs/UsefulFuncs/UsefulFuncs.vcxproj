@@ -19,11 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="funcs.cpp" />
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="useful_funcs.cpp" />
+    <ClCompile Include="test_suite.cpp" />
+    <ClCompile Include="userInput_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="funcs.h" />
+    <ClInclude Include="useful_funcs.h" />
+    <ClInclude Include="userInput_utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

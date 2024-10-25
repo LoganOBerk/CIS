@@ -15,15 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="funcs.cpp">
+    <ClCompile Include="useful_funcs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test.cpp">
+    <ClCompile Include="test_suite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="userInput_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="funcs.h">
+    <ClInclude Include="useful_funcs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="userInput_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

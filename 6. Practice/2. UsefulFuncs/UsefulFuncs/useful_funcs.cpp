@@ -1,4 +1,4 @@
-#include "funcs.h"
+#include "useful_funcs.h"
 
 //Regex namespace to avoid naming conflicts
 namespace RegexPatterns {
@@ -67,15 +67,7 @@ bool validateSegments(const string& input, const regex& pattern) {
     return true;
 }
 
-//Insure programmer does not input incorrect booleans with certain data
-void checkForValidNumericalBools(const bool& singleInput, const bool& caseSensitive) {
-    if (!singleInput) {
-        throw invalid_argument("ARGUMENT: singleInput MUST BE FALSE FOR NUMBERS!");
-    }
-    if (caseSensitive) {
-        throw invalid_argument("ARGUMENT: caseSensitive MUST BE FALSE FOR NUMBERS!");
-    }
-}
+
 
 //Identifies a valid delimeter that will be converted to spaces and multiple occurances will be removed (helper to formatAndTrim)
 static string delimitedInput(string& input, const char delimiterToConvert) {
