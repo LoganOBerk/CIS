@@ -99,7 +99,7 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 template<>
 inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     if (param1 == IS_CHARACTER) {
-        initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, ' ');  //changes delimeter handled to allow every char accept spaces
+        initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, ' ');  //changes delimeter handled to allow every char except spaces
     }
     else {
         initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
