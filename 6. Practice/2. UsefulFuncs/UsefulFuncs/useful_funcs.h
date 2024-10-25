@@ -124,18 +124,16 @@ inline string userInput<string>(string& input, const string& param1, const strin
             else if (param1 == IS_FILE && param2 == IS_NULL && !isFileChar(ch)) {
                 throw invalid_argument("You entered an improper filename!");
             }
-            else if (param1 == IS_CHARACTER && param2 == IS_NULL) {
+            else if (param1 == IS_CHARACTER && param2 == IS_NULL && input.size() != 1) {
                 if (!singleInput) {
                     throw invalid_argument("ARGUMENT: singleInput MUST BE TRUE FOR CHARACTERS!");
                 }
-                if (input.size() != 1) {
-                    throw invalid_argument("This is not a character input!");
-                }
+                throw invalid_argument("This is not a character input!");
+
             }
         }
 
     }
-
     return input;
 }
 
