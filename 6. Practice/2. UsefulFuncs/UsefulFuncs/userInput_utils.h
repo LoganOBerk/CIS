@@ -6,13 +6,13 @@
 #include <cctype>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <map>
-#include <string>
-#include <type_traits>
 #include <regex>
 #include <sstream>
-#include <limits>
-#include <regex>
+#include <string>
+#include <type_traits>
+
 
 using namespace std;
 
@@ -127,4 +127,7 @@ validatedFloatingPoint(string& input, const T& param1, const T& param2, int& dec
     }
     return numConvert;
 }
+
+
+
 #endif
