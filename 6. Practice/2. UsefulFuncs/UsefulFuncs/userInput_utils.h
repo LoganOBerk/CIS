@@ -70,14 +70,32 @@ int findSigFigLength(const string&, const bool&, int&);
 
 //Returns type as a string if data type is float returns "float" etc...
 template<typename T>
-string typeName() {
+inline string typeName() {
     return typeid(T).name();
+}
+//Base templates for string to floating point conversion
+template<typename T>
+inline T stoT(const string&) = delete;
+
+template<>
+inline float stoT<float>(const string& input) {
+    return stof(input);
+}
+
+template<>
+inline double stoT<double>(const string& input) {
+    return stod(input);
+}
+
+template<>
+inline long double stoT<long double>(const string& input) {
+    return stold(input);
 }
 
 
 //Insure programmer does not input incorrect booleans with certain data
 template <typename T>
-void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
+inline void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
     if (!singleInput) {
         throw invalid_argument("ARGUMENT: singleInput MUST BE TRUE FOR: " + typeName<T>() + "!");
     }
@@ -87,63 +105,14 @@ void checkForValidBools(const bool& singleInput, const bool& caseSensitive) {
 }
 
 
-
-//Validates floats
+//Validates floating points
 template<typename T>
-typename enable_if<is_same<T, float>::value, T>::type
+inline typename enable_if<is_floating_point<T>::value, T>::type
 validatedFloatingPoint(string& input, const T& param1, const T& param2, int& decimal, int& length) {
     const int sigFig = numeric_limits<T>::digits10;
     T numConvert = 0;
     try {
-        numConvert = stof(input);
-    }
-    catch (const out_of_range&) {
-        throw out_of_range("You entered a number much too large or small!");
-    }
-
-    if (numConvert < param1 || numConvert > param2) {
-        throw out_of_range("You entered a number outside of the range ( "
-            + to_string(param1) + ", " + to_string(param2) + " )");
-    }
-    else if (length > sigFig) {
-        throw out_of_range("You entered a number with more than " + to_string(sigFig) + " significant figures!");
-    }
-    return numConvert;
-}
-
-
-//Validates doubles
-template<typename T>
-typename enable_if<is_same<T, double>::value, T>::type
-validatedFloatingPoint(string& input, const T& param1, const T& param2, int& decimal, int& length) {
-    const int sigFig = numeric_limits<T>::digits10;
-    T numConvert = 0;
-    try {
-        numConvert = stod(input);
-    }
-    catch (const out_of_range&) {
-        throw out_of_range("You entered a number much too large or small!");
-    }
-
-    if (numConvert < param1 || numConvert > param2) {
-        throw out_of_range("You entered a number outside of the range ( "
-            + to_string(param1) + ", " + to_string(param2) + " )");
-    }
-    else if (length > sigFig) {
-        throw out_of_range("You entered a number with more than " + to_string(sigFig) + " significant figures!");
-    }
-    return numConvert;
-}
-
-
-//Validates long doubles
-template<typename T>
-typename enable_if<is_same<T, long double>::value, T>::type
-validatedFloatingPoint(string& input, const T& param1, const T& param2, int& decimal, int& length) {
-    const int sigFig = numeric_limits<T>::digits10;
-    T numConvert = 0;
-    try {
-        numConvert = stold(input);
+        numConvert = stoT<T>(input);
     }
     catch (const out_of_range&) {
         throw out_of_range("You entered a number much too large or small!");
