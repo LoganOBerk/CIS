@@ -25,7 +25,7 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     T numConvert;
     bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
     bool allIntegers = validateSegments(input, RegexPatterns::integral);
-    bool hasSpaces = (input.find(' ') != string::npos);
+    bool hasSpaces = (input.find(' ') != string::npos || input.find('\t') != string::npos);
 
 
     if (!isScientific && !allIntegers) {  //checks if input is not scientific or not a proper integer
@@ -68,7 +68,7 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     int length = 0;
     bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
     bool allFloatingPointNums = validateSegments(input, RegexPatterns::floatingPoint);
-    bool hasSpaces = (input.find(' ') != string::npos);
+    bool hasSpaces = (input.find(' ') != string::npos || input.find('\t') != string::npos);
 
     for (const auto ch : input) {
         if (!isDigit(ch)) {
@@ -99,12 +99,12 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 template<>
 inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     if (param1 == IS_CHARACTER || param1 == IS_FILE) {
-        initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, ' ');  //changes delimeter handled to allow every char except spaces
+        initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, ' ');  //changes delimeter to space
     }
     else {
         initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
     }
-    bool hasSpaces = (input.find(' ') != string::npos);
+    bool hasSpaces = (input.find(' ') != string::npos || input.find('\t') != string::npos);
 
     for (auto ch : input) {
         if (ch != '\0') {
@@ -114,13 +114,13 @@ inline string userInput<string>(string& input, const string& param1, const strin
                 }
                 throw invalid_argument("You entered more than one character!");
             }
-            if (param1 == IS_ALPHA && param2 == IS_NUMERIC && !(isDigit(ch) || isAlpha(ch)) && ch != ' ') {
+            if (param1 == IS_ALPHA && param2 == IS_NUMERIC && !(isDigit(ch) || isAlpha(ch)) && ch != ' ' && ch != '\t') {
                 if (!singleInput) {
                     throw invalid_argument("This is not an alpha-numeric list!");
                 }
                 throw invalid_argument("This is not an alpha-numeric value!");
             }
-            else if (param1 == IS_ALPHA && param2 == IS_NULL && !isAlpha(ch) && ch != ' ') {
+            else if (param1 == IS_ALPHA && param2 == IS_NULL && !isAlpha(ch) && ch != ' ' && ch != '\t') {
                 if (!singleInput) {
                     throw invalid_argument("You entered a non-alphabetic sentence!");
                 }

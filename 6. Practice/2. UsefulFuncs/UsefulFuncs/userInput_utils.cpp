@@ -176,11 +176,11 @@ static string delimitedInput(string& input, const char& delimiterToConvert) {
     string replacement;
     int i = 0;
     int inputSize = static_cast<int>(input.size());
-    while (input[i] == ' ' || input[i] == delimiterToConvert || input[inputSize - 1] == ' ' || input[inputSize - 1] == delimiterToConvert) {
-        if (input[i] == ' ' || input[i] == delimiterToConvert) {
+    while (input[i] == ' ' || input[i] == delimiterToConvert || input[i] == '\t' || input[inputSize - 1] == ' ' || input[inputSize - 1] == delimiterToConvert || input[inputSize - 1] == '\t') {
+        if (input[i] == ' ' || input[i] == delimiterToConvert || input[i] == '\t') {
             i++;
         }
-        if (input[inputSize - 1] == ' ' || input[inputSize - 1] == delimiterToConvert) {
+        if (input[inputSize - 1] == ' ' || input[inputSize - 1] == delimiterToConvert || input[inputSize - 1] == '\t') {
             inputSize--;
         }
         if (i > inputSize) {
