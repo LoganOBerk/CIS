@@ -66,6 +66,7 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 
     int decimal = 0;
     int length = 0;
+    int invalidChars = 0;
     bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
     bool allFloatingPointNums = validateSegments(input, RegexPatterns::floatingPoint);
     bool hasSpaces = (input.find(' ') != string::npos || input.find('\t') != string::npos);
@@ -76,16 +77,18 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 
     for (const auto ch : input) {
         if (!isDigit(ch)) {
+            if (!isScientific && ch != '.' && ch != ' ' && ch != '\t') {
+                invalidChars++;
+            }
             if (ch == '.') {
                 decimal++;
             }
-            else if (!allFloatingPointNums) {
+            if (invalidChars > 0) {
                 throw invalid_argument("You entered a non-numerical value!");
             }
-
         }
     }
-
+    //TODO FIX: when inputing something like 1.1. 1.1 we should get this output not "You entered a non-numerical value!"
     if (decimal > 1) {
         throw invalid_argument("You entered too many decimals!");
     }
