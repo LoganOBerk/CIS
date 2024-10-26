@@ -70,23 +70,21 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     bool allFloatingPointNums = validateSegments(input, RegexPatterns::floatingPoint);
     bool hasSpaces = (input.find(' ') != string::npos || input.find('\t') != string::npos);
 
+    if (hasSpaces && allFloatingPointNums) {
+        throw invalid_argument("You entered more than one input!");
+    }
     for (const auto ch : input) {
-        if (!isDigit(ch)) {
-            if (hasSpaces && allFloatingPointNums) {
-                throw invalid_argument("You entered more than one input!");
+        if (ch == '.') {
+            decimal++;
+            if (decimal > 1) {
+                throw invalid_argument("You entered too many decimals!");
             }
-            else if (ch == '.') {
-                decimal++;
-                if (decimal > 1) {
-                    throw invalid_argument("You entered too many decimals!");
-                }
-            }
-            else if (!isScientific) {
-                throw invalid_argument("You entered a non-numerical value!");
-            }
-
         }
     }
+    if (!allFloatingPointNums) {
+        throw invalid_argument("You entered a non-numerical value!");
+    }
+
     length = findSigFigLength(input, isScientific, decimal);
 
 
