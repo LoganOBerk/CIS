@@ -98,7 +98,7 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 //Specialization for string
 template<>
 inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
-    if (param1 == IS_CHARACTER) {
+    if (param1 == IS_CHARACTER || param1 == IS_FILE) {
         initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, ' ');  //changes delimeter handled to allow every char except spaces
     }
     else {
