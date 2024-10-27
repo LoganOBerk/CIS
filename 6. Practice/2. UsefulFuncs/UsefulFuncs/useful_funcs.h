@@ -35,10 +35,10 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
         if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { //checks if input is outside of max range
             throw out_of_range("");
         }
-        else if (stold(input) != static_cast<T>(stold(input))) { //checks if inputs conversion is an integer (primarily useful for determining scientific notation)
+        if (stold(input) != static_cast<T>(stold(input))) { //checks if inputs conversion is an integer (primarily useful for determining scientific notation)
             throw invalid_argument("You entered a non-integer value!");
         }
-        else if (hasSpaces && allIntegers && stold(input) == static_cast<T>(stold(input))) {
+        if (hasSpaces) {
             throw invalid_argument("You entered more than one input!");
         }
     }
