@@ -23,20 +23,24 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
 
     T numConvert;
-    bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
-    bool allIntegers = validateSegments(input, RegexPatterns::integral);
     bool hasSpaces = (input.find(' ') != string::npos || input.find('\t') != string::npos);
 
 
-    if (!isScientific && !allIntegers) {  //checks if input is not scientific and not a proper integer
-        throw invalid_argument("You entered a non-integer value!");
-    }
     try {
-        if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { //checks if input is outside of max range
-            throw out_of_range("");
+        try {
+            if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { //checks if input is outside of max range
+                throw out_of_range("");
+            }
+            istringstream iss(input);
+            string segment;
+            while (iss >> segment) {
+                if (stold(segment) != static_cast<T>(stold(segment))) { //checks if segment conversion is an integer
+                    throw invalid_argument("");
+                }
+            }
         }
-        if (stold(input) != static_cast<T>(stold(input))) { //checks if inputs conversion is an integer (primarily useful for determining scientific notation)
-            throw invalid_argument("You entered a non-integer value!");
+        catch(const invalid_argument&){
+            throw invalid_argument("You entered a non - integer value!");
         }
         if (hasSpaces) {
             throw invalid_argument("You entered more than one input!");
@@ -44,6 +48,10 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     }
     catch (const out_of_range&) { //catches all out of range errors including potential stold out of range errors
         throw out_of_range("You entered a number much too large or small!");
+    }
+    catch (const invalid_argument& e){
+        throw invalid_argument(e.what());
+
     }
 
     numConvert = static_cast<T>(stold(input));
