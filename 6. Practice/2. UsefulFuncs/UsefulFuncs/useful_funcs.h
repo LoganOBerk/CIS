@@ -3,19 +3,19 @@
 #ifndef USEFUL_FUNCS_H
 #define USEFUL_FUNCS_H
 
-//Usefull func prototypes
+// Usefull func prototypes
 string pullWord(string&, const int);
 
-//**userInput template function**
-//Default template if no type is matched
+// **userInput template function**
+// Default template if no type is matched
 template<typename T, typename Enable = void>
 inline typename enable_if<!is_arithmetic<T>::value, T>::type
 userInput(string&, const T&, const T&, const bool&, const bool&, const bool&) {
     static_assert(is_same<T, void>::value, "Invalid type for userInput!");
 }
 
-//**userInput template function**
-//Specialization for integral types
+// **userInput template function**
+// Specialization for integral types
 template<typename T>
 inline typename enable_if<is_integral<T>::value, T>::type
 userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
@@ -27,28 +27,29 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     bool allIntegral = validateSegments(input, RegexPatterns::integral);
     bool hasSpaces = input.find_first_of(" \t") != string::npos;
 
-
     try {
-        if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { //checks if input is outside of max range
+        if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { // checks if input is outside of max range
             throw out_of_range("");
         }
+
         istringstream iss(input);
         string segment;
         while (iss >> segment) {
-            if (stold(segment) != static_cast<T>(stold(segment)) || !allIntegral && !isScientific) { //checks if segment conversion is valid integral type
+            if (stold(segment) != static_cast<T>(stold(segment)) || !allIntegral && !isScientific) { // checks if segment conversion is valid integral type
                 throw invalid_argument("");
-                }
             }
         }
-    catch(const invalid_argument&){
+    }
+    catch (const invalid_argument&) {
         throw invalid_argument("You entered a non - integer value!");
     }
-    catch (const out_of_range&) { //catches all out of range errors including potential stold out of range errors
+    catch (const out_of_range&) { // catches all out of range errors including potential stold out of range errors
         throw out_of_range("You entered a number much too large or small!");
     }
+
     if (hasSpaces) {
         throw invalid_argument("You entered more than one input!");
-    }        
+    }
 
     numConvert = static_cast<T>(stold(input));
     if (numConvert < param1 || numConvert > param2) {
@@ -59,9 +60,8 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     return numConvert;
 }
 
-
-//**userInput template function**
-//Specialization for floating point types
+// **userInput template function**
+// Specialization for floating point types
 template<typename T>
 inline typename enable_if<is_floating_point<T>::value, T>::type
 userInput(string& input, const T& param1, const T& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
@@ -80,32 +80,33 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
 
     for (const auto ch : input) {
         if (!isScientific && !isDigit(ch) && ch != '.' && ch != ' ' && ch != '\t') {
-            throw invalid_argument("You entered a non-numerical value!"); 
+            throw invalid_argument("You entered a non-numerical value!");
         }
-        if (ch == '.') { decimal++; }
+        if (ch == '.') {
+            decimal++;
+        }
     }
-    //TODO FIX: when inputing something like 1.1. 1.1 we should get this output not "You entered a non-numerical value!"
+
     if (decimal > 1) {
         throw invalid_argument("You entered too many decimals!");
     }
 
     length = findSigFigLength(input, isScientific, decimal);
 
-
     return validatedFloatingPoint<T>(input, param1, param2, decimal, length);
 }
 
-
-//**userInput template function**
-//Specialization for string
+// **userInput template function**
+// Specialization for string
 template<>
 inline string userInput<string>(string& input, const string& param1, const string& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     if (param1 == IS_CHARACTER || param1 == IS_FILE) {
-        initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, ' ');  //changes delimeter to space
+        initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, ' ');  // changes delimiter to space
     }
     else {
         initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
     }
+
     bool hasSpaces = (input.find(' ') != string::npos || input.find('\t') != string::npos);
 
     for (auto ch : input) {
@@ -136,21 +137,19 @@ inline string userInput<string>(string& input, const string& param1, const strin
                     throw invalid_argument("ARGUMENT: singleInput MUST BE TRUE FOR CHARACTERS!");
                 }
                 throw invalid_argument("This is not a character input!");
-
             }
         }
-
     }
     return input;
 }
 
-
-//USERINPUT
-//Specialization for bool
+// USERINPUT
+// Specialization for bool
 template<>
 inline bool userInput<bool>(string& input, const bool& param1, const bool& param2, const bool& singleInput, const bool& isClearBuffer, const bool& caseSensitive) {
     checkForValidBools<bool>(singleInput, caseSensitive);
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
+
     if (param1 != param2) {
         return false;
     }
@@ -164,7 +163,5 @@ inline bool userInput<bool>(string& input, const bool& param1, const bool& param
         throw invalid_argument("Not a true/false value!");
     }
 }
-
-
 
 #endif
