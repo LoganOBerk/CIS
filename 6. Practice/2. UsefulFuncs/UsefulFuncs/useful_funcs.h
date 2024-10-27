@@ -23,36 +23,32 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
 
     T numConvert;
+    bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
+    bool allIntegral = validateSegments(input, RegexPatterns::integral);
     bool hasSpaces = input.find_first_of(" \t") != string::npos;
 
 
     try {
-        try {
-            if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { //checks if input is outside of max range
-                throw out_of_range("");
-            }
-            istringstream iss(input);
-            string segment;
-            while (iss >> segment) {
-                if (stold(segment) != static_cast<T>(stold(segment))) { //checks if segment conversion is an integer
-                    throw invalid_argument("");
+        if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { //checks if input is outside of max range
+            throw out_of_range("");
+        }
+        istringstream iss(input);
+        string segment;
+        while (iss >> segment) {
+            if (stold(segment) != static_cast<T>(stold(segment)) || !allIntegral && !isScientific) { //checks if segment conversion is valid integral type
+                throw invalid_argument("");
                 }
             }
         }
-        catch(const invalid_argument&){
-            throw invalid_argument("You entered a non - integer value!");
-        }
-        if (hasSpaces) {
-            throw invalid_argument("You entered more than one input!");
-        }
+    catch(const invalid_argument&){
+        throw invalid_argument("You entered a non - integer value!");
     }
     catch (const out_of_range&) { //catches all out of range errors including potential stold out of range errors
         throw out_of_range("You entered a number much too large or small!");
     }
-    catch (const invalid_argument& e){
-        throw invalid_argument(e.what());
-
-    }
+    if (hasSpaces) {
+        throw invalid_argument("You entered more than one input!");
+    }        
 
     numConvert = static_cast<T>(stold(input));
     if (numConvert < param1 || numConvert > param2) {

@@ -21,7 +21,6 @@ namespace RegexPatterns {
     extern const regex scientificNotation;
     extern const regex floatingPoint;
     extern const regex integral;
-
 }
 
 
