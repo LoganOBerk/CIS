@@ -1,10 +1,10 @@
 #include "useful_funcs.h"
 
 //Takes an input identifies words and allows accessing words in sentances by word number
-string pullWord(string& input, int wordNumber) {
+string pullValue(string& input, int wordNumber) {
     wordNumber--;
     if (wordNumber < 0) {
-        throw out_of_range("You cannot access less than 1 word!");
+        throw out_of_range("You cannot access less than 1 value!");
     }
     vector<string> words;
     int numWords = 0;
@@ -23,7 +23,7 @@ string pullWord(string& input, int wordNumber) {
         }
     }
     if (wordNumber >= numWords) {
-        throw out_of_range("Trying to access word number " + to_string(wordNumber + 1) + " when there are only " + to_string(numWords) + " words!");
+        throw out_of_range("Trying to access value number " + to_string(wordNumber + 1) + " when there are only " + to_string(numWords) + " values!");
     }
     return words[wordNumber];
 }

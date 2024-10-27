@@ -107,15 +107,19 @@ inline string userInput<string>(string& input, const string& param1, const strin
         initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
     }
 
+    bool allFloatingPointNums = validateSegments(input, RegexPatterns::floatingPoint);
     bool hasSpaces = (input.find(' ') != string::npos || input.find('\t') != string::npos);
 
     for (auto ch : input) {
         if (ch != '\0') {
             if (hasSpaces && singleInput) {
-                if (param1 != IS_CHARACTER) {
-                    throw invalid_argument("You entered more than one word!");
+                if (param1 == IS_CHARACTER) {
+                    throw invalid_argument("You entered more than one character!");
                 }
-                throw invalid_argument("You entered more than one character!");
+                if (param1 == IS_NUMERIC) {
+                    throw invalid_argument("You entered more than one value!");
+                }
+                throw invalid_argument("You entered more than one word!");
             }
             if (param1 == IS_ALPHA && param2 == IS_NUMERIC && !(isDigit(ch) || isAlpha(ch)) && ch != ' ' && ch != '\t') {
                 if (!singleInput) {
@@ -128,6 +132,12 @@ inline string userInput<string>(string& input, const string& param1, const strin
                     throw invalid_argument("You entered a non-alphabetic sentence!");
                 }
                 throw invalid_argument("You entered a non-alphabetic word!");
+            }
+            else if (param1 == IS_NUMERIC && param2 == IS_NULL && !allFloatingPointNums) {
+                if (!singleInput) {
+                    throw invalid_argument("You entered a list containing one or more non-numbers!");
+                }
+                throw invalid_argument("You entered a non-numerical value!");
             }
             else if (param1 == IS_FILE && param2 == IS_NULL && !isFileChar(ch)) {
                 throw invalid_argument("You entered an improper filename!");
