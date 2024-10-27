@@ -4,7 +4,8 @@
 #define USEFUL_FUNCS_H
 
 // Usefull func prototypes
-string pullWord(string&, const int);
+string pullValue(string&, int);
+int numVals(string&);
 
 // **userInput template function**
 // Default template if no type is matched
