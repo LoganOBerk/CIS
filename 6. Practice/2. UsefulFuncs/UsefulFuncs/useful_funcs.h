@@ -23,7 +23,7 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
 
     T numConvert;
-    bool hasSpaces = (input.find(' ') != string::npos || input.find('\t') != string::npos);
+    bool hasSpaces = input.find_first_of(" \t") != string::npos;
 
 
     try {
