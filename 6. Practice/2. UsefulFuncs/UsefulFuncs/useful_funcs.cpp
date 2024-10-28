@@ -29,19 +29,15 @@ string pullValue(string& input, int valNum) {
 }
 
 int numVals(string& input) {
-    vector<string> values;
     int numVals = 0;
     for (int i = 0; i < input.size(); i++) {
         if (numVals == 0) {
-            values.push_back(input.substr(0, input.find(' ')));
             numVals++;
         }
         if (input[i] == ' ') {
-            values.push_back(input.substr(i + 1, input.substr(i + 1).find(' ')));
             numVals++;
         }
         if (i == input.size() - 1) {
-            values.push_back(input.substr(input.rfind(' ') + 1, input.size() - 1));
             break;
         }
     }
