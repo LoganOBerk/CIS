@@ -23,20 +23,24 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
     checkForValidBools<T>(singleInput, caseSensitive);
     initialInputHandling(input, singleInput, isClearBuffer, caseSensitive, DEFAULT_DELIMITER);
 
-    T numConvert;
+    T integralNum;
     bool isScientific = validateSegments(input, RegexPatterns::scientificNotation);
     bool allIntegral = validateSegments(input, RegexPatterns::integral);
     bool hasSpaces = input.find_first_of(" \t") != string::npos;
 
+    long double convertedInput;
     try {
-        if (stold(input) > numeric_limits<T>::max() || stold(input) < numeric_limits<T>::min()) { // checks if input is outside of max range
+        convertedInput = stold(input);
+        if (convertedInput > numeric_limits<T>::max() || convertedInput < numeric_limits<T>::min()) { // checks if input is outside of max range
             throw out_of_range("");
         }
 
         istringstream iss(input);
         string segment;
+        long double convertedSegment;
         while (iss >> segment) {
-            if (stold(segment) != static_cast<T>(stold(segment)) || !allIntegral && !isScientific) { // checks if segment conversion is valid integral type
+            convertedSegment = stold(segment);
+            if (convertedSegment != static_cast<T>(convertedSegment) || !allIntegral && !isScientific) { // checks if segment conversion is valid integral type
                 throw invalid_argument("");
             }
         }
@@ -52,13 +56,13 @@ userInput(string& input, const T& param1, const T& param2, const bool& singleInp
         throw invalid_argument("You entered more than one input!");
     }
 
-    numConvert = static_cast<T>(stold(input));
-    if (numConvert < param1 || numConvert > param2) {
+    integralNum = static_cast<T>(convertedInput);
+    if (integralNum < param1 || integralNum > param2) {
         throw out_of_range("You entered a number outside of the range ( "
             + to_string(param1) + ", " + to_string(param2) + " )");
     }
 
-    return numConvert;
+    return integralNum;
 }
 
 // **userInput template function**
