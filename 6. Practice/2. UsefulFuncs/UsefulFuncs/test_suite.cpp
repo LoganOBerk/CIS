@@ -8,7 +8,7 @@ int main() {
 		try {
 			cout << userInput(input, IS_NULL, IS_NULL, MULTI_VALUE, DONT_CLEAR_BUFFER, NOT_CASE_SENSITIVE) << endl;
 			cout << pullValue(input, 1) << endl;
-			cout << numVals(input);
+			cout << countVals(input);
 			invalid = false;
 		}
 		catch (const invalid_argument& e) {

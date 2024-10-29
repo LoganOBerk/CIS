@@ -5,7 +5,7 @@
 
 // Usefull func prototypes
 string pullValue(string&, int);
-int numVals(string&);
+int countVals(string&);
 
 // **userInput template function**
 // Default template if no type is matched

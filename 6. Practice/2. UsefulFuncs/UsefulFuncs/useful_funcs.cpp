@@ -2,20 +2,23 @@
 
 //Takes an input identifies values and allows accessing values in sentances by word number
 string pullValue(string& input, int valNum) {
+    int inputSize = static_cast<int>(input.size());
     int amountOfValues;
     string initialValue;
     string finalValue;
     if (--valNum < 0) {
         throw out_of_range("You cannot access less than 1 value!");
     }
-    
-    amountOfValues = numVals(input);
+
+    amountOfValues = countVals(input);
+
+
     initialValue = input.substr(0, input.find(' '));
-    finalValue = input.substr(input.rfind(' ') + 1, input.size() - 1);
+    finalValue = input.substr(input.rfind(' ') + 1, inputSize - 1);
 
     vector<string> values;
     values.push_back(initialValue);
-    for (int i = initialValue.size(); i < input.size(); i++) {
+    for (int i = initialValue.size(); i < inputSize; i++) {
         if (input[i] == ' ') {
             values.push_back(input.substr(i + 1, input.substr(i + 1).find(' ')));
         }
@@ -29,7 +32,7 @@ string pullValue(string& input, int valNum) {
     return values[valNum];
 }
 
-int numVals(string& input) {
+int countVals(string& input) {
     int numVals = 1;
     for (auto val : input) {
         if (val == ' ') {
