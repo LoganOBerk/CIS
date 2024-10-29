@@ -6,24 +6,19 @@ string pullValue(string& input, int valNum) {
     if (valNum < 0) {
         throw out_of_range("You cannot access less than 1 value!");
     }
+    int amountOfValues = numVals(input);
     vector<string> values;
-    int numVals = 0;
-    for (int i = 0; i < input.size(); i++) {
-        if (numVals == 0) {
-            values.push_back(input.substr(0, input.find(' ')));
-            numVals++;
-        }
+    values.push_back(input.substr(0, input.find(' ')));
+    for (int i = values[0].size(); i < input.size(); i++) {
         if (input[i] == ' ') {
             values.push_back(input.substr(i + 1, input.substr(i + 1).find(' ')));
-            numVals++;
-        }
-        if (i == input.size() - 1) {
-            values.push_back(input.substr(input.rfind(' ') + 1, input.size() - 1));
-            break;
         }
     }
-    if (valNum >= numVals) {
-        throw out_of_range("Trying to access value number " + to_string(valNum + 1) + " when there are only " + to_string(numVals) + " values!");
+    if (amountOfValues > 1) {
+        values.push_back(input.substr(input.rfind(' ') + 1, input.size() - 1));
+    }
+    if (valNum >= amountOfValues) {
+        throw out_of_range("Trying to access value number " + to_string(valNum + 1) + " when there are only " + to_string(amountOfValues) + " values!");
     }
     return values[valNum];
 }
