@@ -29,17 +29,11 @@ string pullValue(string& input, int valNum) {
 }
 
 int numVals(string& input) {
-    int numVals = 0;
-    for (int i = 0; i < input.size(); i++) {
-        if (numVals == 0) {
+    int numVals = 1;
+    for (auto val : input) {
+        if (val == ' ') {
             numVals++;
-        }
-        if (input[i] == ' ') {
-            numVals++;
-        }
-        if (i == input.size() - 1) {
-            break;
         }
     }
-    return numVals + 1;
+    return numVals;
 }

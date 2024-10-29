@@ -8,6 +8,7 @@ int main() {
 		try {
 			cout << userInput(input, IS_NULL, IS_NULL, MULTI_VALUE, DONT_CLEAR_BUFFER, NOT_CASE_SENSITIVE) << endl;
 			pullValue(input, 5);
+			cout << numVals(input);
 			invalid = false;
 		}
 		catch (const invalid_argument& e) {
