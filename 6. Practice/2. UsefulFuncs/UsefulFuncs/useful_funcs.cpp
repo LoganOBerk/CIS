@@ -2,11 +2,12 @@
 
 //Takes an input identifies values and allows accessing values in sentances by word number
 string pullValue(string& input, int valNum) {
-    valNum--;
-    if (valNum < 0) {
+    int amountOfValues;
+    if (--valNum < 0) {
         throw out_of_range("You cannot access less than 1 value!");
     }
-    int amountOfValues = numVals(input);
+    
+    amountOfValues = numVals(input);
     vector<string> values;
     values.push_back(input.substr(0, input.find(' ')));
     for (int i = values[0].size(); i < input.size(); i++) {
