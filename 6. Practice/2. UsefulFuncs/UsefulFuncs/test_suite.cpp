@@ -7,7 +7,7 @@ int main() {
 		getline(cin, input);
 		try {
 			cout << userInput(input, IS_NULL, IS_NULL, MULTI_VALUE, DONT_CLEAR_BUFFER, NOT_CASE_SENSITIVE) << endl;
-			cout << pullValue(input, 1) << endl;
+			cout << pullValue(input, 5) << endl;
 			cout << countVals(input);
 			invalid = false;
 		}
