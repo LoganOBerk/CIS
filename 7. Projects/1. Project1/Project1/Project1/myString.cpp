@@ -1,6 +1,12 @@
 #include "myString.h"
 
 myString::myString(Status& extStatus, std::string stringToConvert) : status(extStatus) {
+	if (extStatus == Status::memoryAllocationFailure) {
+		return;
+	}
+	if (extStatus == Status::invalidParamValue) {
+		return;
+	}
 	length = static_cast<int>(stringToConvert.size());
 	seqChars = new char[length + 1];
 	for (int i = 0; i < length; i++) {
@@ -69,10 +75,9 @@ int newLength = length + inputStringObj.size();
 };
 
 myString* myString::partString(int startPos, int length) {
-	
-	if (startPos < 1 || startPos > this->length || length > this->length) {
+	if (startPos < 1 || startPos > this->length || length > this->length - startPos) {
 		status = Status::invalidParamValue;
-		return;
+		return new myString(status, "");
 	}
 	startPos--;
 	char* newArr = new char[length + 1];
@@ -84,12 +89,10 @@ myString* myString::partString(int startPos, int length) {
 };
 
 myString* myString::replPartString(myString objToAdd, int startPos, int length) {
-
-	if (startPos < 1 || startPos > this->length || length > this->length - startPos - 1) {
+	if (startPos < 1 || startPos > this->length || length > this->length - startPos) {
 		status = Status::invalidParamValue;
-		return;
+		return new myString(status, "");
 	}
-
 
 	startPos--;
 
@@ -122,7 +125,13 @@ myString* myString::replPartString(myString objToAdd, int startPos, int length) 
 
 myString replWholeString(myString);
 int compareString(myString);
-void initString();
+void myString::initString() {
+	length = 0;
+	delete[] seqChars;
+	seqChars = nullptr;
+	status = Status::success;
+
+};
 
 myString* myString::setString(std::string stringToConvert) {
 	return new myString(status, stringToConvert);
