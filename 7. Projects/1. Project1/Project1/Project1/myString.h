@@ -22,11 +22,11 @@ public:
 	void addEnd(myString&);
 	myString* partString(int, int);
 	myString* replPartString(myString, int, int);
-	myString replWholeString(myString);
+	myString* replWholeString(myString);
 	int compareString(myString);
 	void initString();
 	myString* setString(std::string);
-	std::string getString();
+	std::string getString() const;
 	void printStringScreen();
 	bool numericString();
 	bool alphabeticString();

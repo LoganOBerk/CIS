@@ -2,9 +2,13 @@
 
 myString::myString(Status& extStatus, std::string stringToConvert) : status(extStatus) {
 	if (extStatus == Status::memoryAllocationFailure) {
+		std::cout << "MEMORY ALLOCATION FALIURE";
+		status = Status::success;
 		return;
 	}
 	if (extStatus == Status::invalidParamValue) {
+		std::cout << "INVALID PARAMETER";
+		status = Status::success;
 		return;
 	}
 	length = static_cast<int>(stringToConvert.size());
@@ -75,7 +79,7 @@ int newLength = length + inputStringObj.size();
 };
 
 myString* myString::partString(int startPos, int length) {
-	if (startPos < 1 || startPos > this->length || length > this->length - startPos) {
+	if (startPos < 1 || startPos > this->length || length > this->length - startPos + 1 || seqChars == nullptr) {
 		status = Status::invalidParamValue;
 		return new myString(status, "");
 	}
@@ -123,8 +127,37 @@ myString* myString::replPartString(myString objToAdd, int startPos, int length) 
 	return new myString(status, newCharArray);
 };
 
-myString replWholeString(myString);
-int compareString(myString);
+myString* myString::replWholeString(myString objToReplace) {
+	int newLength = objToReplace.length;
+	char* newArr = new char[newLength + 1];
+	for (int i = 0; i < objToReplace.length; i++) {
+		newArr[i] = objToReplace.seqChars[i];
+	}
+	newArr[newLength] = '\0';
+	delete[] seqChars;
+	return new myString(status, newArr);
+};
+int myString::compareString(myString stringToCompare) {
+	int sameChars = 0;
+	if (length > stringToCompare.length) {
+		for (int i = 0; i < stringToCompare.length; i++) {
+			if (seqChars[i] == stringToCompare.seqChars[i]) {
+				sameChars++;
+			}
+			
+		}
+		return sameChars + 1;
+	}
+	if (length < stringToCompare.length) {
+		for (int i = 0; i < stringToCompare.length; i++) {
+			if (seqChars[i] == stringToCompare.seqChars[i]) {
+				sameChars++;
+			}
+
+		}
+		return -sameChars - 1;
+	}
+};
 void myString::initString() {
 	length = 0;
 	delete[] seqChars;
@@ -137,14 +170,16 @@ myString* myString::setString(std::string stringToConvert) {
 	return new myString(status, stringToConvert);
 };
 
-std::string myString::getString(){
+std::string myString::getString() const{
 	return seqChars;
 };
 
 void myString::printStringScreen(){
-	for (int i = 0; i < length; i++) {
-		std::cout << seqChars[i];
-	}
+
+		for (int i = 0; i < length; i++) {
+			std::cout << seqChars[i];
+		}
+		std::cout << std::endl;
 };
 
 bool myString::numericString() {
