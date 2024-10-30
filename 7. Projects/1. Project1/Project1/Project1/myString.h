@@ -15,17 +15,17 @@ private:
 	Status& status;
 public:
 	myString(Status& extStatus, std::string);
-	myString(Status& extStatus, myString&);
+	myString(Status& extStatus, const myString&);
 	~myString();
 	int size();
-	void addStart(myString);
-	char* addEnd(myString);
-	myString partString(int, int);
-	myString replPartString(myString, int, int);
+	void addStart(myString&);
+	void addEnd(myString&);
+	myString* partString(int, int);
+	myString* replPartString(myString, int, int);
 	myString replWholeString(myString);
 	int compareString(myString);
 	void initString();
-	myString setString(std::string);
+	myString* setString(std::string);
 	std::string getString();
 	void printStringScreen();
 	bool numericString();

@@ -4,10 +4,16 @@ using namespace std;
 
 int main() {
 	Status myStatus;
-	myString* mine = new myString(myStatus, "");
-	cout << mine->size();
+	myString* interface = new myString(myStatus, "Hello I am a String");
+	//myString notMine(myStatus, " world");
+	myString* setANewString = interface->setString("hello");
+	myString* makeASubstr = interface->partString(1, 5);
+	myString* replPartString = interface->replPartString(*setANewString, 7, 12);
+	replPartString->printStringScreen();
+	//mine->addEnd(notMine);
+	//mine->printStringScreen();
 	if (myStatus == Status::invalidParamValue) {
-		cout << "Invalid Parameter string must be less than 100 chars!" << endl;
+		cout << "Invalid Parameter!" << endl;
 	}
 	if (myStatus == Status::memoryAllocationFailure) {
 		cout << "Memory Allocation Failure!" << endl;
