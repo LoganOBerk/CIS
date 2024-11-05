@@ -52,7 +52,7 @@ int main() {
 	//+ offset moves forward, - offset moves backward
 
 	//second param needs to be the offset byte count
-	myFile.seekg(14, ios::cur); // forward 14 bytes from current location
+	myFile.seekg( 14, ios::cur); // forward 14 bytes from current location
 	myFile.seekp(-9, ios::cur); //backward 9 bytes from current location
 	myFile.seekg(0, ios::end); // move to end of file, after last val
 	//occasionally a compiler will have issues with text files due to buffering, if so open in binary mode.
