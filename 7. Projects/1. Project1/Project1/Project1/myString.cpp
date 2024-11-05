@@ -44,18 +44,18 @@ int myString::size() {
     return length;
 }
 
-void myString::addStart(myString& inputStringObj) {
-    int newLength = length + inputStringObj.size();
+void myString::addStart(myString& appendChars) {
+    int newLength = length + appendChars.size();
     char* newArr = new char[newLength + 1];
     if (newArr == nullptr) {
         status = Status::memoryAllocationFailure;
         return;
     }
-    for (int i = 0; i < inputStringObj.length; i++) {
-        newArr[i] = inputStringObj.seqChars[i];
+    for (int i = 0; i < appendChars.length; i++) {
+        newArr[i] = appendChars.seqChars[i];
     }
     for (int j = 0; j < length; j++) {
-        newArr[inputStringObj.length + j] = seqChars[j];
+        newArr[appendChars.length + j] = seqChars[j];
     }
     newArr[newLength] = '\0';
     delete[] seqChars;
@@ -63,8 +63,8 @@ void myString::addStart(myString& inputStringObj) {
     length = newLength;
 }
 
-void myString::addEnd(myString& inputStringObj) {
-    int newLength = length + inputStringObj.size();
+void myString::addEnd(myString& appendChars) {
+    int newLength = length + appendChars.size();
     char* newArr = new char[newLength + 1];
     if (newArr == nullptr) {
         status = Status::memoryAllocationFailure;
@@ -73,8 +73,8 @@ void myString::addEnd(myString& inputStringObj) {
     for (int i = 0; i < length; i++) {
         newArr[i] = seqChars[i];
     }
-    for (int j = 0; j < inputStringObj.length; j++) {
-        newArr[length + j] = inputStringObj.seqChars[j];
+    for (int j = 0; j < appendChars.length; j++) {
+        newArr[length + j] = appendChars.seqChars[j];
     }
     newArr[newLength] = '\0';
     delete[] seqChars;
@@ -100,29 +100,29 @@ myString* myString::partString(int startPos, int length) {
     return new myString(status, newArr);
 }
 
-myString* myString::replPartString(myString objToAdd, int startPos, int length) {
+myString* myString::replPartString(myString objToInsert, int startPos, int length) {
     if (startPos < 1 || startPos > this->length || length > this->length - startPos) {
         status = Status::invalidParamValue;
         return new myString(status, "");
     }
     startPos--;
-    int newLength = this->length - length + objToAdd.length;
-    char* newCharArray = new char[newLength + 1];
-    if (newCharArray == nullptr) {
+    int newLength = this->length - length + objToInsert.length;
+    char* newArr = new char[newLength + 1];
+    if (newArr == nullptr) {
         status = Status::memoryAllocationFailure;
         return nullptr;
     }
     for (int i = 0; i < startPos; ++i) {
-        newCharArray[i] = this->seqChars[i];
+        newArr[i] = this->seqChars[i];
     }
-    for (int i = 0; i < objToAdd.length; ++i) {
-        newCharArray[startPos + i] = objToAdd.seqChars[i];
+    for (int i = 0; i < objToInsert.length; ++i) {
+        newArr[startPos + i] = objToInsert.seqChars[i];
     }
     for (int i = startPos + length; i < this->length; ++i) {
-        newCharArray[i - length + objToAdd.length] = this->seqChars[i];
+        newArr[i - length + objToInsert.length] = this->seqChars[i];
     }
-    newCharArray[newLength] = '\0';
-    return new myString(status, newCharArray);
+    newArr[newLength] = '\0';
+    return new myString(status, newArr);
 }
 
 myString* myString::replWholeString(myString objToReplace) {
@@ -212,5 +212,34 @@ bool myString::alphabeticString() {
             allowedChars++;
         }
     }
-    return allowedChars == length;
+    return (allowedChars == length);
+}
+
+
+void myString::logAction(std::ofstream& logFile, const std::string& methodName, const std::string& originalValue,
+    const std::string& parameters, const std::string& modifiedValue,
+    const std::string& statusMessage) {
+    logFile << std::left << std::setw(25) << methodName
+        << std::setw(25) << originalValue
+        << std::setw(25) << parameters
+        << std::setw(25) << modifiedValue
+        << statusMessage << std::endl;
+}
+
+void myString::writeResultsToFile(const std::string& result, std::ofstream& outFile) {
+    outFile << result << std::endl;
+}
+
+void myString::printFileContents(const std::string& fileName) {
+    std::ifstream file(fileName);
+    if (!file) {
+        std::cerr << "Unable to open file: " << fileName << std::endl;
+        return;
+    }
+    std::string line;
+    std::cout << "Contents of " << fileName << ":" << std::endl;
+    while (std::getline(file, line)) {
+        std::cout << line << std::endl;
+    }
+    file.close();
 }
