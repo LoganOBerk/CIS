@@ -89,6 +89,7 @@ void writeData(fstream& file) {
 
         file.seekp((currentClient->accountNumber - 1) * CLIENTSIZE);
         file.write(reinterpret_cast<const char*>(currentClient), CLIENTSIZE);
+
         if (clientRecordNum >= 15) {
             cout << "Would you like to continue recording data? (y/n): ";
             char input;
@@ -126,7 +127,7 @@ void readData(fstream& file) {
             }
         } while (input < 1 || input > 100);
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
+       
         if (searching) {
             clientData currentClient;
             file.seekg((input - 1) * CLIENTSIZE);

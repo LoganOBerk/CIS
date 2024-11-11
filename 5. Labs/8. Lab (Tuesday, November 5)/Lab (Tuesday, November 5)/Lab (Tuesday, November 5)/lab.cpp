@@ -20,7 +20,7 @@ int main() {
         cerr << "Error opening file!" << endl;
         return 1;
     }
-    
+   
     // Test 2, 3, 4: Write data for clients (at least 15 clients)
     cout << "\nTest 2-4: Writing data for clients..." << endl;
     writeData(fileToManipulate);  
@@ -37,7 +37,7 @@ int main() {
     cout << "\nTest 6: Reading data for client 2..." << endl;
     readData(fileToManipulate);  
     cout << "Test 6 Passed: Data read for client 2." << endl;
-
+   
     // Test 7: Print all client data
     cout << "\nTest 7: Printing all client data..." << endl;
     printAllData(fileToManipulate);  
