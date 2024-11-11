@@ -55,25 +55,13 @@ int main() {
 	
 	map<string, Animal*> animal;
 	for (int i = 0; i < names.size(); i++) {
-		if (animal[names[i]] == animal[animal1] || animal[names[i]] == animal[animal2]) {
-			if (animal[names[0]] == animal[names[i]]) {
-				animal[names[0]] = new Dog;
-			}
-			if (animal[names[1]] == animal[names[i]]) {
-				animal[names[1]] = new Cat;
-			}
-			if (animal[names[2]] == animal[names[i]]) {
-				animal[names[2]] = new Cow;
-			}
-			if (animal[names[3]] == animal[names[i]]) {
-				animal[names[3]] = new Giraffe;
-			}
-			if (animal[names[4]] == animal[names[i]]) {
-				animal[names[4]] = new Owl;
-			}
-			if (animal[names[5]] == animal[names[i]]) {
-				animal[names[5]] = new Skunk;
-			}
+		if (names[i] == animal1 || names[i] == animal2) {
+			if (names[0] == names[i]) animal[names[0]] = new Dog;
+			if (names[1] == names[i]) animal[names[1]] = new Cat;
+			if (names[2] == names[i]) animal[names[2]] = new Cow;
+			if (names[3] == names[i]) animal[names[3]] = new Giraffe;
+			if (names[4] == names[i]) animal[names[4]] = new Owl;
+			if (names[5] == names[i]) animal[names[5]] = new Skunk;
 		}
 	}
 	
