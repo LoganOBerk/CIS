@@ -32,5 +32,8 @@
     <ClInclude Include="userInput_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="testingFunction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

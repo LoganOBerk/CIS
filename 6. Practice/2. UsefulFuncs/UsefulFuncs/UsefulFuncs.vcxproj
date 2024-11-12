@@ -24,6 +24,7 @@
     <ClCompile Include="userInput_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="testingFunction.h" />
     <ClInclude Include="useful_funcs.h" />
     <ClInclude Include="userInput_utils.h" />
   </ItemGroup>

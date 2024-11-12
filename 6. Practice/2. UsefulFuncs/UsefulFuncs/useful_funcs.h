@@ -1,4 +1,5 @@
 #include "userInput_utils.h"
+#include "testingFunction.h"
 
 #ifndef USEFUL_FUNCS_H
 #define USEFUL_FUNCS_H

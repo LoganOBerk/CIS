@@ -26,7 +26,16 @@ string getCorrectUserInput(string& input, vector<string>& names) {
 			}
 		}
 		if (notValid) {
-			cout << "Please enter a valid animal name: ";
+			cout << "Please enter a valid animal name ";
+			cout << "(";
+			for (int i = 0; i < names.size(); i++) {
+				cout << names[i];
+				if (i < names.size() - 1) {
+					cout << ", ";
+				}
+			}
+			cout << ")";
+			cout << ": ";
 		}
 	}
 	return input;
@@ -34,23 +43,8 @@ string getCorrectUserInput(string& input, vector<string>& names) {
 
 int main() {
 	vector<string> names = { "dog", "cat", "cow", "giraffe", "owl", "skunk"};
-	Animal* dog = new Dog;
-	Animal* cat = new Cat;
-	Animal* cow = new Cow;
-	Animal* giraffe = new Giraffe;
-	Animal* owl = new Owl;
-	Animal* skunk = new Skunk;
+	
 
-	dog->makeSound();
-	dog->printWeight();
-	cat->makeSound();
-	cat->printWeight();
-	cow->makeSound();
-	cow->printWeight();
-	giraffe->makeSound();
-	giraffe->printWeight();
-	
-	
 	cout << "Would you like to make a hybrid?" << endl;
 	cout << "Enter first animal: ";
 	string animal1;
@@ -59,27 +53,26 @@ int main() {
 	string animal2;
 		animal2 = getCorrectUserInput(animal2, names);
 	
-	
 	map<string, Animal*> animal;
-	Animal* hybrid;
-	animal[names[0]] = dog;
-	animal[names[1]] = cat;
-	animal[names[2]] = cow;
-	animal[names[3]] = giraffe;
-	animal[names[4]] = owl;
-	animal[names[5]] = skunk;
-
+	for (int i = 0; i < names.size(); i++) {
+		if (names[i] == animal1 || names[i] == animal2) {
+			if (names[0] == names[i]) animal[names[0]] = new Dog;
+			if (names[1] == names[i]) animal[names[1]] = new Cat;
+			if (names[2] == names[i]) animal[names[2]] = new Cow;
+			if (names[3] == names[i]) animal[names[3]] = new Giraffe;
+			if (names[4] == names[i]) animal[names[4]] = new Owl;
+			if (names[5] == names[i]) animal[names[5]] = new Skunk;
+		}
+	}
 	
-	hybrid = *animal[animal1] + *animal[animal2];
+		
+	Animal* hybrid = *animal[animal1] + *animal[animal2];
 	
 	hybrid->makeSound();
 	hybrid->printWeight();
 
 	delete hybrid;
-	delete cow;
-	delete cat;
-	delete dog;
-	delete giraffe;
-
+	delete animal[animal1];
+	delete animal[animal2];
 	return 0;
 }
