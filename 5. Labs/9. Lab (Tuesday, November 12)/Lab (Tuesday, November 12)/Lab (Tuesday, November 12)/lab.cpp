@@ -1,9 +1,9 @@
 #include "funcs.h"
 
 int main() {
-	Record* record;
-	getValidTool(record);
-	cout << record->toolname;
-
+	bool running = true;
+	Node* list1 = nullptr;
+	Node* list2 = nullptr;
+	collectUserInput(running, list1);
 	return 0;
 }
