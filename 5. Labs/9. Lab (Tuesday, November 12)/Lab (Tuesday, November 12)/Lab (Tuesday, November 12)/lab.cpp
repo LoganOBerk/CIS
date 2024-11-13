@@ -5,6 +5,7 @@ int main() {
 	Node* list1 = nullptr;
 	Node* list2 = nullptr;
 	fstream file("out.dat", ios::in | ios::out | ios::binary | ios::trunc);
+	fstream logFile("log.bin", ios::out | ios::binary | ios::app);
 	initFile(file);
 	int input;
 	do {
@@ -22,16 +23,16 @@ int main() {
 		cin >> input;
 		switch (input) {
 		case 1:
-			addRecord(list1, list2, file);
+			addRecord(list1, list2, file, logFile);
 			break;
 		case 2:
-			updateRecord(list1, list2, file);
+			updateRecord(list1, list2, file, logFile);
 			break;
 		case 3:
-			deleteRecord(list1, list2, file);
+			deleteRecord(list1, list2, file, logFile);
 			break;
 		case 4:
-			displayRecord(list1, list2, file);
+			displayRecord(list1, list2, file, logFile);
 			break;
 		case 5:
 			displayTools(list1, list2, file);
@@ -48,5 +49,8 @@ int main() {
 	} while (running);
 	
 	file.close();
+
+	printLogFile(logFile);
+	logFile.close();
 	return 0;
 }

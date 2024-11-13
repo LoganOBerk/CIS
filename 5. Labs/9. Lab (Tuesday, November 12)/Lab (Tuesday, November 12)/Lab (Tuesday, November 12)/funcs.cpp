@@ -2,6 +2,65 @@
 
 const int MAX_RECORDS = 100;
 
+int randomFileAccessComparisons = 0;
+int unsortedListComparisons = 0;
+int sortedListComparisons = 0;
+
+void logComparison(fstream& logFile, const string& dataStructure) {
+	if (dataStructure == "RandomFileAccess") {
+		randomFileAccessComparisons++;
+	}
+	else if (dataStructure == "UnsortedList") {
+		unsortedListComparisons++;
+	}
+	else if (dataStructure == "SortedList") {
+		sortedListComparisons++;
+	}
+
+	if (logFile.is_open()) {
+		logFile << "Comparison in " << dataStructure << " completed.\n";
+	}
+}
+
+void writeSummary(fstream& logFile) {
+	if (logFile.is_open()) {
+		
+		logFile.seekp(0, ios::beg);
+
+		
+		logFile << randomFileAccessComparisons << "\n";
+		logFile << unsortedListComparisons << "\n";
+		logFile << sortedListComparisons << "\n";
+
+		
+		logFile.flush();
+	}
+	else {
+		cerr << "Failed to open log file for writing summary.\n";
+	}
+}
+
+void printLogFile(fstream& logFile) {
+	if (!logFile.is_open()) {
+		cerr << "Failed to open log file for reading.\n";
+		return;
+	}
+
+	
+	logFile.seekg(0, ios::beg);
+
+	
+	logFile >> randomFileAccessComparisons;
+	logFile >> unsortedListComparisons;
+	logFile >> sortedListComparisons;
+
+	
+	cout << "\n--- Comparison Summary ---\n";
+	cout << "Random File Access comparisons: " << randomFileAccessComparisons << "\n";
+	cout << "Unsorted Linked List comparisons: " << unsortedListComparisons << "\n";
+	cout << "Sorted Linked List comparisons: " << sortedListComparisons << "\n";
+}
+
 
 void initFile(fstream& file) {
 	Record record = {};
@@ -10,7 +69,7 @@ void initFile(fstream& file) {
 	}
 	file.seekg(0, ios::beg);
 }
-void placeInFile(Record& hardware, fstream& file) {
+void placeInFile(Record& hardware, fstream& file, fstream& logFile) {
 	do {
 		if (file.fail()) {
 			file.clear();
@@ -18,6 +77,7 @@ void placeInFile(Record& hardware, fstream& file) {
 		if (file.is_open()) {
 			file.seekp(sizeof(hardware) * (hardware.recordNumber - 1), ios::beg);
 			file.write(reinterpret_cast<const char*>(&hardware), sizeof(Record));
+			logComparison(logFile, "RandomFileAccess");
 		}
 		else {
 			cout << "Failed to open file for writing!" << endl;
@@ -25,7 +85,7 @@ void placeInFile(Record& hardware, fstream& file) {
 	} while (file.fail());
 
 }
-void sortInLinkedList(Node* nodeToAdd, Node*& list2) {
+void sortInLinkedList(Node* nodeToAdd, Node*& list2, fstream& logFile) {
 	if (list2 == nullptr) {
 		list2 = nodeToAdd;
 		nodeToAdd->next = nullptr;
@@ -33,6 +93,7 @@ void sortInLinkedList(Node* nodeToAdd, Node*& list2) {
 	}
 
 	if (nodeToAdd->record.recordNumber < list2->record.recordNumber) {
+		logComparison(logFile, "SortedList");
 		nodeToAdd->next = list2;
 		list2 = nodeToAdd;
 		return;
@@ -40,6 +101,7 @@ void sortInLinkedList(Node* nodeToAdd, Node*& list2) {
 
 	Node* current = list2;
 	while (current->next && current->next->record.recordNumber < nodeToAdd->record.recordNumber) {
+		logComparison(logFile, "SortedList");
 		current = current->next;
 	}
 
@@ -47,9 +109,10 @@ void sortInLinkedList(Node* nodeToAdd, Node*& list2) {
 	current->next = nodeToAdd;
 
 }
-bool doesRecordExist(int input, Node*& list1, Node*& list2) {
+bool doesRecordExist(int input, Node*& list1, Node*& list2, fstream& logFile) {
 	Node* current = list1;
 	while (current) {
+		logComparison(logFile, "UnsortedList");
 		if (current->record.recordNumber == input) {
 			return true;
 		}
@@ -155,6 +218,20 @@ Record* collectRecordData() {
 	return myRecord;
 }
 
+Record* collectRecordData(int recordNum) {
+	Record* myRecord = new Record;
+	myRecord->recordNumber = recordNum;
+	cout << "Enter a tool: ";
+	getValidTool(myRecord);
+	cout << "Enter a quantity: ";
+	getValidQuantity(myRecord);
+	cout << "Enter a cost: ";
+	getValidCost(myRecord);
+
+
+	return myRecord;
+}
+
 void placeInLinkedList(Node* nodeToAdd, Node*& list1) {
 	if (!list1) {
 		list1 = nodeToAdd;
@@ -166,7 +243,7 @@ void placeInLinkedList(Node* nodeToAdd, Node*& list1) {
 	}
 }
 
-void addRecord(Node*& list1, Node*& list2, fstream& file) {
+void addRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	bool recordExists = false;
 	Node* current = list1;
 	Node* node1 = new Node;
@@ -185,8 +262,8 @@ void addRecord(Node*& list1, Node*& list2, fstream& file) {
 	}
 	if (!recordExists) {
 		placeInLinkedList(node1, list1);
-		sortInLinkedList(node2, list2);
-		placeInFile(hardware, file);
+		sortInLinkedList(node2, list2, logFile);
+		placeInFile(hardware, file, logFile);
 	}
 	else {
 		cout << "===================================================" << endl;
@@ -195,7 +272,7 @@ void addRecord(Node*& list1, Node*& list2, fstream& file) {
 	}
 }
 
-void updateRecord(Node*& list1, Node*& list2, fstream& file) {
+void updateRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	cout << "Which record would you like to update? : ";
 	int recordNum = getValidRecordNumber();
 	Node* current = list1;
@@ -203,6 +280,7 @@ void updateRecord(Node*& list1, Node*& list2, fstream& file) {
 		cout << "No Records to read from!" << endl;
 	}
 	while (current != nullptr && current->record.recordNumber != recordNum) {
+		logComparison(logFile, "UnsortedList");
 		current = current->next;
 	}
 	if (!current) {
@@ -210,15 +288,15 @@ void updateRecord(Node*& list1, Node*& list2, fstream& file) {
 	}
 	Record hardware;
 	if (current != nullptr && current->record.recordNumber == recordNum) {
-		hardware = *collectRecordData();
+		hardware = *collectRecordData(recordNum);
 		current->record = hardware;
 		list2->record = hardware;
-		placeInFile(hardware, file);
+		placeInFile(hardware, file, logFile);
 	}
 
 
 }
-void deleteRecord(Node*& list1, Node*& list2, fstream& file) {
+void deleteRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	cout << "Which record would you like to delete? : ";
 	int recordNum = getValidRecordNumber();
 
@@ -230,6 +308,7 @@ void deleteRecord(Node*& list1, Node*& list2, fstream& file) {
 	}
 
 	while (current != nullptr && current->record.recordNumber != recordNum) {
+		logComparison(logFile, "UnsortedList");
 		prev = current;
 		current = current->next;
 	}
@@ -255,6 +334,7 @@ void deleteRecord(Node*& list1, Node*& list2, fstream& file) {
 	}
 
 	while (current != nullptr && current->record.recordNumber != recordNum) {
+		logComparison(logFile, "SortedList");
 		prev = current;
 		current = current->next;
 	}
@@ -277,13 +357,14 @@ void deleteRecord(Node*& list1, Node*& list2, fstream& file) {
 	file.write(reinterpret_cast<const char*>(&init), sizeof(Record));
 	cout << "Record deleted!" << endl;
 }
-void displayRecord(Node* list1, Node* list2, fstream& file) {
+void displayRecord(Node* list1, Node* list2, fstream& file, fstream& logFile) {
 	cout << "Which record would you like to access? : ";
 	int recordNum = getValidRecordNumber();
 	cout << "\nContents of List1" << endl;
 	cout << "---------------------" << endl;
 	Node* current = list1;
 	while (current != nullptr && current->record.recordNumber != recordNum) {
+		logComparison(logFile, "UnsortedList");
 		current = current->next;
 	}
 	if (current) {
@@ -300,6 +381,7 @@ void displayRecord(Node* list1, Node* list2, fstream& file) {
 
 	current = list2;
 	while (current != nullptr && current->record.recordNumber != recordNum) {
+		logComparison(logFile, "SortedList");
 		current = current->next;
 	}
 	if (current) {

@@ -22,10 +22,13 @@ struct Node {
 	Node* next;
 };
 
+void logComparison(fstream&, const string&);
+void writeSummary(fstream&);
+void printLogFile(fstream&);
 void initFile(fstream&);
-void placeInFile(Record&, fstream&);
-void sortInLinkedList(Node*, Node*&);
-bool doesRecordExist(int, Node*&, Node*&);
+void placeInFile(Record&, fstream&, fstream&);
+void sortInLinkedList(Node*, Node*&, fstream&);
+bool doesRecordExist(int, Node*&, Node*&, fstream&);
 void getValidRecordNumber(Record*&);
 int getValidRecordNumber();
 void getValidTool(Record*&);
@@ -33,11 +36,11 @@ void getValidQuantity(Record*&);
 void getValidCost(Record*&);
 Record* collectRecordData();
 void placeInLinkedList(Node*, Node*& );
-void addRecord(Node*& , Node*& , fstream& );
-void updateRecord(Node*& , Node*& , fstream& );
-void deleteRecord(Node*& , Node*& , fstream& );
-void displayRecord(Node* list1, Node* list2, fstream& );
-void displayTools(Node* , Node* , fstream& );
+void addRecord(Node*& , Node*& , fstream&, fstream& );
+void updateRecord(Node*& , Node*& , fstream&, fstream&);
+void deleteRecord(Node*& , Node*& , fstream&, fstream&);
+void displayRecord(Node*, Node*, fstream&, fstream&);
+void displayTools(Node* , Node* , fstream&);
 void quit(bool&);
 
 
