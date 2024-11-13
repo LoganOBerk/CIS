@@ -397,20 +397,26 @@ void displayRecord(Node* list1, Node* list2, fstream& file, fstream& logFile) {
 	cout << "\nContents of file" << endl;
 	cout << "---------------------" << endl;
 	Record record;
-	int offset = sizeof(record) * (recordNum - 1);
-	file.seekg(offset, ios::beg);
-
-	if (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
-		if (record.recordNumber > 0 && record.recordNumber < 101) {
-			cout << "Record #: " << record.recordNumber << endl;
-			cout << "Tool: " << record.toolname << endl;
-			cout << "Quantity: " << record.quantity << endl;
-			cout << "Cost: $" << record.cost << endl;
+	int offset;
+	do {
+		if (file.fail()) {
+			file.clear();
 		}
-		else {
-			cout << "Record does not exist!" << endl;
+		offset = sizeof(record) * (recordNum - 1);
+		file.seekg(offset, ios::beg);
+		if (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
+			if (record.recordNumber > 0 && record.recordNumber < 101) {
+				cout << "Record #: " << record.recordNumber << endl;
+				cout << "Tool: " << record.toolname << endl;
+				cout << "Quantity: " << record.quantity << endl;
+				cout << "Cost: $" << record.cost << endl;
+			}
+			else {
+				cout << "Record does not exist!" << endl;
+			}
 		}
-	}
+	} while (file.fail());
+	
 }
 void displayTools(Node* list1, Node* list2, fstream& file) {
 	cout << "\nContents of unsorted list" << endl;
@@ -449,17 +455,22 @@ void displayTools(Node* list1, Node* list2, fstream& file) {
 	cout << "---------------------" << endl;
 	bool readRecord = false;
 	Record record;
-	file.seekg(0, ios::beg);
-	while (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
-		if (record.recordNumber > 0 && record.recordNumber < 101) {
-			cout << "Record #: " << record.recordNumber << endl;
-			cout << "Tool: " << record.toolname << endl;
-			cout << "Quantity: " << record.quantity << endl;
-			cout << "Cost: $" << record.cost << endl;
-			cout << endl;
-			readRecord = true;
+	
+		if (file.fail()) {
+			file.clear();
 		}
-	};
+		file.seekg(0, ios::beg);
+		while (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
+			if (record.recordNumber > 0 && record.recordNumber < 101) {
+				cout << "Record #: " << record.recordNumber << endl;
+				cout << "Tool: " << record.toolname << endl;
+				cout << "Quantity: " << record.quantity << endl;
+				cout << "Cost: $" << record.cost << endl;
+				cout << endl;
+				readRecord = true;
+			}
+		};
+
 	if (!readRecord) {
 		cout << "No Records to read from!" << endl;
 	}

@@ -49,7 +49,6 @@ int main() {
 	} while (running);
 	
 	file.close();
-
 	printLogFile(logFile);
 	logFile.close();
 	return 0;
