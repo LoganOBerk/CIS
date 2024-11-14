@@ -370,6 +370,8 @@ void deleteRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	else if(!noUnsortRecord){
 		prev->next = current1->next;
 	}
+	current1 = nullptr;
+	delete current1;
 
 	Node* current2 = list2;
 	prev = nullptr;
@@ -391,6 +393,8 @@ void deleteRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	else if(!noSortRecord){
 		prev->next = current2->next;
 	}
+	current2 = nullptr;
+	delete current2;
 
 	if (file.fail()) {
 		file.clear();
