@@ -7,8 +7,7 @@ int main() {
 	fstream file("out.dat", ios::in | ios::out | ios::binary | ios::trunc);
 	fstream logFile("log.bin", ios::out | ios::binary | ios::app);
 	initFile(file);
-	int input;
-	do {
+	while(running){
 		cout << "===========Hardware Store Inventory============" << endl;
 		cout << " 1. Add a Record" << endl;
 		cout << " 2. Update a Record" << endl;
@@ -19,8 +18,13 @@ int main() {
 		cout << "===============================================" << endl;
 		cout << "Enter Valid Choice Here (1-6): ";
 
-
+		int input;
 		cin >> input;
+		if (cin.peek() != '\n' || cin.fail()) { 
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			input = -1;
+		}
 		switch (input) {
 		case 1:
 			addRecord(list1, list2, file, logFile);
@@ -46,7 +50,7 @@ int main() {
 
 		}
 		cout << endl;
-	} while (running);
+	}
 	
 	file.close();
 	printLogFile(logFile);

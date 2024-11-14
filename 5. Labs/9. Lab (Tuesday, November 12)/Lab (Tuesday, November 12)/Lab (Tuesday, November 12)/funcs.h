@@ -28,7 +28,7 @@ void printLogFile(fstream&);
 void initFile(fstream&);
 void placeInFile(Record&, fstream&, fstream&);
 void sortInLinkedList(Node*, Node*&, fstream&);
-bool doesRecordExist(int, Node*&, Node*&, fstream&);
+bool doesRecordExist(int, Node*&, Node*&, fstream&, fstream&, const string&);
 void getValidRecordNumber(Record*&);
 int getValidRecordNumber();
 void getValidTool(Record*&);

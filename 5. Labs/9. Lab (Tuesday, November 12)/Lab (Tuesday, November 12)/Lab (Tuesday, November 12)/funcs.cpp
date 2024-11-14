@@ -16,10 +16,6 @@ void logComparison(fstream& logFile, const string& dataStructure) {
 	else if (dataStructure == "SortedList") {
 		sortedListComparisons++;
 	}
-
-	if (logFile.is_open()) {
-		logFile << "Comparison in " << dataStructure << " completed.\n";
-	}
 }
 
 void writeSummary(fstream& logFile) {
@@ -106,16 +102,43 @@ void sortInLinkedList(Node* nodeToAdd, Node*& list2, fstream& logFile) {
 	current->next = nodeToAdd;
 
 }
-bool doesRecordExist(int input, Node*& list1, Node*& list2, fstream& logFile) {
-	Node* current = list1;
-	while (current) {
-		logComparison(logFile, "UnsortedList");
-		if (current->record.recordNumber == input) {
-			return true;
+bool doesRecordExist(int input, Node*& list1, Node*& list2, fstream& file, fstream& logFile, const string& dataStructure) {
+	if (dataStructure == "UnsortedList") {
+		Node* current1 = list1;
+		while (current1) {
+			logComparison(logFile, dataStructure);
+			if (current1->record.recordNumber == input) {
+				return true;
+			}
+			current1 = current1->next;
 		}
-		current = current->next;
 	}
-	return false;
+	else if (dataStructure == "SortedList") {
+		Node* current2 = list2;
+		while (current2) {
+			logComparison(logFile, dataStructure);
+			if (current2->record.recordNumber == input) {
+				return true;
+			}
+			current2 = current2->next;
+		}
+	}
+	else if (dataStructure == "RandomAccessFile") {
+		if (file.fail()) {
+			file.clear();
+		}
+		file.seekg(0, ios::beg);
+		Record record;
+		while (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
+			logComparison(logFile, dataStructure);
+			if (record.recordNumber == input) {
+				return true;
+			}
+		}
+	}
+	else {
+		return false;
+	}
 }
 void getValidRecordNumber(Record*& myRecord) {
 
@@ -249,38 +272,9 @@ void addRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	Record hardware = *collectRecordData();
 	node1->record = hardware;
 	node2->record = hardware;
-	while (current1) {
-		logComparison(logFile, "UnsortedList");
-		if (current1->record.recordNumber == node1->record.recordNumber) {
-			delete node1;
-			recordExists = true;
-			break;
-		}
-		current1 = current1->next;
-	}
-	while (current2) {
-		logComparison(logFile, "SortedList");
-		if (current2->record.recordNumber == node2->record.recordNumber) {
-			delete node2;
-			recordExists = true;
-			break;
-		}
-		current2 = current2->next;
-	}
-
-	if (file.fail()) {
-		file.clear();
-	}
-	file.seekg(0, ios::beg);
-	Record record;
-	while (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
-		logComparison(logFile, "RandomAccessFile");
-		if (record.recordNumber == hardware.recordNumber) {
-			recordExists = true;
-			break;
-		}
-		
-	}
+	recordExists = doesRecordExist(node1->record.recordNumber, list1, list2, file, logFile, "UnsortedList")
+					&& doesRecordExist(node2->record.recordNumber, list1, list2, file, logFile, "SortedList")
+					&& doesRecordExist(hardware.recordNumber, list1, list2, file, logFile, "RandomAccessFile");
 
 	if (!recordExists) {
 		placeInLinkedList(node1, list1);
