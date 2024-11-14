@@ -72,7 +72,6 @@ void placeInFile(Record& hardware, fstream& file, fstream& logFile) {
 	if (file.is_open()) {
 		file.seekp(sizeof(hardware) * (hardware.recordNumber - 1), ios::beg);
 		file.write(reinterpret_cast<const char*>(&hardware), sizeof(Record));
-		logComparison(logFile, "RandomFileAccess");
 	}
 	else {
 		cout << "Failed to open file for writing!" << endl;
