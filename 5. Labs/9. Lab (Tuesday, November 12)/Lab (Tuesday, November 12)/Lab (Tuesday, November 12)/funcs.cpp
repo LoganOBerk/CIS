@@ -70,20 +70,17 @@ void initFile(fstream& file) {
 	file.seekg(0, ios::beg);
 }
 void placeInFile(Record& hardware, fstream& file, fstream& logFile) {
-	do {
-		if (file.fail()) {
-			file.clear();
-		}
-		if (file.is_open()) {
-			file.seekp(sizeof(hardware) * (hardware.recordNumber - 1), ios::beg);
-			file.write(reinterpret_cast<const char*>(&hardware), sizeof(Record));
-			logComparison(logFile, "RandomFileAccess");
-		}
-		else {
-			cout << "Failed to open file for writing!" << endl;
-		}
-	} while (file.fail());
-
+	if (file.fail()) {
+		file.clear();
+	}
+	if (file.is_open()) {
+		file.seekp(sizeof(hardware) * (hardware.recordNumber - 1), ios::beg);
+		file.write(reinterpret_cast<const char*>(&hardware), sizeof(Record));
+		logComparison(logFile, "RandomFileAccess");
+	}
+	else {
+		cout << "Failed to open file for writing!" << endl;
+	}
 }
 void sortInLinkedList(Node* nodeToAdd, Node*& list2, fstream& logFile) {
 	if (list2 == nullptr) {
@@ -278,7 +275,7 @@ void addRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	Record record;
 	while (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
 		logComparison(logFile, "RandomAccessFile");
-		if (record.recordNumber != 0) {
+		if (record.recordNumber == hardware.recordNumber) {
 			recordExists = true;
 			break;
 		}
@@ -334,7 +331,6 @@ void updateRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	if (file.fail()) {
 		file.clear();
 	}
-	
 	bool foundRecord = false;
 	Record record;
 	file.seekg(0, ios::beg);
@@ -451,26 +447,26 @@ void displayRecord(Node* list1, Node* list2, fstream& file, fstream& logFile) {
 
 	cout << "\nContents of file" << endl;
 	cout << "---------------------" << endl;
+	
+	
+	if (file.fail()) {
+		file.clear();
+	}
 	Record record;
-	int offset;
-	do {
-		if (file.fail()) {
-			file.clear();
+	int offset = sizeof(record) * (recordNum - 1);
+	file.seekg(offset, ios::beg);
+	if (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
+		if (record.recordNumber > 0 && record.recordNumber < 101) {
+			cout << "Record #: " << record.recordNumber << endl;
+			cout << "Tool: " << record.toolname << endl;
+			cout << "Quantity: " << record.quantity << endl;
+			cout << "Cost: $" << record.cost << endl;
 		}
-		offset = sizeof(record) * (recordNum - 1);
-		file.seekg(offset, ios::beg);
-		if (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
-			if (record.recordNumber > 0 && record.recordNumber < 101) {
-				cout << "Record #: " << record.recordNumber << endl;
-				cout << "Tool: " << record.toolname << endl;
-				cout << "Quantity: " << record.quantity << endl;
-				cout << "Cost: $" << record.cost << endl;
-			}
-			else {
-				cout << "Record does not exist!" << endl;
-			}
+		else {
+			cout << "Record does not exist!" << endl;
 		}
-	} while (file.fail());
+	}
+	
 	
 }
 void displayTools(Node* list1, Node* list2, fstream& file) {
@@ -506,25 +502,25 @@ void displayTools(Node* list1, Node* list2, fstream& file) {
 	}
 	cout << endl;
 
+
 	cout << "\nContents of file" << endl;
 	cout << "---------------------" << endl;
-	bool readRecord = false;
+	if (file.fail()) {
+		file.clear();
+	}
 	Record record;
-	
-		if (file.fail()) {
-			file.clear();
+	bool readRecord = false;
+	file.seekg(0, ios::beg);
+	while (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
+		if (record.recordNumber > 0 && record.recordNumber < 101) {
+			cout << "Record #: " << record.recordNumber << endl;
+			cout << "Tool: " << record.toolname << endl;
+			cout << "Quantity: " << record.quantity << endl;
+			cout << "Cost: $" << record.cost << endl;
+			cout << endl;
+			readRecord = true;
 		}
-		file.seekg(0, ios::beg);
-		while (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
-			if (record.recordNumber > 0 && record.recordNumber < 101) {
-				cout << "Record #: " << record.recordNumber << endl;
-				cout << "Tool: " << record.toolname << endl;
-				cout << "Quantity: " << record.quantity << endl;
-				cout << "Cost: $" << record.cost << endl;
-				cout << endl;
-				readRecord = true;
-			}
-		};
+	};
 
 	if (!readRecord) {
 		cout << "No Records to read from!" << endl;
