@@ -367,11 +367,11 @@ void deleteRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	if (prev == nullptr && !noUnsortRecord) {
 		list1 = current1->next;
 	}
-	else if(!noUnsortRecord){
+	else if (!noUnsortRecord) {
 		prev->next = current1->next;
 	}
-	current1 = nullptr;
 	delete current1;
+	current1 = nullptr;
 
 	Node* current2 = list2;
 	prev = nullptr;
@@ -393,8 +393,8 @@ void deleteRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	else if(!noSortRecord){
 		prev->next = current2->next;
 	}
-	current2 = nullptr;
 	delete current2;
+	current2 = nullptr;
 
 	if (file.fail()) {
 		file.clear();
@@ -439,7 +439,7 @@ void displayRecord(Node* list1, Node* list2, fstream& file, fstream& logFile) {
 	}
 	cout << "\nContents of List2" << endl;
 	cout << "---------------------" << endl;
-
+	
 	Node* current2 = list2;
 	while (current2 != nullptr && current2->record.recordNumber != recordNum) {
 		logComparison(logFile, "SortedList");
