@@ -2,15 +2,19 @@
 #ifdef FUNCS_H
 #include <iostream>
 #include <string>
-#include <cstring>
+#include <cmath>
+#include <vector>
+#include <fstream>
 
 using namespace std;
 
+extern const int MAX_RECORDS;
+
 struct Record {
-	int recordNumber;
-	char toolname[21];
-	int quantity;
-	double cost;
+	int recordNumber = 0;
+	char toolname[21] = "";
+	int quantity = 0;
+	double cost = 0;
 };
 
 struct Node {
@@ -18,132 +22,39 @@ struct Node {
 	Node* next;
 };
 
-void unsortedLinkedList(Node*& nodeToAdd, Node* head) {
-	if (!head) {
-		head = nodeToAdd;
-		nodeToAdd->next = nullptr;
-	}
-	else {
-		head->next = nodeToAdd;
-		nodeToAdd->next = nullptr;
-	}
-}
-void getValidRecordNumber(Record*& myRecord) {
+// File Operations
+void logComparison(fstream&, const string&);
+void writeSummary(fstream&);
+void printLogFile(fstream&);
+void initFile(fstream&);
+void placeInFile(Record&, fstream&, fstream&);
 
-	int input;
-	while(true){
-		cin >> input;
-		if (cin.fail() || cin.peek() != '\n') {
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			cout << "Invalid Record Number Try again: ";
-		}
-		else {
-			break;
-		}
-	}
-	myRecord->recordNumber = input;
+// Linked List Operations
+void placeInLinkedList(Node*, Node*&);
+void sortInLinkedList(Node*, Node*&, fstream&);
 
-}
-void getValidTool(Record*& myRecord) {
+// Record Operations
+void addRecord(Node*&, Node*&, fstream&, fstream&);
+void updateRecord(Node*&, Node*&, fstream&, fstream&);
+void deleteRecord(Node*&, Node*&, fstream&, fstream&);
+void displayRecord(Node*, Node*, fstream&, fstream&);
+void displayTools(Node*, Node*, fstream&);
 
-	string input;
-	string temp;
-	bool wordStarted = false;
-	getline(cin, input);
-	int max;
-	input.size() < 20 ? max = input.size() : max = 21;
-	for (int i = 0; i < max; i++) {
-		if (input[i] != ' ' && input[i] != '\t' || wordStarted) {
-			temp += input[i];
-			wordStarted = true;
-		}
-	}
-}
-void getValidQuantity(Record*& myRecord) {
+// Record Validation
+bool doesRecordExist(int, Node*&, Node*&, fstream&, fstream&, const string&);
+void getValidRecordNumber(Record*&);
+int getValidRecordNumber();
+void getValidTool(Record*&);
+void getValidQuantity(Record*&);
+void getValidCost(Record*&);
 
-}
-void getValidCost(Record*& myRecord) {
+// Data Collection
+Record* collectRecordData();
+Record* collectRecordData(int);
 
-}
-void collectRecordData() {
-	Record* myRecord = new Record;
-	cout << "Enter a record number: ";
-	getValidRecordNumber(myRecord);
-	cout << "Enter a tool: ";
-	getValidTool(myRecord);
-	cout << "Enter a quantity: ";
-	getValidQuantity(myRecord);
-	cout << "Enter a cost: ";
-	getValidCost(myRecord);
-}
-void addRecord() {
-
-}
-void updateRecord() {
-
-}
-void deleteRecord() {
-
-}
-void displayRecord() {
-
-}
-void displayTools() {
-	
-}
-void quit(bool& isRunning) {
-	isRunning = false;
-}
-
-void collectUserInput(bool& isRunning) {
-	cout << "What would you like to do?" << endl;
-	cout << "--------------------------" << endl;
-	cout << " 1. Add a Record" << endl;
-	cout << " 2. Update a Record" << endl;
-	cout << " 3. Delete a Record" << endl;
-	cout << " 4. List a Record" << endl;
-	cout << " 5. List All Tools" << endl;
-	cout << " 6. Quit" << endl;
-	
-	int input;
-	bool valid;
-	do{
-		cout << "Enter Valid Choice Here: ";
-		cin >> input;
-		switch (input) {
-		case 1:
-			addRecord();
-			valid = true;
-			break;
-		case 2:
-			updateRecord();
-			valid = true;
-			break;
-		case 3:
-			deleteRecord();
-			valid = true;
-			break;
-		case 4:
-			displayRecord();
-			valid = true;
-			break;
-		case 5:
-			displayTools();
-			valid = true;
-			break;
-		case 6:
-			quit(isRunning);
-			valid = true;
-			break;
-		default:
-			cout << "Invalid Response!" << endl;
-			break;
-
-		}
-	} while (!valid);
+// Miscellaneous
+void quit(bool&);
 
 
-}
 
 #endif
