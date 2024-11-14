@@ -7,6 +7,8 @@ int main() {
 	fstream file("out.dat", ios::in | ios::out | ios::binary | ios::trunc);
 	fstream logFile("log.bin", ios::out | ios::binary | ios::app);
 	initFile(file);
+
+
 	while(running){
 		cout << "===========Hardware Store Inventory============" << endl;
 		cout << " 1. Add a Record" << endl;
