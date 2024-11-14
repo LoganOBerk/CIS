@@ -35,6 +35,7 @@ void getValidTool(Record*&);
 void getValidQuantity(Record*&);
 void getValidCost(Record*&);
 Record* collectRecordData();
+Record* collectRecordData(int);
 void placeInLinkedList(Node*, Node*& );
 void addRecord(Node*& , Node*& , fstream&, fstream& );
 void updateRecord(Node*& , Node*& , fstream&, fstream&);

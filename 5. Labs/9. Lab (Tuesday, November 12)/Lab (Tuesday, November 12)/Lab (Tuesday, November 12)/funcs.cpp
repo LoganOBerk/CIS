@@ -245,21 +245,46 @@ void placeInLinkedList(Node* nodeToAdd, Node*& list1) {
 
 void addRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	bool recordExists = false;
-	Node* current = list1;
+	Node* current1 = list1;
+	Node* current2 = list2;
 	Node* node1 = new Node;
 	Node* node2 = new Node;
 	Record hardware = *collectRecordData();
 	node1->record = hardware;
 	node2->record = hardware;
-	while (current) {
-		if (current->record.recordNumber == node1->record.recordNumber) {
+	while (current1) {
+		logComparison(logFile, "UnsortedList");
+		if (current1->record.recordNumber == node1->record.recordNumber) {
 			delete node1;
+			recordExists = true;
+			break;
+		}
+		current1 = current1->next;
+	}
+	while (current2) {
+		logComparison(logFile, "SortedList");
+		if (current2->record.recordNumber == node2->record.recordNumber) {
 			delete node2;
 			recordExists = true;
 			break;
 		}
-		current = current->next;
+		current2 = current2->next;
 	}
+
+	if (file.fail()) {
+		file.clear();
+	}
+	file.seekg(0, ios::beg);
+	Record record;
+	while (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
+		logComparison(logFile, "RandomAccessFile");
+		if (record.recordNumber != 0) {
+			recordExists = true;
+			break;
+		}
+		
+	}
+
 	if (!recordExists) {
 		placeInLinkedList(node1, list1);
 		sortInLinkedList(node2, list2, logFile);
@@ -275,83 +300,113 @@ void addRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 void updateRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	cout << "Which record would you like to update? : ";
 	int recordNum = getValidRecordNumber();
-	Node* current = list1;
-	if (!current) {
-		cout << "No Records to read from!" << endl;
-	}
-	while (current != nullptr && current->record.recordNumber != recordNum) {
+	Record hardware = *collectRecordData(recordNum);
+
+	Node* current1 = list1;
+	while (current1 != nullptr && current1->record.recordNumber != recordNum) {
 		logComparison(logFile, "UnsortedList");
-		current = current->next;
+		current1 = current1->next;
 	}
-	if (!current) {
-		cout << "No Record to update!" << endl;
+	if (!current1) {
+		cout << "=====================================" << endl;
+		cout << "*No Record exists for unsorted list!*" << endl;
 	}
-	Record hardware;
-	if (current != nullptr && current->record.recordNumber == recordNum) {
-		hardware = *collectRecordData(recordNum);
-		current->record = hardware;
-		list2->record = hardware;
+
+	if (current1 != nullptr && current1->record.recordNumber == recordNum) {
+		current1->record = hardware;
 		placeInFile(hardware, file, logFile);
 	}
 
+	Node* current2 = list2;
+	while (current2 != nullptr && current2->record.recordNumber != recordNum) {
+		logComparison(logFile, "SortedList");
+		current2 = current2->next;
+	}
+	if (!current2) {
+		cout << "*No Record exists for sorted list!  *" << endl;
+	}
+
+	if (current2 != nullptr && current2->record.recordNumber == recordNum) {
+		current2->record = hardware;
+		
+	}
+
+	if (file.fail()) {
+		file.clear();
+	}
+	
+	bool foundRecord = false;
+	Record record;
+	file.seekg(0, ios::beg);
+	while (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
+		logComparison(logFile, "RandomAccessFile");
+		if (record.recordNumber == recordNum) {
+			placeInFile(hardware, file, logFile);
+			foundRecord = true;
+		}
+	}
+	if (!foundRecord) {
+		cout << "*No Record exists for file!         *" << endl;
+		cout << "=====================================" << endl;
+	}
 
 }
 void deleteRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	cout << "Which record would you like to delete? : ";
 	int recordNum = getValidRecordNumber();
 
-	Node* current = list1;
+	Node* current1 = list1;
 	Node* prev = nullptr;
-	if (!current) {
+	if (!current1) {
 		cout << "No records to delete!" << endl;
 		return;
 	}
 
-	while (current != nullptr && current->record.recordNumber != recordNum) {
+	while (current1 != nullptr && current1->record.recordNumber != recordNum) {
 		logComparison(logFile, "UnsortedList");
-		prev = current;
-		current = current->next;
+		prev = current1;
+		current1 = current1->next;
 	}
 
 
-	if (current == nullptr) {
+	if (current1 == nullptr) {
 		cout << "Record not found!" << endl;
 		return;
 	}
 	if (prev == nullptr) {
-		list1 = current->next;
+		list1 = current1->next;
 	}
 	else {
-		prev->next = current->next;
+		prev->next = current1->next;
 	}
-	delete current;
+	delete current1;
 
-	current = list2;
+	Node* current2 = list2;
 	prev = nullptr;
-	if (!current) {
+	if (!current2) {
 		cout << "No records to delete!" << endl;
 		return;
 	}
 
-	while (current != nullptr && current->record.recordNumber != recordNum) {
+	while (current2 != nullptr && current2->record.recordNumber != recordNum) {
 		logComparison(logFile, "SortedList");
-		prev = current;
-		current = current->next;
+		prev = current2;
+		current2 = current2->next;
 	}
 
 
-	if (current == nullptr) {
+	if (current2 == nullptr) {
 		cout << "Record not found!" << endl;
 		return;
 	}
 	if (prev == nullptr) {
-		list2 = current->next;
+		list2 = current2->next;
 	}
 	else {
-		prev->next = current->next;
+		prev->next = current2->next;
 	}
 
-	delete current;
+	delete current2;
 	Record init{};
 	file.seekp(sizeof(Record) * (recordNum - 1), ios::beg);
 	file.write(reinterpret_cast<const char*>(&init), sizeof(Record));
@@ -362,16 +417,16 @@ void displayRecord(Node* list1, Node* list2, fstream& file, fstream& logFile) {
 	int recordNum = getValidRecordNumber();
 	cout << "\nContents of List1" << endl;
 	cout << "---------------------" << endl;
-	Node* current = list1;
-	while (current != nullptr && current->record.recordNumber != recordNum) {
+	Node* current1 = list1;
+	while (current1 != nullptr && current1->record.recordNumber != recordNum) {
 		logComparison(logFile, "UnsortedList");
-		current = current->next;
+		current1 = current1->next;
 	}
-	if (current) {
-		cout << "Record #: " << current->record.recordNumber << endl;
-		cout << "Tool: " << current->record.toolname << endl;
-		cout << "Quantity: " << current->record.quantity << endl;
-		cout << "Cost: $" << current->record.cost << endl;
+	if (current1) {
+		cout << "Record #: " << current1->record.recordNumber << endl;
+		cout << "Tool: " << current1->record.toolname << endl;
+		cout << "Quantity: " << current1->record.quantity << endl;
+		cout << "Cost: $" << current1->record.cost << endl;
 	}
 	else {
 		cout << "Record does not exist!" << endl;
@@ -379,16 +434,16 @@ void displayRecord(Node* list1, Node* list2, fstream& file, fstream& logFile) {
 	cout << "\nContents of List2" << endl;
 	cout << "---------------------" << endl;
 
-	current = list2;
-	while (current != nullptr && current->record.recordNumber != recordNum) {
+	Node* current2 = list2;
+	while (current2 != nullptr && current2->record.recordNumber != recordNum) {
 		logComparison(logFile, "SortedList");
-		current = current->next;
+		current2 = current2->next;
 	}
-	if (current) {
-		cout << "Record #: " << current->record.recordNumber << endl;
-		cout << "Tool: " << current->record.toolname << endl;
-		cout << "Quantity: " << current->record.quantity << endl;
-		cout << "Cost: $" << current->record.cost << endl;
+	if (current2) {
+		cout << "Record #: " << current2->record.recordNumber << endl;
+		cout << "Tool: " << current2->record.toolname << endl;
+		cout << "Quantity: " << current2->record.quantity << endl;
+		cout << "Cost: $" << current2->record.cost << endl;
 	}
 	else {
 		cout << "Record does not exist!" << endl;
