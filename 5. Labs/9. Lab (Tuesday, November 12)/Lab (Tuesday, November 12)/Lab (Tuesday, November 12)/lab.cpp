@@ -1,3 +1,15 @@
+/************************
+* Programer Name: Logan Berk
+*
+* Purpose: To store inventory data and allow user to modify add and remove records and
+*		   allow them to access data as they specify until they end the program.
+*
+* Create Date: 11/12/2024
+*
+* Modified Date: 11/14/2024
+*************************/
+
+
 #include "funcs.h"
 
 int main() {

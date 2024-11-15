@@ -122,7 +122,7 @@ bool doesRecordExist(int input, Node*& list1, Node*& list2, fstream& file, fstre
 			current2 = current2->next;
 		}
 	}
-	else if (dataStructure == "RandomAccessFile") {
+	else if (dataStructure == "RandomFileAccess") {
 		if (file.fail()) {
 			file.clear();
 		}
@@ -184,6 +184,9 @@ void getValidTool(Record*& myRecord) {
 	for (int i = 0; i < max; i++) {
 		if (input[i] != ' ' && input[i] != '\t' || wordStarted) {
 			myRecord->toolname[j++] = input[i];
+			if (i == 20) {
+				myRecord->toolname[j] = '\0';
+			}
 			wordStarted = true;
 		}
 	}
@@ -271,7 +274,7 @@ void addRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	Record* hardware = collectRecordData();
 	recordExists = doesRecordExist(node1->record.recordNumber, list1, list2, file, logFile, "UnsortedList")
 					&& doesRecordExist(node2->record.recordNumber, list1, list2, file, logFile, "SortedList")
-					&& doesRecordExist(hardware->recordNumber, list1, list2, file, logFile, "RandomAccessFile");
+					&& doesRecordExist(hardware->recordNumber, list1, list2, file, logFile, "RandomFileAccess");
 
 	if (!recordExists) {
 		node1->record = *hardware;
@@ -323,25 +326,24 @@ void updateRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 		current2->record = *hardware;
 		
 	}
-
+	
 	if (file.fail()) {
 		file.clear();
 	}
 	bool foundRecord = false;
 	Record record;
-	file.seekg(0, ios::beg);
-	while (file.read(reinterpret_cast<char*>(&record), sizeof(Record))) {
-		logComparison(logFile, "RandomAccessFile");
-		if (record.recordNumber == recordNum) {
-			placeInFile(*hardware, file, logFile);
-			foundRecord = true;
-		}
-	}
-	if (!foundRecord) {
+	int offset = sizeof(record) * (recordNum - 1);
+	file.seekg(offset, ios::beg);
+	file.read(reinterpret_cast<char*>(&record), sizeof(Record));
+	if(record.recordNumber == 0) {
 		cout << "*No Record exists for file!         *" << endl;
 		cout << "=====================================" << endl;
 	}
+	else {
+		placeInFile(*hardware, file, logFile);
+	}
 	delete hardware;
+	
 }
 void deleteRecord(Node*& list1, Node*& list2, fstream& file, fstream& logFile) {
 	cout << "Which record would you like to delete? : ";
