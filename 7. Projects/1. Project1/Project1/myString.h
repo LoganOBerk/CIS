@@ -1,9 +1,11 @@
 #pragma once
 #include <iostream>
-#include <string>
-#include <limits>
 #include <fstream>
+#include <limits>
 #include <iomanip>
+
+//String library only used for testing, and labels for file contents
+#include <string>
 
 enum class Status {
     success,
@@ -34,9 +36,9 @@ public:
     void printStringScreen();
     bool numericString();
     bool alphabeticString();
-    void logAction(std::ofstream& logFile, const std::string& methodName, const std::string& originalValue,
-        const std::string& parameters, const std::string& modifiedValue,
-        const std::string& statusMessage);
-    void writeResultsToFile(const std::string& result, std::ofstream& outFile);
-    void printFileContents(const std::string& fileName);
+    void logAction(std::ofstream&, const std::string&, const std::string&,
+        const std::string&, const std::string&,
+        const Status&);
+    void writeResultsToFile(const std::string&, std::ofstream&);
+    void printFileContents(const std::string&);
 };

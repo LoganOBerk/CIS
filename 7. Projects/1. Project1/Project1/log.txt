@@ -3,7 +3,7 @@ replWholeString          Hello                     World                    Worl
 compareString            apple                    apricot                  -3                       Success
 replPartString           Hello                    Hi, 1, 4                 Hio                      Success
 partString               Hello                    1, 3                     Hel                      Success
-initString                                                                                          Success
+initString               Hel                                                                        Success
 addEnd                   Hello                     World                   Hello World              Success
 addStart                 Hello                     World                    World Hello             Success
 getString                 World Hello                                       World Hello             Success
