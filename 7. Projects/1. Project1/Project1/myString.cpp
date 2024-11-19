@@ -218,7 +218,19 @@ bool myString::alphabeticString() {
 
 void myString::logAction(std::ofstream& logFile, const std::string& methodName, const std::string& originalValue,
     const std::string& parameters, const std::string& modifiedValue,
-    const std::string& statusMessage) {
+    const Status& status) {
+
+    std::string statusMessage;
+    if (status == Status::success) {
+        statusMessage = "Success";
+    }
+    if (status == Status::memoryAllocationFailure) {
+        statusMessage = "MEMORY ALLOCATION FAILURE";
+    }
+    if (status == Status::invalidParamValue) {
+        statusMessage = "INVALID PARAMETER";
+    }
+   
     logFile << std::left << std::setw(25) << methodName
         << std::setw(25) << originalValue
         << std::setw(25) << parameters
