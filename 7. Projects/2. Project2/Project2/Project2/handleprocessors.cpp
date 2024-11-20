@@ -1,4 +1,5 @@
 #include "handleprocessors.h"
+#include <iostream> // Added for logging
 
 void generateJobs(const std::string& filename) {
     // Initialize random number generator with current time as seed
@@ -31,20 +32,22 @@ void generateJobs(const std::string& filename) {
         for (int i = 1; i <= jt.quantity; ++i) {
             // Calculate arrival interval using X ± Y
             int arrivalInterval = jt.baseArrival - jt.arrivalVar + (rng() % (2 * jt.arrivalVar + 1));
-            currentTime += arrivalInterval;
+            currentTime += std::max(arrivalInterval, 0); // Ensure non-negative arrival times
 
             // Calculate processing time using X ± Y
-            int procTimeMin = jt.baseProcessing - jt.processingVar;
-            if (procTimeMin < 1) procTimeMin = 1; // Ensure processing time is at least 1
+            int procTimeMin = std::max(jt.baseProcessing - jt.processingVar, 1);
             int procTimeMax = jt.baseProcessing + jt.processingVar;
             int processingTime = procTimeMin + (rng() % (procTimeMax - procTimeMin + 1));
 
+            // Log processing time calculation for debugging
+            std::cout << "Generated job " << jt.type << " with processing time: " << processingTime << std::endl;
+
             // Create Job
-            Job job;
+            Job job = {}; // Zero-initialize to avoid uninitialized data
             job.type = jt.type;
             job.arrivalTime = currentTime;
-            job.processingTime = processingTime;
-            job.remainingTime = processingTime;
+            job.processingTime = std::max(processingTime, 1); // Ensure processing time is at least 1
+            job.remainingTime = job.processingTime;
             job.overallJobNumber = overallJobCounter++;
             job.jobTypeNumber = i;
             job.priority = jt.priority;
@@ -54,7 +57,6 @@ void generateJobs(const std::string& filename) {
     }
 
     // Sort all jobs by arrival time
-    // If arrival times are equal, higher priority jobs come first
     std::sort(allJobs.begin(), allJobs.end(), [&](const Job& a, const Job& b) -> bool {
         if (a.arrivalTime == b.arrivalTime) {
             return a.priority > b.priority;
@@ -106,7 +108,7 @@ Metrics simulateJobs(int numProcessors, const std::string& jobDataFile, const st
     metrics.numberOfProcessors = numProcessors;
 
     // Initialize processors
-    std::vector<Processor> processors(numProcessors, Processor());
+    std::vector<Processor> processors(numProcessors);
 
     // Read job data from file
     std::ifstream inFile(jobDataFile);
@@ -125,9 +127,9 @@ Metrics simulateJobs(int numProcessors, const std::string& jobDataFile, const st
 
     while (std::getline(inFile, line)) {
         std::istringstream iss(line);
-        Job job;
+        Job job = {}; // Zero-initialize to avoid uninitialized data
         iss >> job.type >> job.arrivalTime >> job.processingTime;
-        job.remainingTime = job.processingTime;
+        job.remainingTime = std::max(job.processingTime, 1); // Ensure remaining time is non-negative
         job.overallJobNumber = overallJobCounter++;
 
         // Assign jobTypeNumber based on type
@@ -135,8 +137,7 @@ Metrics simulateJobs(int numProcessors, const std::string& jobDataFile, const st
         job.jobTypeNumber = typeCounters[job.type];
 
         // Assign priority
-        if (job.type == 'D') job.priority = 2;
-        else job.priority = 1;
+        job.priority = (job.type == 'D') ? 2 : 1;
 
         allJobs.push_back(job);
 
@@ -150,8 +151,8 @@ Metrics simulateJobs(int numProcessors, const std::string& jobDataFile, const st
     }
     inFile.close();
 
-    // Initialize priority queue for waiting jobs
-    std::priority_queue<Job, std::vector<Job>, CompareJob> jobQueue;
+    // Initialize custom queue for waiting jobs
+    CustomQueue<Job> jobQueue;
 
     // Open log file
     std::ofstream logStream(logFile);
@@ -172,12 +173,19 @@ Metrics simulateJobs(int numProcessors, const std::string& jobDataFile, const st
     // For average queue size calculation
     double cumulativeQueueSize = 0.0;
 
+    // Metrics tracking
+    int maxQueueLength = 0;  // Track maximum queue length
+    double totalJobWaitTime = 0;  // Track total job wait time
+    long long totalProcessingTime = 0;  // Track total processing time
+    long long totalIdleTime = 0;  // Track total idle time
+
     // Simulation loop
     while (currentTime <= simulationEndTime) {
         // 1. Handle job completions
         for (size_t p = 0; p < processors.size(); ++p) {
             if (processors[p].isBusy) {
                 Job& currentJob = processors[p].currentJob;
+
                 // Check if the job completes at this time
                 if ((currentTime - currentJob.startTime) >= currentJob.remainingTime) {
                     // Job completed
@@ -187,8 +195,7 @@ Metrics simulateJobs(int numProcessors, const std::string& jobDataFile, const st
 
                     // Update metrics
                     metrics.totalJobsCompleted++;
-                    // Removed the line below to prevent double-counting
-                    // metrics.totalProcessingTime += currentJob.processingTime;
+                    totalProcessingTime += currentJob.processingTime; // Add to total processing time
 
                     switch (currentJob.type) {
                     case 'A': metrics.totalJobsCompleted_A++; break;
@@ -197,9 +204,12 @@ Metrics simulateJobs(int numProcessors, const std::string& jobDataFile, const st
                     case 'D': metrics.totalJobsCompleted_D++; break;
                     }
 
+                    // Calculate job wait time (queue enter time to start time)
+                    totalJobWaitTime += (currentTime - currentJob.queueEnterTime);
+
                     // Processor becomes idle
                     processors[p].isBusy = false;
-                    processors[p].currentJob = Job();
+                    processors[p].currentJob = Job(); // Clear the current job
 
                     // Assign next job from queue if available
                     if (!jobQueue.empty()) {
@@ -264,7 +274,7 @@ Metrics simulateJobs(int numProcessors, const std::string& jobDataFile, const st
 
                             interruptedJob.isInterrupted = true;
                             // Re-add to the queue with updated remaining time
-                            interruptedJob.queueEnterTime = currentTime; // Set arrival time to current time
+                            interruptedJob.queueEnterTime = currentTime;
                             jobQueue.push(interruptedJob);
                             logStream << "Time " << currentTime << ":  Interrupting Job: "
                                 << interruptedJob.overallJobNumber << ", Job " << interruptedJob.type
@@ -287,103 +297,53 @@ Metrics simulateJobs(int numProcessors, const std::string& jobDataFile, const st
                         // No lower priority job to interrupt, add to queue
                         arrivingJob.queueEnterTime = currentTime;
                         jobQueue.push(arrivingJob);
-                        if (jobQueue.size() == 1)
-                            logStream << "Time " << currentTime << ":  Queue: 1 Job; ";
-                        else
-                            logStream << "Time " << currentTime << ":  Queue: " << jobQueue.size() << " Jobs; ";
                     }
                 }
                 else {
                     // Add to queue
                     arrivingJob.queueEnterTime = currentTime;
                     jobQueue.push(arrivingJob);
-                    if (jobQueue.size() == 1)
-                        logStream << "Time " << currentTime << ":  Queue: 1 Job; ";
-                    else
-                        logStream << "Time " << currentTime << ":  Queue: " << jobQueue.size() << " Jobs; ";
                 }
             }
 
-            // Log CPU statuses after handling arrivals
-            logStream << "CPU Status:";
-            for (size_t p = 0; p < processors.size(); ++p) {
-                if (processors[p].isBusy) {
-                    logStream << " CPU " << (p + 1) << " Run Time:"
-                        << (currentTime - processors[p].currentJob.startTime) << ";";
-                }
-                else {
-                    logStream << " CPU " << (p + 1) << " Idle Time:"
-                        << processors[p].idleTime << ";";
-                }
-            }
-            logStream << "\n";
-
+            // Track max queue length
+            maxQueueLength = std::max(maxQueueLength, static_cast<int>(jobQueue.size()));
             jobIndex++;
         }
 
-        // 3. Update processor run times and idle times
+        // 3. Track queue size for average calculation
+        cumulativeQueueSize += jobQueue.size();
+
+        // 4. Track total idle time
         for (size_t p = 0; p < processors.size(); ++p) {
-            if (processors[p].isBusy) {
-                processors[p].runTime++;
-            }
-            else {
-                processors[p].idleTime++;
+            if (!processors[p].isBusy) {
+                totalIdleTime++;
             }
         }
-
-        // 4. Update queue metrics
-        metrics.currentQueueSize = static_cast<int>(jobQueue.size());
-        if (metrics.maxQueueLength < metrics.currentQueueSize) {
-            metrics.maxQueueLength = metrics.currentQueueSize;
-        }
-        cumulativeQueueSize += metrics.currentQueueSize;
-
-        // 5. Log queue and processor status
-        logStream << "Time " << currentTime << ": Queue: ";
-        if (jobQueue.empty()) {
-            logStream << "Empty; ";
-        }
-        else if (jobQueue.size() == 1) {
-            logStream << "1 Job; ";
-        }
-        else {
-            logStream << jobQueue.size() << " Jobs; ";
-        }
-
-        // Log CPU statuses
-        for (size_t p = 0; p < processors.size(); ++p) {
-            if (processors[p].isBusy) {
-                logStream << "CPU " << (p + 1) << " Run Time:"
-                    << (currentTime - processors[p].currentJob.startTime) << "; ";
-            }
-            else {
-                logStream << "CPU " << (p + 1) << " Idle Time:"
-                    << processors[p].idleTime << "; ";
-            }
-        }
-        logStream << "\n";
 
         // Increment time
         currentTime++;
     }
 
-    // Close log file
-    logStream.close();
-
-    // 6. Calculate final metrics
+    // Compute the average queue size
     metrics.averageQueueSize = cumulativeQueueSize / simulationEndTime;
+
+    // Compute the average wait time per job
     if (metrics.totalJobsCompleted > 0) {
-        metrics.averageTimeJobsInQueue = static_cast<double>(metrics.totalTimeJobsInQueue) / metrics.totalJobsCompleted;
+        metrics.averageTimeJobsInQueue = totalJobWaitTime / metrics.totalJobsCompleted;
     }
 
-    // Calculate total idle time and total processing time across all processors
-    for (const auto& proc : processors) {
-        metrics.totalIdleTime += proc.idleTime;
-        metrics.totalProcessingTime += proc.runTime; 
-    }
+    // Set metrics for total processing time, total idle time, etc.
+    metrics.totalProcessingTime = totalProcessingTime;
+    metrics.totalIdleTime = totalIdleTime;
+    metrics.maxQueueLength = maxQueueLength;
 
     return metrics;
 }
+
+
+
+
 
 bool fileExists(const std::string& filename) {
     return fs::exists(filename);

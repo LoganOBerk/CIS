@@ -1,3 +1,6 @@
+#ifndef HANDLEPROCESSORS_H
+#define HANDLEPROCESSORS_H
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -5,7 +8,6 @@
 #include <algorithm>
 #include <random>
 #include <ctime>
-#include <queue>
 #include <sstream>
 #include <iomanip>
 #include <unordered_map>
@@ -13,14 +15,10 @@
 
 namespace fs = std::filesystem;
 
-#ifndef JOB_H
-#define JOB_H
-
-
 struct Job {
     char type;              // Job Type: 'A', 'B', 'C', 'D'
     int arrivalTime;        // Cumulative Arrival Time
-    int processingTime;     // Processing Time
+    int processingTime = 0;     // Processing Time
     int remainingTime;      // Remaining Processing Time
     int overallJobNumber;   // Sequential number across all jobs
     int jobTypeNumber;      // Sequential number within job type
@@ -67,10 +65,9 @@ struct CompareJob {
     bool operator()(const Job& a, const Job& b) {
         if (a.priority == b.priority) {
             // If priorities are equal, earlier arrival time has higher priority
-            return a.arrivalTime > b.arrivalTime;
+            return a.arrivalTime > b.arrivalTime;  // FIFO for equal priority
         }
-        // Higher priority value has higher priority
-        return a.priority < b.priority;
+        return a.priority < b.priority;  // Higher priority jobs are processed first
     }
 };
 
@@ -78,5 +75,45 @@ void generateJobs(const std::string&);
 Metrics simulateJobs(int, const std::string&, const std::string&);
 bool fileExists(const std::string&);
 
+// Custom Queue to maintain job priorities using heap for better performance
+template <typename T>
+class CustomQueue {
+private:
+    std::vector<T> container;  // Internal container (using vector)
 
-#endif // JOB_H
+public:
+    // Push an element to the queue
+    void push(const T& value) {
+        container.push_back(value);
+        // Maintain the highest priority job at the front
+        std::push_heap(container.begin(), container.end(), CompareJob()); // Using heap to maintain order
+    }
+
+    // Pop the front element
+    void pop() {
+        if (!container.empty()) {
+            std::pop_heap(container.begin(), container.end(), CompareJob());
+            container.pop_back();
+        }
+    }
+
+    // Get the front element (highest priority)
+    T top() const {
+        if (!container.empty()) {
+            return container.front();
+        }
+        throw std::runtime_error("Queue is empty");
+    }
+
+    // Check if the queue is empty
+    bool empty() const {
+        return container.empty();
+    }
+
+    // Get the current size of the queue
+    size_t size() const {
+        return container.size();
+    }
+};
+
+#endif // HANDLEPROCESSORS_H
