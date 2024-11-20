@@ -39,9 +39,6 @@ void generateJobs(const std::string& filename) {
             int procTimeMax = jt.baseProcessing + jt.processingVar;
             int processingTime = procTimeMin + (rng() % (procTimeMax - procTimeMin + 1));
 
-            // Log processing time calculation for debugging
-            std::cout << "Generated job " << jt.type << " with processing time: " << processingTime << std::endl;
-
             // Create Job
             Job job = {}; // Zero-initialize to avoid uninitialized data
             job.type = jt.type;
