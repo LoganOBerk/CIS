@@ -14,7 +14,7 @@ int main() {
 	// - Bytes for basic variables (know sizes for `int`, `float`, `double`, etc.).
 	// - Why use a pointer to a pointer?
 	//   Example: To pass by reference in a function, you can use `**` to modify the actual value directly.
-	// - When is `**` usage good in the context of a linked list?
+	// - When is `**` usage good in the context of a linked list? specific case for wanting to change the head ptr
 	//   Example: For modifying pointers themselves (e.g., reassigning head pointers).
 
 	// 3. LINKED LISTS
@@ -34,7 +34,8 @@ int main() {
 	//   - Add
 	//   - Delete
 	//   - Clear
-	//   - Binary operations (check if full or empty).
+	//   - isFull
+	//	 - isEmpty
 	// - Binding:
 	//   - Early binding: Compile-time.
 	//   - Late binding: Runtime (dynamic memory).
@@ -77,6 +78,7 @@ int main() {
 	// - AVL Tree basics:
 	//   - Balance factor: Max weight difference is ±1.
 	//   - Rebalancing: After balance factor exceeds ±2.
+	//	 - Calculating the weight of AVL tree nodes each nodes left and right levels must be balanced
 	// - Traversal orders:
 	//   - Pre-order: NLR (Node, Left, Right).
 	//   - Post-order: LRN (Left, Right, Node).
@@ -93,6 +95,22 @@ int main() {
 	//   - Left child: `2 * i + 1`
 	//   - Right child: `2 * i + 2`
 	//   - Parent: `(i - 1) / 2`
+
+	//Time complexity, and space complexity
+	//Most useful is worst case
+	//Most used is average case
+	
+	//define heap
+	//whats the root node and how is it ordered, types of heaps
+	//min vs max heap
+	// 
+	// Types of errors
+	// logic errors
+	// compiler errors(syntax errors)
+	// runtime error
+	//
+	//
+
 
 	return 0;
 }
