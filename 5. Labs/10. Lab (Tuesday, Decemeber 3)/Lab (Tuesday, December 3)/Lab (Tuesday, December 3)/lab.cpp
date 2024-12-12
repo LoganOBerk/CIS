@@ -65,9 +65,25 @@ int main() {
     list.add(55);
     list.print('M', 'A');
 
+    try {
+        cout << "Adding 55 to the list again:" << endl;
+        list.add(55);
+    }
+    catch (const invalid_argument& e) {
+        cerr << e.what() << endl;
+    }
+
     cout << "Deleting 55 from the list:" << endl;
     list.deleteValue(55);
     list.print('M', 'A');
+
+    try {
+        cout << "Deleting 100 from the list:" << endl;
+        list.deleteValue(100);
+    }
+    catch (const invalid_argument& e) {
+        cerr << e.what() << endl;
+    }
 
     return 0;
 }
