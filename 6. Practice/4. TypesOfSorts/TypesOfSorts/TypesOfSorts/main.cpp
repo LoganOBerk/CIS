@@ -132,7 +132,7 @@ void mergeSortArr(int* arr, int size) {
 }
 
 void insertionSortArr(int* arr, int size) {
-
+	
 }
 
 int main() {
