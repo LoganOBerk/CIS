@@ -27,17 +27,18 @@ void printList(SinglyNode* head) {
 void insert(SinglyNode*& head, int value) {
 	SinglyNode* currentNode = head;
 	SinglyNode* nodeToAdd = new SinglyNode(value);
-	if (!head) {
+	if (!head || head->data >= value) {
+		nodeToAdd->next = head;
 		head = nodeToAdd;
 		return;
 	}
 	
-	while (currentNode->next) {
+	while (currentNode->next && currentNode->next->data < value) {
 		currentNode = currentNode->next;
 	}
+	nodeToAdd->next = currentNode->next;
 	currentNode->next = nodeToAdd;
 }
-
 
 
 void remove(SinglyNode** head, int value) {
@@ -100,17 +101,53 @@ void sort(SinglyNode** head, int value) {
 	current->next = node;
 }
 
+int binSearch(int arr[], int size, int value) {
+	int left = 0, right = size - 1;
+	if (left <= right) {
+		int mid = left + (right - left) / 2;
+		if (arr[mid] == value) return mid;
+		if (arr[mid] < value) left = mid + 1;
+		else right = mid - 1;
+	}
+	return binSearch(arr, left + right , value);
+}
+
+int binarySearch(int arr[], int left, int right, int target) {
+	if (left > right) {
+		return -1; // Element not found
+	}
+
+	int mid = left + (right - left) / 2;
+
+	// Check if the target is at the middle
+	if (arr[mid] == target) {
+		return mid;
+	}
+
+	// If target is smaller, search the left half
+	if (target < arr[mid]) {
+		return binarySearch(arr, left, mid - 1, target);
+	}
+
+	// If target is larger, search the right half
+	return binarySearch(arr, mid + 1, right, target);
+}
+
 int main() {
 
 	SinglyNode* head = nullptr;
 
-	sort(&head, 3);
-	sort(&head, 1);
-	sort(&head, 0);
+	insert(head, 3);
+	insert(head, 1);
+	insert(head, 0);
 	printList(head);
 
 	remove(&head, 3);
 	printList(head);
+
+
+	int arr[5] = {2,4,6,8,10};
+	cout << binSearch(arr, 5, 10);
 	
 	
 	
