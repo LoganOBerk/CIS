@@ -132,7 +132,15 @@ void mergeSortArr(int* arr, int size) {
 }
 
 void insertionSortArr(int* arr, int size) {
-	
+	int curr;
+	for (int i = 0; i < size; i++) {
+		curr = arr[i];
+		for (int j = 0; j < size; j++) {
+			
+			
+		}
+
+	}
 }
 
 int main() {
@@ -140,7 +148,7 @@ int main() {
 	int* arr = new int[size];
 	initArr(arr, size);
 	displayArr(arr, size);
-	mergeSortArr(arr, size);
+	insertionSortArr(arr, size);
 	displayArr(arr, size);
 
 	return 0;
