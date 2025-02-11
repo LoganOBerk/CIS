@@ -357,13 +357,16 @@ visited during the search for key k, or NULL if the tree is empty
 # POSTCONDITION: no node in the BST has key k: that is, if the BST had a node
 with key k, then it is properly removed; otherwise, the BST remains intact
 */
+/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
 BSTMap::Node*
 BSTMap::eraseNode(int k) {
 	BSTMap::Node* w = findNode(k);
 	// Your code here
-	
-	return w;
+	if (!w || w->key != k) return w;
+	return removeNode(w);
 }
+/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////
+/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
 /*
 # INPUT: a key k (as an integer)
 # OUTPUT: see output of eraseNode member function
