@@ -361,8 +361,16 @@ with key k, then it is properly removed; otherwise, the BST remains intact
 BSTMap::Node*
 BSTMap::eraseNode(int k) {
 	BSTMap::Node* w = findNode(k);
-	// Your code here
+	//Handle if findNode returns null or returns the parent of last node
 	if (!w || w->key != k) return w;
+	//Handles the case where a node has 2 children by replacing the node with its successor and then removing our successor node 
+	BSTMap::Node* t = successor(w);
+	if (w->left && w->right) {
+		w->key = t->key;
+		w->value = t->value;
+		return removeNode(t);
+	}
+	//Returns the parent of the node and removes if there are one child or none
 	return removeNode(w);
 }
 /////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////
@@ -542,6 +550,8 @@ AVLTreeMap::Node*
 AVLTreeMap::rebalance(AVLTreeMap::Node* z) {
 	AVLTreeMap::Node* r = z;
 	// Your code here
+
+	
 	return r;
 }
 /*
