@@ -548,11 +548,18 @@ node heights properly set
 */
 AVLTreeMap::Node*
 AVLTreeMap::rebalance(AVLTreeMap::Node* z) {
-	AVLTreeMap::Node* r = z;
+	bool breakLeft = true;
+	AVLTreeMap::Node* y = tallestChild(z, breakLeft);
+	AVLTreeMap::Node* x = tallestChild(y, breakLeft);
 	// Your code here
-
-	
-	return r;
+	if (y == z->left && x == y->left || y == z->right && x == y->right) {
+		singleRotation(y, z);
+		return y;
+	}
+	else {
+		doubleRotation(x, y, z);
+		return x;
+	}
 }
 /*
 # INPUT: nodes y and z in the AVL Tree
@@ -565,6 +572,37 @@ subtree with node heights properly set
 void
 AVLTreeMap::singleRotation(AVLTreeMap::Node* y, AVLTreeMap::Node* z) {
 	// Your code here
+	if (z->left) {
+		z->left = y->right;
+		if (y->right) y->right->parent = z;
+		y->right = z;
+	}
+	else {
+		z->right = y->left;
+		if (y->left) y->left->parent = z;
+		y->left = z;
+	}
+
+	if (z->parent) {
+		if (z->parent->left == z) {
+			z->parent->left = y;
+		}
+		else {
+			z->parent->right = y;
+		}
+	}
+
+	if (!z->parent) {
+		root = z;
+	}
+
+	y->parent = z->parent;
+	z->parent = y;
+	
+	
+	resetHeight(z);
+	resetHeight(y);
+	
 }
 /*
 # INPUT: nodes x, y, and z in the AVL Tree
@@ -650,8 +688,7 @@ plus the height of its tallest child)
 */
 void
 AVLTreeMap::resetHeight(AVLTreeMap::Node* w) {
-	w->ht = std::max(height((AVLTreeMap::Node*)w->left), height((AVLTreeMap::Node*)
-		w->right)) + 1;
+	w->ht = std::max(height((AVLTreeMap::Node*)w->left), height((AVLTreeMap::Node*)w->right)) + 1;
 }
 /*
 # INPUT: a node w in the AVL tree
@@ -679,7 +716,7 @@ public:
 				//all the map values of map entries stored in the subtree; the minimum map value of
 				//all the map entries stored in the subtree; the maximum map value of the map entries
 				//stored in the subtree
-					int num;
+				int num;
 				int sum;
 				int min;
 				int max;
@@ -720,6 +757,7 @@ public:
 		# POSTCONDITION: the info values for the node have been properly set,
 		consistent with the subtree that it roots
 		*/
+		
 	};
 	// print utilities
 	void printTreeMapStats();
@@ -759,7 +797,10 @@ TreeMapStats::singleRotation(AVLTreeMap::Node* y, AVLTreeMap::Node* z) {
 	TreeMapStats::Node* w = (TreeMapStats::Node*)y;
 	TreeMapStats::Node* x = (TreeMapStats::Node*)z;
 	// Your code here
+	
 }
+
+
 /*
 # overload of putNode member function of an AVLTreeMap
 # see input, precondition, and postcondition for overloaded function
@@ -780,6 +821,7 @@ TreeMapStats::Node*
 TreeMapStats::eraseNode(int key) {
 	TreeMapStats::Node* w = (TreeMapStats::Node*)AVLTreeMap::eraseNode(key);
 	// Your code here
+	
 	return w;
 }
 /*
