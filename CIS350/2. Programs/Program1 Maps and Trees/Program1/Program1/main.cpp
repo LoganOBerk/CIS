@@ -363,7 +363,7 @@ BSTMap::eraseNode(int k) {
 	BSTMap::Node* w = findNode(k);
 	//Handle if findNode returns null or returns the parent of last node
 	if (!w || w->key != k) return w;
-	//Handles the case where a node has 2 children by replacing the node with its successor and then removing our successor node 
+	//Handles the case where a node has 2 children by replacing the node with its successor and then removing our successor node
 	BSTMap::Node* t = successor(w);
 	if (w->left && w->right) {
 		w->key = t->key;
@@ -732,6 +732,13 @@ public:
 					os << "{" << s.num << "," << s.sum << "," << s.min << "," << s.max << "}";
 					return os;
 				};
+
+				void setNum(int& n) {
+					num = n;
+				}
+				int getNum() {
+					return num;
+				}
 		};
 		// data member: node info/stats
 		Stats* info;
@@ -757,6 +764,17 @@ public:
 		# POSTCONDITION: the info values for the node have been properly set,
 		consistent with the subtree that it roots
 		*/
+
+			void updatePut(Node* w) {
+				Node* curr = (TreeMapStats::Node*)w->parent;
+				int currNum;
+				while (curr) {
+					currNum = curr->info->getNum();
+					currNum++;
+					curr->info->setNum(currNum);
+					curr = (TreeMapStats::Node*)curr->parent;
+				}
+			}
 		
 	};
 	// print utilities
@@ -798,6 +816,7 @@ TreeMapStats::singleRotation(AVLTreeMap::Node* y, AVLTreeMap::Node* z) {
 	TreeMapStats::Node* x = (TreeMapStats::Node*)z;
 	// Your code here
 	
+	
 }
 
 
@@ -810,6 +829,7 @@ TreeMapStats::Node*
 TreeMapStats::putNode(int key, int value) {
 	TreeMapStats::Node* w = (TreeMapStats::Node*)AVLTreeMap::putNode(key, value);
 	// Your code here
+	w->updatePut(w);
 	return w;
 }
 /*

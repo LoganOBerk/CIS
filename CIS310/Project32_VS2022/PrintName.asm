@@ -1,6 +1,6 @@
 INCLUDE irvine32.inc
 
-; Expression Calculation and using the Irvine Library
+; Reverse a string using stack operations
 ; Myname: Logan Berk
 ; date: 1/30/2025
 
@@ -10,29 +10,45 @@ INCLUDE irvine32.inc
 ExitProcess proto,dwExitCode:dword
 
 .data
+    str1 BYTE 'Logan Berk', 0    ; Original string
+lenStr DWORD SIZEOF str1 - 1 ; String length excluding null terminator
 
-str1 BYTE "My name is: Logan Berk", 0ah, 0dh
 .code
+reverseString PROC
+    mov ecx, lenstr         ;load length of string to counter register
+    mov esi, OFFSET str1    ;load address of str1 to esi
+    push_stack:
+        mov ax, [esi]       ;load first char to 16 bit register
+        inc esi             ;move to next address location
+        push ax             ;push the first char onto stack
+    loop push_stack         ;repeat the proccess until ecx is 0
+
+    mov ecx, lenstr         ;load length of string to counter register
+    mov esi, OFFSET str1    ;load address of str1 to esi
+    pop_stack:              
+        pop ax              ;pop char off the stack
+        mov [esi], ax       ;take the first value of esi and replace it with the new char
+        inc esi             ;move to next address location
+    loop pop_stack          ;repeat until ecx is 0, aka all chars are replaced
+
+    mov BYTE PTR [esi], 0   ;add null terminator at the end
+
+    ret
+reverseString ENDP
+
 main PROC
+    mov edx, OFFSET str1     ; Load original string address
+    call WriteString         ; Display original string
+    call Crlf                ; Print newline
+    
+    call reverseString       ; Reverse the string
+    
+    mov edx, OFFSET str1     ; Load reversed string address
+    call WriteString         ; Display reversed string
 
-mov eax,8000h
-mov ebx,2000h
-mov ecx,1000h
-mov edx,5000h
-
-add eax, ebx; update eax to the sum of eax(8000h) and ebx(2000h) /// expected result 10000h in eax
-add ecx, edx; update ecx to the sum of ecx(1000h) and edx(5000h) /// expected result 6000h in ecx
-sub eax,ecx; update eax to the difference of eax(which is now 10000h) and ecx (which is now 6000h) /// expected result 4000h in eax
-
-;final expected eax = 4000h, ebx = 2000h, ecx = 6000h, edx = 5000h
-call dumpregs
-
-mov edx, offset str1
-
-call writestring
-
-
-
-INVOKE ExitProcess,0
+    INVOKE ExitProcess,0
 main ENDP
 END main
+
+
+    

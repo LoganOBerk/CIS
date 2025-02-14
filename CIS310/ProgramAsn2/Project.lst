@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.42.34433.0	    02/14/25 00:55:36
+Microsoft (R) Macro Assembler Version 14.42.34433.0	    02/14/25 00:28:56
 ..\Project32_VS2022\PrintName.asm			     Page 1 - 1
 
 
@@ -32,7 +32,8 @@ Microsoft (R) Macro Assembler Version 14.42.34433.0	    02/14/25 00:55:36
 				ExitProcess proto,dwExitCode:dword
 
  00000000			.data
- 00000000 4C 6F 67 61 6E	    str1 BYTE 'Logan Berk', 0    ; Original string
+
+ 00000000 4C 6F 67 61 6E	str1 BYTE 'Logan Berk', 0    ; Original string
 	   20 42 65 72 6B
 	   00
  0000000B 0000000A		lenStr DWORD SIZEOF str1 - 1 ; String length excluding null terminator
@@ -42,43 +43,41 @@ Microsoft (R) Macro Assembler Version 14.42.34433.0	    02/14/25 00:55:36
  00000000  8B 0D 0000000B R	    mov ecx, lenstr         ;load length of string to counter register
  00000006  BE 00000000 R	    mov esi, OFFSET str1    ;load address of str1 to esi
  0000000B			    push_stack:
- 0000000B  66| 8B 06		        mov ax, [esi]       ;load first char to 16 bit register
- 0000000E  46			        inc esi             ;move to next address location
- 0000000F  66| 50		        push ax             ;push the first char onto stack
- 00000011  E2 F8		    loop push_stack         ;repeat the proccess until ecx is 0
+				        mov ax, esi      ;load first char at str1 address to 1
+..\Project32_VS2022\PrintName.asm(22) : error A2022:instruction operands must be the same size
+ 0000000B  46			        inc esi
+ 0000000C  66| 50		        push ax
+ 0000000E  E2 FB		    loop push_stack
 
- 00000013  8B 0D 0000000B R	    mov ecx, lenstr         ;load length of string to counter register
- 00000019  BE 00000000 R	    mov esi, OFFSET str1    ;load address of str1 to esi
- 0000001E			    pop_stack:              
- 0000001E  66| 58		        pop ax              ;pop char off the stack
- 00000020  66| 89 06		        mov [esi], ax       ;take the first value of esi and replace it with the new char
- 00000023  46			        inc esi             ;move to next address location
- 00000024  E2 F8		    loop pop_stack          ;repeat until ecx is 0, aka all chars are replaced
+ 00000010  8B 0D 0000000B R	    mov ecx, lenstr
+ 00000016  BE 00000000 R	    mov esi, OFFSET str1
+ 00000026			    pop_stack:
+ 00000026  66| 58		        pop ax
+ 00000028  66| 89 06		        mov [esi], ax
+ 0000002B  46			        inc esi
+ 0000002C  E2 F8		    loop pop_stack
 
- 00000026  C6 06 00		    mov BYTE PTR [esi], 0   ;add null terminator at the end
+ 0000002E  C6 06 00		    mov BYTE PTR [esi], 0
 
- 00000029  C3			    ret
- 0000002A			reverseString ENDP
+ 00000031  C3			    ret
+ 00000032			reverseString ENDP
 
- 0000002A			main PROC
- 0000002A  BA 00000000 R	    mov edx, OFFSET str1     ; Load original string address
- 0000002F  E8 00000000 E	    call WriteString         ; Display original string
- 00000034  E8 00000000 E	    call Crlf                ; Print newline
+ 00000032			main PROC
+ 00000032  BA 00000000 R	    mov edx, OFFSET str1     ; Load original string address
+ 00000037  E8 00000000 E	    call WriteString         ; Display original string
+ 0000003C  E8 00000000 E	    call Crlf                ; Print newline
 				    
- 00000039  E8 FFFFFFC2		    call reverseString       ; Reverse the string
+ 00000041  E8 FFFFFFBA		    call reverseString       ; Reverse the string
 				    
- 0000003E  BA 00000000 R	    mov edx, OFFSET str1     ; Load reversed string address
- 00000043  E8 00000000 E	    call WriteString         ; Display reversed string
-
+ 00000046  BA 00000000 R	    mov edx, OFFSET str1     ; Load reversed string address
+ 0000004B  E8 00000000 E	    call WriteString         ; Display reversed string
+				    
 				    INVOKE ExitProcess,0
- 00000048  6A 00	   *	    push   +000000000h
- 0000004A  E8 00000000 E   *	    call   ExitProcess
- 0000004F			main ENDP
+ 00000050  6A 00	   *	    push   +000000000h
+ 00000052  E8 00000000 E   *	    call   ExitProcess
+ 00000057			main ENDP
 				END main
-
-
-				    
-Microsoft (R) Macro Assembler Version 14.42.34433.0	    02/14/25 00:55:36
+Microsoft (R) Macro Assembler Version 14.42.34433.0	    02/14/25 00:28:56
 ..\Project32_VS2022\PrintName.asm			     Symbols 2 - 1
 
 
@@ -173,7 +172,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 0000000F Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000004F Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000057 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -280,11 +279,11 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 0000002A _TEXT	Length= 00000025 Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000032 _TEXT	Length= 00000025 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-reverseString  . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000002A Public STDCALL
+reverseString  . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000032 Public STDCALL
   push_stack . . . . . . . . . .	L Near	 0000000B _TEXT	
-  pop_stack  . . . . . . . . . .	L Near	 0000001E _TEXT	
+  pop_stack  . . . . . . . . . .	L Near	 00000026 _TEXT	
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 
@@ -524,4 +523,4 @@ wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
 
 	   1 Warnings
-	   0 Errors
+	   1 Errors
