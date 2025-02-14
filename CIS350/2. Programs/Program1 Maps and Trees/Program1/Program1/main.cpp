@@ -710,6 +710,8 @@ public:
 	private:
 		// stats class to account for basic statistics/information of subtree rooted at
 		//each node
+
+		
 			class Stats {
 			private:
 				// data members: number of nodes/map entries stored in the subtree; sum of
@@ -733,7 +735,7 @@ public:
 					return os;
 				};
 
-				friend Node; /////ADDED/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED
+				friend Node;/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED
 		};
 		// data member: node info/stats
 		Stats* info;
@@ -759,20 +761,26 @@ public:
 		# POSTCONDITION: the info values for the node have been properly set,
 		consistent with the subtree that it roots
 		*/
-
 			/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
 			void updatePut(Node* w) {
+				Node* prev = (TreeMapStats::Node*)w;
 				Node* curr = (TreeMapStats::Node*)w->parent;
-				int currNum;
 				while (curr) {
-					currNum = curr->info->num++;
+					curr->info->num++;
+					curr->info->sum = prev->info->sum + curr->value; //NOT WORKING PROPERLY
+					curr->info->max = std::max(curr->info->max, prev->info->max);
+					curr->info->min = std::min(curr->info->min, prev->info->min);
+					prev = (TreeMapStats::Node*)curr;
 					curr = (TreeMapStats::Node*)curr->parent;
 				}
 			}
 			/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////
 			/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
+		
+			
 	};
 
+	
 	// print utilities
 	void printTreeMapStats();
 	void printTreeMapStats(Node* w);
