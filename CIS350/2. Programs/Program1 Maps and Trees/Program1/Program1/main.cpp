@@ -733,12 +733,7 @@ public:
 					return os;
 				};
 
-				void setNum(int& n) {
-					num = n;
-				}
-				int getNum() {
-					return num;
-				}
+				friend Node; /////ADDED/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED
 		};
 		// data member: node info/stats
 		Stats* info;
@@ -765,18 +760,19 @@ public:
 		consistent with the subtree that it roots
 		*/
 
+			/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
 			void updatePut(Node* w) {
 				Node* curr = (TreeMapStats::Node*)w->parent;
 				int currNum;
 				while (curr) {
-					currNum = curr->info->getNum();
-					currNum++;
-					curr->info->setNum(currNum);
+					currNum = curr->info->num++;
 					curr = (TreeMapStats::Node*)curr->parent;
 				}
 			}
-		
+			/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////
+			/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
 	};
+
 	// print utilities
 	void printTreeMapStats();
 	void printTreeMapStats(Node* w);
