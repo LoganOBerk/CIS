@@ -764,14 +764,15 @@ public:
 			/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
 			void updatePut(Node* w) {
 				Node* nodeToPut = (TreeMapStats::Node*)w;
-				Node* curr = (TreeMapStats::Node*)w->parent;
-				while (curr) {
-					curr->info->num++;
-					curr->info->sum += nodeToPut->value;
-					curr->info->max = std::max(curr->info->max, nodeToPut->value);
-					curr->info->min = std::min(curr->info->min, nodeToPut->value);
+				Node* nodesParent = (TreeMapStats::Node*)w->parent;
+				int nodeValue = nodeToPut->value;
+				while (nodesParent) {
+					nodesParent->info->num++;
+					nodesParent->info->sum += nodeValue;
+					nodesParent->info->max = std::max(nodesParent->info->max, nodeValue);
+					nodesParent->info->min = std::min(nodesParent->info->min, nodeValue);
 					
-					curr = (TreeMapStats::Node*)curr->parent;
+					nodesParent = (TreeMapStats::Node*)nodesParent->parent;
 				}
 			}
 			/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////
