@@ -1,3 +1,18 @@
+
+put 70 70
+put 60 60
+put 100 100
+put 40 40
+put 65 65
+put 80 80
+put 110 110
+put 81 81
+
+
+print_stats_tree
+erase 70
+print_stats_tree
+
 put 2 9
 print_stats_tree
 put 9 -2

@@ -775,6 +775,10 @@ public:
 					nodesParent = (TreeMapStats::Node*)nodesParent->parent;
 				}
 			}
+
+			void updateErase(Node* w) {
+				
+			}
 			/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////
 			/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
 		
@@ -846,7 +850,6 @@ TreeMapStats::Node*
 TreeMapStats::eraseNode(int key) {
 	TreeMapStats::Node* w = (TreeMapStats::Node*)AVLTreeMap::eraseNode(key);
 	// Your code here
-	
 	return w;
 }
 /*
