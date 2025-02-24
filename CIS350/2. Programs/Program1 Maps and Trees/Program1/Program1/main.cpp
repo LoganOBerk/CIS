@@ -361,7 +361,7 @@ with key k, then it is properly removed; otherwise, the BST remains intact
 BSTMap::Node*
 BSTMap::eraseNode(int k) {
 	BSTMap::Node* w = findNode(k);
-	//Handle if findNode returns null or returns the parent of last node
+	//Handle if findNode returns null or returns the last node visited
 	if (!w || w->key != k) return w;
 	//Handles the case where a node has 2 children by replacing the node with its successor and then removing our successor node
 	BSTMap::Node* t = successor(w);
@@ -777,7 +777,43 @@ public:
 			}
 
 			void updateErase(Node* w) {
-				
+				Node* nodeToPut = (TreeMapStats::Node*)w;
+
+				if (!w) return;
+
+				Node* s = (TreeMapStats::Node*)w->parent;
+				while (s) {
+					Node* l = (TreeMapStats::Node*)s->left;
+					Node* r = (TreeMapStats::Node*)s->right;
+
+					if (!l && !r) {
+						s->info->sum = s->value;
+						s->info->max = s->value;
+						s->info->min = s->value;
+						s->info->num = 1;
+					}
+
+					if (l && !r) {
+						s->info->sum = l->info->sum + s->value;
+						s->info->max = std::max(l->info->max, s->value);
+						s->info->min = std::min(l->info->max, s->value);
+						s->info->num = l->info->num + 1;
+					}
+					if (r && !l) {
+						s->info->sum = r->info->sum + s->value;
+						s->info->max = std::max(r->info->max, s->value);
+						s->info->min = std::min(r->info->max, s->value);
+						s->info->num = r->info->num + 1;
+					}
+					if (l && r) {
+						s->info->sum = r->info->sum + l->info->sum + s->value;
+						s->info->max = std::max(std::max(r->info->max, l->info->max), s->value);
+						s->info->min = std::min(std::min(r->info->min, l->info->min), s->value);
+						s->info->num = l->info->num + r->info->num + 1;
+					}
+
+					s = (TreeMapStats::Node*)s->parent;
+				}
 			}
 			/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////
 			/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
@@ -850,6 +886,7 @@ TreeMapStats::Node*
 TreeMapStats::eraseNode(int key) {
 	TreeMapStats::Node* w = (TreeMapStats::Node*)AVLTreeMap::eraseNode(key);
 	// Your code here
+	w->updateErase((TreeMapStats::Node*)successor(w));
 	return w;
 }
 /*
