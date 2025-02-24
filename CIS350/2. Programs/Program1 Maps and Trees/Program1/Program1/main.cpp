@@ -365,7 +365,7 @@ BSTMap::eraseNode(int k) {
 	if (!w || w->key != k) return w;
 	//Handles the case where a node has 2 children by replacing the node with its successor and then removing our successor node
 	BSTMap::Node* t = successor(w);
-	if (w->left && w->right) {
+	if (w->left && w->right && t) {
 		w->key = t->key;
 		w->value = t->value;
 		return removeNode(t);
@@ -552,7 +552,7 @@ AVLTreeMap::rebalance(AVLTreeMap::Node* z) {
 	AVLTreeMap::Node* y = tallestChild(z, breakLeft);
 	AVLTreeMap::Node* x = tallestChild(y, breakLeft);
 	// Your code here
-	if (y == z->left && x == y->left || y == z->right && x == y->right) {
+	if ((y == z->left && x == y->left) || (y == z->right && x == y->right)) {
 		singleRotation(y, z);
 		return y;
 	}
@@ -572,17 +572,19 @@ subtree with node heights properly set
 void
 AVLTreeMap::singleRotation(AVLTreeMap::Node* y, AVLTreeMap::Node* z) {
 	// Your code here
-	if (z->left) {
+	if (y == z->left) {  // Left-heavy -> Right rotation
 		z->left = y->right;
 		if (y->right) y->right->parent = z;
 		y->right = z;
 	}
-	else {
+	else {  // Right-heavy -> Left rotation
 		z->right = y->left;
 		if (y->left) y->left->parent = z;
 		y->left = z;
 	}
 
+	// Update parent links
+	y->parent = z->parent;
 	if (z->parent) {
 		if (z->parent->left == z) {
 			z->parent->left = y;
@@ -591,15 +593,12 @@ AVLTreeMap::singleRotation(AVLTreeMap::Node* y, AVLTreeMap::Node* z) {
 			z->parent->right = y;
 		}
 	}
-
-	if (!z->parent) {
-		root = z;
+	else {
+		root = y;  // Update root if necessary
 	}
-
-	y->parent = z->parent;
 	z->parent = y;
-	
-	
+
+	// Update Heights
 	resetHeight(z);
 	resetHeight(y);
 	
@@ -886,7 +885,7 @@ TreeMapStats::Node*
 TreeMapStats::eraseNode(int key) {
 	TreeMapStats::Node* w = (TreeMapStats::Node*)AVLTreeMap::eraseNode(key);
 	// Your code here
-	w->updateErase((TreeMapStats::Node*)successor(w));
+	//w->updateErase((TreeMapStats::Node*)successor(w));
 	return w;
 }
 /*

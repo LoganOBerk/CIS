@@ -1,20 +1,103 @@
 
-put 70 70
-put 60 60
-put 100 100
-put 40 40
-put 65 65
-put 80 80
-put 110 110
-put 81 81
+put 3 5        
+print_stats_tree
+put 1 2       
+print_stats_tree
+put 5 -4      
+print_stats_tree
+put 0 7        
+print_stats_tree
+put 2 9        
+print_stats_tree
+put 4 -2      
+print_stats_tree
+put 6 8       
+size
+print_stats_tree
+erase 0       
+print_stats_tree
+erase 6        
+print_stats_tree
+size
+put 0 1       
+print_stats_tree
+put 6 -3       
+size
+print_stats_tree
+print
+print_key_stats 3
+find 2
+find 5
+print_key_stats 4
+print
+print_stats
+print_tree
 
 
+
+put 2 9
 print_stats_tree
-erase 70
+put 9 -2
 print_stats_tree
-erase 80
+put 3 5
 print_stats_tree
-erase 110
+put 1 2
+print_stats_tree
+put 2 10
+print_stats_tree
+put 7 -4
+size
+print_stats_tree
+erase 3
+print_stats_tree
+erase 7
+print_stats_tree
+size
+put 3 1
+print_stats_tree
+put 7 -10
+size
+print_stats_tree
+print
+print_key_stats 7
+find 2
+find 5
+print_key_stats 4
+print
+print_stats
+print_tree
+
+put 1 10
+put 2 20
+put 3 30
+put 4 40
+put 5 50
+put 6 60
+put 7 70
+put 8 80
+put 9 90
+put 10 100
+put 11 110
+put 12 120
+put 13 130
+put 14 140
+put 15 150
 print_stats_tree
 
+erase 15
+erase 14
+erase 13
+erase 12
+erase 11
+erase 10
+erase 9
+erase 8
+erase 7
+erase 6
+erase 5
+erase 4
+erase 3
+erase 2
+erase 1
+print_stats_tree
 
