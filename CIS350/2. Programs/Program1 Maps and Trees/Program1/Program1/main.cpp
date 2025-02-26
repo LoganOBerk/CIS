@@ -777,7 +777,7 @@ public:
 			void updateErase(Node* w, bool ancestorCase) {
 				if (!w) return;
 				Node* s = (TreeMapStats::Node*)w;
-				if (ancestorCase) {
+				if (ancestorCase || !w->parent) {
 					s = (TreeMapStats::Node*)w->right;
 				}
 				while (s) {
@@ -895,9 +895,11 @@ TreeMapStats::eraseNode(int key) {
 	// Your code here
 	bool ancestorCase = false;
 	TreeMapStats::Node* succ = (TreeMapStats::Node*)successor(w);
-	if (succ && succ->key < key) {
+	//check if successor is the first ancestor or a true successor
+	if ((succ && succ->key < key)) {
 		ancestorCase = true;
 	}
+	//check if the successor doesnt exist
 	if (!succ) {
 		succ = w;
 	}
