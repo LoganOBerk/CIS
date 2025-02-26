@@ -774,48 +774,42 @@ public:
 				}
 			}
 
-			void updateErase(Node* w, bool ancestorCase) {
-				if (!w) return;
-				Node* s = (TreeMapStats::Node*)w;
-				if (ancestorCase || !w->parent) {
-					s = (TreeMapStats::Node*)w->right;
-				}
-				while (s) {
-					Node* l = (TreeMapStats::Node*)s->left;
-					Node* r = (TreeMapStats::Node*)s->right;
-					//Updates nodes stats with no children
+			void updateErase(Node* w) {
+				while (w) {
+					Node* l = (TreeMapStats::Node*)w->left;
+					Node* r = (TreeMapStats::Node*)w->right;
+
+					// Case: No children
 					if (!l && !r) {
-						s->info->sum = s->value;
-						s->info->max = s->value;
-						s->info->min = s->value;
-						s->info->num = 1;
+						w->info->sum = w->value;
+						w->info->max = w->value;
+						w->info->min = w->value;
+						w->info->num = 1;
+					}
+					// Case: Only left child
+					else if (l && !r) {
+						w->info->sum = l->info->sum + w->value;
+						w->info->max = std::max(l->info->max, w->value);
+						w->info->min = std::min(l->info->min, w->value);
+						w->info->num = l->info->num + 1;
+					}
+					// Case: Only right child
+					else if (r && !l) {
+						w->info->sum = r->info->sum + w->value;
+						w->info->max = std::max(r->info->max, w->value);
+						w->info->min = std::min(r->info->min, w->value);
+						w->info->num = r->info->num + 1;
+					}
+					// Case: Both children
+					else {
+						w->info->sum = l->info->sum + r->info->sum + w->value;
+						w->info->max = std::max({ l->info->max, r->info->max, w->value });
+						w->info->min = std::min({ l->info->min, r->info->min, w->value });
+						w->info->num = l->info->num + r->info->num + 1;
 					}
 
-					//Update Nodes stats with left child
-					if (l && !r) {
-						s->info->sum = l->info->sum + s->value;
-						s->info->max = std::max(l->info->max, s->value);
-						s->info->min = std::min(l->info->min, s->value);
-						s->info->num = l->info->num + 1;
-					}
-
-					//Updates Nodes stats with right child
-					if (r && !l) {
-						s->info->sum = r->info->sum + s->value;
-						s->info->max = std::max(r->info->max, s->value);
-						s->info->min = std::min(r->info->min, s->value);
-						s->info->num = r->info->num + 1;
-					}
-					//Updates Nodes stats with 2 children
-					if (l && r) {
-						s->info->sum = r->info->sum + l->info->sum + s->value;
-						//Takes max of the left and right and then compares to itself to update the nodes max
-						s->info->max = std::max(std::max(r->info->max, l->info->max), s->value);
-						s->info->min = std::min(std::min(r->info->min, l->info->min), s->value);
-						s->info->num = l->info->num + r->info->num + 1;
-					}
-
-					s = (TreeMapStats::Node*)s->parent;
+					// Move up the tree
+					w = (TreeMapStats::Node*)w->parent;
 				}
 			}
 
@@ -893,17 +887,14 @@ TreeMapStats::Node*
 TreeMapStats::eraseNode(int key) {
 	TreeMapStats::Node* w = (TreeMapStats::Node*)AVLTreeMap::eraseNode(key);
 	// Your code here
-	bool ancestorCase = false;
-	TreeMapStats::Node* succ = (TreeMapStats::Node*)successor(w);
-	//check if successor is the first ancestor or a true successor
-	if ((succ && succ->key < key)) {
-		ancestorCase = true;
-	}
-	//check if the successor doesnt exist
-	if (!succ) {
-		succ = w;
-	}
-	w->updateErase(succ, ancestorCase);
+	// 
+	// If key wasn't found, return NULL
+	if (!w) return NULL;
+
+	// Update stats for w and its ancestors
+	w->updateErase(w);
+
+	// Return the parent of the removed node
 	return w;
 }
 /*
