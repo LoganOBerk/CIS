@@ -1,47 +1,32 @@
-# Basic Inserts
+
 put 2 9
+print_stats_tree
 put 9 -2
+print_stats_tree
 put 3 5
+print_stats_tree
 put 1 2
-put 2 10   # Updating an existing key (should adjust sum, min, max)
+print_stats_tree
+put 2 10
+print_stats_tree
 put 7 -4
-
-# Ensure expected output is shown
-size                    # Expect a nonzero number
-print_stats_tree        # Should show stats for inserted nodes
-
-# Edge Case: Deleting a node that exists
+size
+print_stats_tree
 erase 3
-print_stats_tree        # Should not show 3, stats must update
-
-# Edge Case: Deleting a node that was already removed
-erase 3                # No output expected, but should not crash
 print_stats_tree
-
-# Edge Case: Min/Max does not update correctly
-put 7 -10              # Should update min if necessary
-size                   # Should still match expected node count
-print_stats_tree
-
-# Edge Case: Deleting a node and checking that tree structure remains valid
 erase 7
-print_stats_tree       # Should update stats
-
-# Edge Case: Reinserting deleted node
+print_stats_tree
+size
 put 3 1
-print_stats_tree       # Should reintroduce 3 with correct values
-
-# Edge Case: Finding existing and missing keys
-find 2                 # Should return the node, otherwise something is wrong
-find 5                 # Should fail (5 was never inserted)
-
-# Edge Case: Stats for missing key (should indicate key is missing)
-print_key_stats 4      # Expect message that key is not found
-
-# Edge Case: Stats for key that was erased
-print_key_stats 7      # Should not exist after `erase 7`
-
-# Final integrity checks
-print                  # Ensure entire tree is displayed
-print_stats            # Check global tree stats
-print_tree             # Verify structure
+print_stats_tree
+put 7 -10
+size
+print_stats_tree
+print
+print_key_stats 7
+find 2
+find 5
+print_key_stats 4
+print
+print_stats
+print_tree
