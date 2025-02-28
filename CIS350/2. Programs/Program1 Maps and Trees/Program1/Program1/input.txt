@@ -1,54 +1,32 @@
-# Insert a sequence of numbers to create a balanced tree without triggering rotations
-put 20 1
-put 10 2
-put 30 3
-put 5 4
-put 15 5
-put 25 6
-put 35 7
-put 2 8
-put 7 9
-put 12 10
-put 17 11
-put 22 12
-put 27 13
-put 32 14
-put 37 15
-print_stats_tree
 
-# Case 1: Delete a leaf node (should not affect structure)
-erase 2
+put 2 9
 print_stats_tree
-
-# Case 2: Delete a node with one child
-erase 10
+put 9 -2
 print_stats_tree
-
-# Case 3: Delete a node with two children
-erase 30
+put 3 5
 print_stats_tree
-
-# Case 4: Delete the root node
-erase 20
+put 1 2
 print_stats_tree
-
-# Case 5: Attempt to delete a non-existent key (should not change tree)
-erase 100
+put 2 10
 print_stats_tree
-
-# Case 6: Delete all nodes sequentially to check tree shrinking correctly
-erase 5
-erase 7
-erase 12
-erase 15
-erase 17
-erase 22
-erase 25
-erase 27
-erase 32
-erase 35
-erase 37
-print_stats_tree
-
-# Final size check (should be 0)
+put 7 -4
 size
+print_stats_tree
+erase 3
+print_stats_tree
+erase 7
+print_stats_tree
+size
+put 3 1
+print_stats_tree
+put 7 -10
+size
+print_stats_tree
+print
+print_key_stats 7
+find 2
+find 5
+print_key_stats 4
+print
+print_stats
+print_tree

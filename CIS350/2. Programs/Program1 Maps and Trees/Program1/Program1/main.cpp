@@ -710,31 +710,31 @@ public:
 		// stats class to account for basic statistics/information of subtree rooted at
 		//each node
 
-		
-			class Stats {
-			private:
-				// data members: number of nodes/map entries stored in the subtree; sum of
-				//all the map values of map entries stored in the subtree; the minimum map value of
-				//all the map entries stored in the subtree; the maximum map value of the map entries
-				//stored in the subtree
-				int num;
-				int sum;
-				int min;
-				int max;
-			public:
-				// stats constructors
-				Stats() {};
-				Stats(int v, Node* l, Node* r) : num(1), sum(v), min(v), max(v) {
-				};
-				// stats destructor
-				~Stats() {};
-				// overloading output stream for a representation of stats s
-				friend ostream& operator<<(ostream& os, const Stats& s) {
-					os << "{" << s.num << "," << s.sum << "," << s.min << "," << s.max << "}";
-					return os;
-				};
 
-				friend Node;/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED
+		class Stats {
+		private:
+			// data members: number of nodes/map entries stored in the subtree; sum of
+			//all the map values of map entries stored in the subtree; the minimum map value of
+			//all the map entries stored in the subtree; the maximum map value of the map entries
+			//stored in the subtree
+			int num;
+			int sum;
+			int min;
+			int max;
+		public:
+			// stats constructors
+			Stats() {};
+			Stats(int v, Node* l, Node* r) : num(1), sum(v), min(v), max(v) {
+			};
+			// stats destructor
+			~Stats() {};
+			// overloading output stream for a representation of stats s
+			friend ostream& operator<<(ostream& os, const Stats& s) {
+				os << "{" << s.num << "," << s.sum << "," << s.min << "," << s.max << "}";
+				return os;
+			};
+
+			friend Node;/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED
 		};
 		// data member: node info/stats
 		Stats* info;
@@ -753,72 +753,108 @@ public:
 		};
 		// (overloading) print utility for a node, including map entry and additional
 		//info and stats
-			void printStats() { cout << *this << endl; }
+		void printStats() { cout << *this << endl; }
 		/*
 		# PRECONDITION: the info values for the left and right nodes for the children
 		of the node have been properly set, consistent with the subtree that they root
 		# POSTCONDITION: the info values for the node have been properly set,
 		consistent with the subtree that it roots
 		*/
-			/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
-			void updatePut(Node* w) {
-				int nodeValue = w->value;
-				Node* nodesParent = (TreeMapStats::Node*)w->parent;
-				while (nodesParent) {
+		/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
+		void updatePut(Node* w, bool keyExists, int originalVal) {
+			int nodeValue = w->value;
+			Node* nodesParent = (TreeMapStats::Node*)w->parent;
+			while (nodesParent) {
+				if (!keyExists) {
 					nodesParent->info->num++;
 					nodesParent->info->sum += nodeValue;
 					nodesParent->info->max = std::max(nodesParent->info->max, nodeValue);
 					nodesParent->info->min = std::min(nodesParent->info->min, nodeValue);
-					
-					nodesParent = (TreeMapStats::Node*)nodesParent->parent;
 				}
-			}
-
-			void updateErase(Node* w) {
-				while (w) {
-					Node* l = (TreeMapStats::Node*)w->left;
-					Node* r = (TreeMapStats::Node*)w->right;
-
-					// Case: No children
-					if (!l && !r) {
-						w->info->sum = w->value;
-						w->info->max = w->value;
-						w->info->min = w->value;
-						w->info->num = 1;
-					}
-					// Case: Only left child
-					else if (l && !r) {
-						w->info->sum = l->info->sum + w->value;
-						w->info->max = std::max(l->info->max, w->value);
-						w->info->min = std::min(l->info->min, w->value);
-						w->info->num = l->info->num + 1;
-					}
-					// Case: Only right child
-					else if (r && !l) {
-						w->info->sum = r->info->sum + w->value;
-						w->info->max = std::max(r->info->max, w->value);
-						w->info->min = std::min(r->info->min, w->value);
-						w->info->num = r->info->num + 1;
-					}
-					// Case: Both children
-					else {
-						w->info->sum = l->info->sum + r->info->sum + w->value;
-						w->info->max = std::max({ l->info->max, r->info->max, w->value });
-						w->info->min = std::min({ l->info->min, r->info->min, w->value });
-						w->info->num = l->info->num + r->info->num + 1;
-					}
-
-					// Move up the tree
-					w = (TreeMapStats::Node*)w->parent;
+				else {
+					nodesParent->info->sum += nodeValue - originalVal;
+					nodesParent->info->max = std::max(nodesParent->info->max, nodeValue);
+					nodesParent->info->min = std::min(nodesParent->info->min, nodeValue);
 				}
-			}
 
-			void updateSingleRotation(Node* w, Node* x) {
-				
+				nodesParent = (TreeMapStats::Node*)nodesParent->parent;
 			}
+		}
+
+		void updateErase(Node* w) {
+			while (w) {
+				Node* l = (TreeMapStats::Node*)w->left;
+				Node* r = (TreeMapStats::Node*)w->right;
+
+				// Case: No children
+				if (!l && !r) {
+					w->info->sum = w->value;
+					w->info->max = w->value;
+					w->info->min = w->value;
+					w->info->num = 1;
+				}
+				// Case: Only left child
+				else if (l && !r) {
+					w->info->sum = l->info->sum + w->value;
+					w->info->max = std::max(l->info->max, w->value);
+					w->info->min = std::min(l->info->min, w->value);
+					w->info->num = l->info->num + 1;
+				}
+				// Case: Only right child
+				else if (r && !l) {
+					w->info->sum = r->info->sum + w->value;
+					w->info->max = std::max(r->info->max, w->value);
+					w->info->min = std::min(r->info->min, w->value);
+					w->info->num = r->info->num + 1;
+				}
+				// Case: Both children
+				else {
+					w->info->sum = l->info->sum + r->info->sum + w->value;
+					w->info->max = std::max({ l->info->max, r->info->max, w->value });
+					w->info->min = std::min({ l->info->min, r->info->min, w->value });
+					w->info->num = l->info->num + r->info->num + 1;
+				}
+
+				// Move up the tree
+				w = (TreeMapStats::Node*)w->parent;
+			}
+		}
+
+		void updateSingleRotation(Node* w, Node* x) {
+
+
+			Node* l = (TreeMapStats::Node*)x->left;
+			Node* r = (TreeMapStats::Node*)x->right;
+			int rs = (r) ? r->info->sum : 0;
+			int ls = (l) ? l->info->sum : 0;
+			int rma = (r) ? r->info->max : INT32_MIN;
+			int lma = (l) ? l->info->max : INT32_MIN;
+			int rmi = (r) ? r->info->min : INT32_MAX;
+			int lmi = (l) ? l->info->min : INT32_MAX;
+			int lnum = (l) ? l->info->num : 0;
+			int rnum = (r) ? r->info->num : 0;
+			x->info->sum = rs + ls + x->value;
+			x->info->max = std::max({ rma, lma, x->value });
+			x->info->min = std::min({ rmi, lmi, x->value });
+			x->info->num = rnum + lnum + 1;
+
+			l = (TreeMapStats::Node*)w->left;
+			r = (TreeMapStats::Node*)w->right;
+			rs = (r) ? r->info->sum : 0;
+			ls = (l) ? l->info->sum : 0;
+			rma = (r) ? r->info->max : INT32_MIN;
+			lma = (l) ? l->info->max : INT32_MIN;
+			rmi = (r) ? r->info->min : INT32_MAX;
+			lmi = (l) ? l->info->min : INT32_MAX;
+			lnum = (l) ? l->info->num : 0;
+			rnum = (r) ? r->info->num : 0;
+			w->info->sum = rs + ls + w->value;
+			w->info->max = std::max({ rma, lma, w->value });
+			w->info->min = std::min({ rmi, lmi, w->value });
+			w->info->num = rnum + lnum + 1;
 			/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////^^^^^^^^^^^^^^^/////
 			/////MADE EDITS HERE/////MADE EDITS HERE/////MADE EDITS HERE/////
-		
+		}
 			
 	};
 
@@ -861,8 +897,7 @@ TreeMapStats::singleRotation(AVLTreeMap::Node* y, AVLTreeMap::Node* z) {
 	TreeMapStats::Node* w = (TreeMapStats::Node*)y;
 	TreeMapStats::Node* x = (TreeMapStats::Node*)z;
 	// Your code here
-	
-	
+	w->updateSingleRotation(w, x);
 }
 
 
@@ -873,9 +908,12 @@ TreeMapStats::singleRotation(AVLTreeMap::Node* y, AVLTreeMap::Node* z) {
 */
 TreeMapStats::Node*
 TreeMapStats::putNode(int key, int value) {
+	bool keyExists = findNode(key) && findNode(key)->key == key;
+	int originalVal = 0;
+	if (keyExists) originalVal = findNode(key)->value;
 	TreeMapStats::Node* w = (TreeMapStats::Node*)AVLTreeMap::putNode(key, value);
 	// Your code here
-	w->updatePut(w);
+	w->updatePut(w, keyExists, originalVal);
 	return w;
 }
 /*
