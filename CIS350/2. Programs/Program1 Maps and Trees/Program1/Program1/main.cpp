@@ -780,6 +780,7 @@ public:
 			int rnum = (r) ? r->info->num : 0;
 			int lnum = (l) ? l->info->num : 0;
 
+			//update node stats
 			h->info->sum = rs + ls + h->value;
 			h->info->max = std::max({ rma, lma, h->value });
 			h->info->min = std::min({ rmi, lmi, h->value });
@@ -788,43 +789,11 @@ public:
 
 		void updateStats(Node* w) {
 			while (w) {
-				Node* l = (TreeMapStats::Node*)w->left;
-				Node* r = (TreeMapStats::Node*)w->right;
-				// Case: No children
-				if (!l && !r) {
-					w->info->sum = w->value;
-					w->info->max = w->value;
-					w->info->min = w->value;
-					w->info->num = 1;
-				}
-				// Case: Only left child
-				else if (l && !r) {
-					w->info->sum = l->info->sum + w->value;
-					w->info->max = std::max(l->info->max, w->value);
-					w->info->min = std::min(l->info->min, w->value);
-					w->info->num = l->info->num + 1;
-				}
-				// Case: Only right child
-				else if (r && !l) {
-					w->info->sum = r->info->sum + w->value;
-					w->info->max = std::max(r->info->max, w->value);
-					w->info->min = std::min(r->info->min, w->value);
-					w->info->num = r->info->num + 1;
-				}
-				// Case: Both children
-				else {
-					w->info->sum = l->info->sum + r->info->sum + w->value;
-					w->info->max = std::max({ l->info->max, r->info->max, w->value });
-					w->info->min = std::min({ l->info->min, r->info->min, w->value });
-					w->info->num = l->info->num + r->info->num + 1;
-				}
-
+				updateNode(w);
 				// Move up the tree
 				w = (TreeMapStats::Node*)w->parent;
 			}
 		}
-
-		
 
 		void updateStats(Node* w, Node* x) {
 			updateNode(w);
