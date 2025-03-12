@@ -10,6 +10,13 @@ empty) implemented
 # Modification Date: 10/8/2022
 # Purpose: Modified code for simple int-to-int (from int-to-string) order map ADT
 Implementation on linked-structured BSTs
+
+# Modifier: Logan Berk
+# Modification Date: 03/12/2025
+# Purpose: Implements eraseNode, rebalance, singleRotation, and stats updates
+for the put, erase, and singleRotation functions. Requires treeMapStats
+Node to be declared as a friend and adds updateNode and updateStats for
+modularization
 */
 #include <iostream>
 #include <cstdlib>
@@ -734,7 +741,8 @@ public:
 				return os;
 			};
 
-			friend Node;/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED
+			//added to allow the treeMapStats Node class to be able to access stats private members
+			friend Node;
 		};
 		// data member: node info/stats
 		Stats* info;
@@ -757,6 +765,7 @@ public:
 
 
 		/*
+		# INPUT: a node h in the AVL tree
 		# PRECONDITION: the info values for the left and right nodes for the children
 		of the node have been properly set, consistent with the subtree that they root
 		# POSTCONDITION: the info values for the node have been properly set,
@@ -767,24 +776,24 @@ public:
 			Node* l = (TreeMapStats::Node*)h->left;
 			Node* r = (TreeMapStats::Node*)h->right;
 
-			//set sum values
-			int ls = (l) ? l->info->sum : 0;
-			int rs = (r) ? r->info->sum : 0;
-			//set max values
-			int lma = (l) ? l->info->max : INT32_MIN;
-			int rma = (r) ? r->info->max : INT32_MIN;
-			//set min values
-			int lmi = (l) ? l->info->min : INT32_MAX;
-			int rmi = (r) ? r->info->min : INT32_MAX;
-			//set number of nodes in subtree
-			int rnum = (r) ? r->info->num : 0;
-			int lnum = (l) ? l->info->num : 0;
+			//set temp sum values
+			int leftSum = (l) ? l->info->sum : 0;
+			int rightSum = (r) ? r->info->sum : 0;
+			//set temp max values
+			int leftMax = (l) ? l->info->max : INT32_MIN;
+			int rightMax = (r) ? r->info->max : INT32_MIN;
+			//set temp min values
+			int leftMin = (l) ? l->info->min : INT32_MAX;
+			int rightMin = (r) ? r->info->min : INT32_MAX;
+			//set temp number of nodes in left and right subtree
+			int rightNum = (r) ? r->info->num : 0;
+			int leftNum = (l) ? l->info->num : 0;
 
 			//update node stats
-			h->info->sum = rs + ls + h->value;
-			h->info->max = std::max({ rma, lma, h->value });
-			h->info->min = std::min({ rmi, lmi, h->value });
-			h->info->num = rnum + lnum + 1;
+			h->info->sum = leftSum + rightSum + h->value;
+			h->info->max = std::max({ leftMax, rightMax, h->value });
+			h->info->min = std::min({ leftMin, rightMin, h->value });
+			h->info->num = leftNum + rightNum + 1;
 		}
 
 		void updateStats(Node* w) {

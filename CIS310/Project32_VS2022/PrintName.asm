@@ -45,7 +45,6 @@ main PROC
     
     mov edx, OFFSET str1     ; Load reversed string address
     call WriteString         ; Display reversed string
-
     INVOKE ExitProcess,0
 main ENDP
 END main
