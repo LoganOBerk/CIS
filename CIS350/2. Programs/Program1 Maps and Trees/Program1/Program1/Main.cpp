@@ -10,6 +10,13 @@ empty) implemented
 # Modification Date: 10/8/2022
 # Purpose: Modified code for simple int-to-int (from int-to-string) order map ADT
 Implementation on linked-structured BSTs
+
+# Modifier: Logan Berk
+# Modification Date: 03/12/2025
+# Purpose: Implements eraseNode, rebalance, singleRotation, and stats updates
+for the put, erase, and singleRotation functions. Requires treeMapStats
+Node to be declared as a friend and adds updateNode and updateStats for
+modularization
 */
 #include <iostream>
 #include <cstdlib>
@@ -734,7 +741,8 @@ public:
 				return os;
 			};
 
-			friend Node;/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED/////ADDED
+			//added to allow the treeMapStats Node class to be able to access stats private members
+			friend Node;
 		};
 		// data member: node info/stats
 		Stats* info;
@@ -757,6 +765,7 @@ public:
 
 
 		/*
+		# INPUT: a node h in the AVL tree
 		# PRECONDITION: the info values for the left and right nodes for the children
 		of the node have been properly set, consistent with the subtree that they root
 		# POSTCONDITION: the info values for the node have been properly set,
