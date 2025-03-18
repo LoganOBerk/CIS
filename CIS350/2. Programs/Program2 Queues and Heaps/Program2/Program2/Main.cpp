@@ -363,8 +363,7 @@ BT::lastLeftDescendant(Node* w) {
 // INPUT: a node w in a BT
 // OUTPUT: z = the first ancestor node (i.e., node in a path from w to the root)
 // such that w is the right subtree of the BT rooted at z
-// PRECONDITION:
-// POSTCONDITION:
+// PRECONDITION: w is not NULL
 BT::Node*
 BT::firstRightAncestor(Node* w) {
 	// NAME: Logan Berk
@@ -403,7 +402,9 @@ public:
 private:
 	Node* getParentOfNewLastNode();
 	Node* getNewLastNode();
+	
 };
+
 // OUTPUT: the node in the complete BT where any new node inserted would be placed
 // PRECONDITION: non-empty tree
 BT::Node*
@@ -613,12 +614,12 @@ void
 Heap::downHeapBubbling() {
 	// NAME: Logan Berk
 	// Your code here
-	if (empty() || n == 1 || !root) return;  // Add root null check
+	if (empty() || n == 1 || !root) return; 
 
 	Node* current = root;
 
 	bool done = false;
-	while (!done && current) {  // Add current null check
+	while (!done && current) { 
 		// Find the minimum child
 		Node* left = current->left;
 		Node* right = current->right;
@@ -627,7 +628,7 @@ Heap::downHeapBubbling() {
 		// Determine which child is smaller
 		if (left && right) {
 			// Both children exist, compare them
-			if (left->elem && right->elem) {  // Add null checks for elements
+			if (left->elem && right->elem) { 
 				smallerChild = (*(left->elem) < *(right->elem)) ? left : right;
 			}
 			else {
