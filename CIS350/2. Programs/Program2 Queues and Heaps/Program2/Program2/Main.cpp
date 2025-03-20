@@ -354,11 +354,7 @@ BT::Node*
 BT::lastLeftDescendant(Node* w) {
 	// NAME: Logan Berk
 	// Your code here
-	Node* z = w;
-	while (z->left) {
-		z = z->left;
-	}
-	return z;
+	return youngestDescendantType(w, true);
 }
 // INPUT: a node w in a BT
 // OUTPUT: z = the first ancestor node (i.e., node in a path from w to the root)
