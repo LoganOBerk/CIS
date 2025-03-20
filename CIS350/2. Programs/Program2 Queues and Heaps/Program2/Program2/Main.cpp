@@ -407,29 +407,13 @@ BT::Node*
 CompleteBT::getParentOfNewLastNode() {
 	// NAME: Logan Berk
 	// Your code here
-	int path = n + 1;  // Next insertion index
-	int mask = 1;      // Start with LSB
-
-	// Find the MSB position (equivalent to log(n+1))
-	while (path >= (mask << 1)) {
-		mask <<= 1;  // Move left to find the highest 1-bit
-	}
-
-	// Traverse from the second MSB down to the LSB
-	Node* current = root;
-	mask >>= 1;  // Ignore the first 1 (since it represents the root)
-
-	while (mask > 1) {
-		if (path & mask) {
-			current = current->right;  // Go right if bit is 1
-		}
-		else {
-			current = current->left;   // Go left if bit is 0
-		}
-		mask >>= 1;  // Move to the next bit
-	}
-
-	return current;  // The parent of the new last node
+	Node* w = lastNode;
+	if (w == root) return w;
+	Node* p = w->parent;
+	if (w == p->left) return p;
+	w = firstLeftAncestor(w);
+	w = (!w) ? root : w->right;
+	return lastLeftDescendant(w);
 }
 // OUTPUT: the node in the BT that would become the last node of the complete BT
 //should the last node be removed
@@ -438,32 +422,13 @@ BT::Node*
 CompleteBT::getNewLastNode() {
 	// NAME: Logan Berk
 	// Your code here
-	if (n <= 1) return nullptr;  // If tree has 0 or 1 nodes, no new last node
-
-	int path = n - 1;  // The position of what will be the last node after removal
-	int mask = 1;      // Start with LSB
-
-	// Find the MSB position (equivalent to log(n))
-	while (path >= (mask << 1)) {
-		mask <<= 1;  // Move left to find the highest 1-bit
-	}
-
-	// Traverse from the MSB down to the LSB to find the node
-	BT::Node* current = root;
-
-	mask >>= 1;  // Start from the second highest bit
-
-	while (mask > 0) {
-		if (path & mask) {
-			current = current->right;
-		}
-		else {
-			current = current->left;
-		}
-		mask >>= 1;
-	}
-
-	return current;
+	Node* w = lastNode;
+	if (w == root) return nullptr;
+	Node* p = w->parent;
+	if (w == p->right) return p->left;
+	w = firstRightAncestor(w);
+	w = (!w) ? root : w->right;
+	return lastRightDescendant(w);
 }
 // INPUT: an element e
 // OUTPUT: the new node x in the complete BT containing e
