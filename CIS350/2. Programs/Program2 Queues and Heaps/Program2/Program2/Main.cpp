@@ -407,12 +407,20 @@ BT::Node*
 CompleteBT::getParentOfNewLastNode() {
 	// NAME: Logan Berk
 	// Your code here
+
+	//store lastNode
 	Node* w = lastNode;
+	//if the lastNode is the root or if the root and last node are null return
 	if (w == root) return w;
+	//store the parent of the lastNode
 	Node* p = w->parent;
+	//if the lastnode is the left then return the parent
 	if (w == p->left) return p;
+	//otherwise store the first left ancestor of the lastNode
 	w = firstLeftAncestor(w);
+	//if the first left ancestor isnt found store the root, otherwise store the right node
 	w = (!w) ? root : w->right;
+	//return the last left descendant of w
 	return lastLeftDescendant(w);
 }
 // OUTPUT: the node in the BT that would become the last node of the complete BT
@@ -422,12 +430,20 @@ BT::Node*
 CompleteBT::getNewLastNode() {
 	// NAME: Logan Berk
 	// Your code here
+	
+	//store lastNode
 	Node* w = lastNode;
+	//if the lastNode is the root or if the root and last node are null return
 	if (w == root) return nullptr;
+	//store the parent of the lastNode
 	Node* p = w->parent;
+	//if the lastnode is to the right then return the left
 	if (w == p->right) return p->left;
+	//otherwise store the first right ancestor of the lastNode
 	w = firstRightAncestor(w);
+	//if the first right ancestor isnt found store the root, otherwise store the right node
 	w = (!w) ? root : w->right;
+	//return the last right descendant of w
 	return lastRightDescendant(w);
 }
 // INPUT: an element e
@@ -461,18 +477,10 @@ CompleteBT::remove() {
 	// Your code here
 	// Check if lastNode is null before proceeding
 	if (!lastNode) return nullptr;
-
 	// Save current lastNode
 	Node* oldLastNode = lastNode;
-
 	// Update lastNode before removing the node
-	if (n > 1) {
-		lastNode = getNewLastNode();
-	}
-	else {
-		// If we're removing the last element, set lastNode to nullptr
-		lastNode = nullptr;
-	}
+	lastNode = (n > 1) ? getNewLastNode() : nullptr;
 
 	return removeNode(oldLastNode);
 }
@@ -526,20 +534,10 @@ Heap::removeMin() {
 		delete rootElem;
 		return;
 	}
-
 	// Save the root element to be deleted later
 	Elem* rootElem = root->elem;
-
-	// Move the last element to the root
-	root->elem = lastNode->elem;
-
-	// Set the last node's element to NULL to prevent it from being deleted
-	// when we call remove()
-	lastNode->elem = nullptr;
-
-	// Remove the last node
-	remove();
-
+	// remove and reassign the last element to the root
+	root->elem = remove();
 	// Perform down-heap bubbling to maintain heap property
 	downHeapBubbling();
 
@@ -575,56 +573,22 @@ void
 Heap::downHeapBubbling() {
 	// NAME: Logan Berk
 	// Your code here
-	if (empty() || n == 1 || !root) return; 
+
+	// Early return for empty heap or single-node heap
+	if (empty() || n == 1) return;
 
 	Node* current = root;
+	while (current) {
+		// Get the child with the minimum key using the existing minChild function
+		Node* minC = minChild(current);
 
-	bool done = false;
-	while (!done && current) { 
-		// Find the minimum child
-		Node* left = current->left;
-		Node* right = current->right;
-		Node* smallerChild = nullptr;
+		// If no children or current is already smaller than min child, we're done
+		if (!minC || *(current->elem) < *(minC->elem))
+			break;
 
-		// Determine which child is smaller
-		if (left && right) {
-			// Both children exist, compare them
-			if (left->elem && right->elem) { 
-				smallerChild = (*(left->elem) < *(right->elem)) ? left : right;
-			}
-			else {
-				smallerChild = (left->elem) ? left : right;
-			}
-		}
-		else if (left) {
-			smallerChild = left;
-		}
-		else if (right) {
-			smallerChild = right;
-		}
-		else {
-			// No children, we're at a leaf
-			done = true;
-			continue;
-		}
-
-		// If no smaller child was found, we're done
-		if (!smallerChild || !smallerChild->elem || !current->elem) {
-			done = true;
-			continue;
-		}
-
-		// If current is smaller than smallerChild, we're done
-		if (*(current->elem) < *(smallerChild->elem)) {
-			done = true;
-		}
-		else {
-			// Swap elements
-			swapElem(current, smallerChild);
-
-			// Move down
-			current = smallerChild;
-		}
+		// Swap elements and continue down the heap
+		swapElem(current, minC);
+		current = minC;
 	}
 }
 // DO NOT CHANGE ANYTHING BELOW THIS LINE

@@ -1,18 +1,57 @@
-buy 100  3.29  123456
+buy 100 3.29 123456
 print buy
-sell 20    3.50  234578
+sell 20 3.50 234578
 print sell
-buy 10    3.55  156782
-print buy
-print sell
-sell 50    3.35  234578
-print sell
-buy 200  3.32  234578
-print buy
-buy 60    3.33  190874
-print buy
-sell 60    3.63  190874
-print sell
-sell 250   3.30 562890
+buy 10 3.55 156782
 print buy
 print sell
+sell 50 3.35 234578
+print sell
+buy 200 3.32 234578
+print buy
+buy 60 3.33 190874
+print buy
+sell 60 3.63 190874
+print sell
+sell 250 3.30 562890
+print buy
+print sell
+print
+# Edge cases for heaps
+buy 5 3.40 111111
+buy 5 3.40 222222
+print buy
+# Test time priority with same price
+sell 15 3.60 333333
+sell 15 3.60 444444
+print sell
+# Test market crossing
+buy 30 3.65 555555
+print buy
+print sell
+# Test removal of min elements
+buy 500 3.10 666666
+print buy
+sell 500 3.70 777777
+print sell
+# Test large trades that partially match
+buy 1000 3.50 888888
+sell 800 3.45 999999
+print buy
+print sell
+# Test multiple consecutive trades
+buy 50 3.55 123123
+buy 60 3.56 234234
+buy 70 3.57 345345
+sell 200 3.40 456456
+print buy
+print sell
+# Test empty heap and re-fill
+sell 100 3.80 567567
+sell 100 3.81 678678
+sell 100 3.82 789789
+buy 350 3.85 890890
+print buy
+print sell
+print ledger
+print bank
