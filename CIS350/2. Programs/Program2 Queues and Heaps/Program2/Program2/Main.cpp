@@ -4,6 +4,11 @@
 based on heaps and
 a hash map to keep track of trade transaction records
 # Update: 10/30/2023 - Refactored
+
+*Modifier: Logan Berk
+*Modification: Implemented lastLeftDecendant, firstRightAncestor, getParentOfNewLastNode,
+getNewLastNode, add, remove, insert, min, removeMin, upHeapBubbling, downHeapBubbling functions
+#Modification Date: 3/22/2025
 */
 #include <iostream>
 #include <string>
@@ -513,8 +518,7 @@ Elem*
 Heap::min() {
 	// NAME: Logan Berk
 	// Your code here
-	if (empty()) return nullptr;  // If heap is empty, return nullptr
-	return root->elem;  // Min element is at the root
+	return (empty()) ? nullptr : root->elem;  // Min element is at the root or NULL
 }
 // POSTCONDITION: the minimum (highest priority) element (i.e., the element at the
 //root of the tree) is removed from the heap; the element of the last node is copied
@@ -526,23 +530,23 @@ Heap::removeMin() {
 	// NAME: Logan Berk
 	// Your code here
 	if (empty()) return;  // If heap is empty, nothing to remove
-
-	// If there's only one node, just remove it
-	if (n == 1) {
-		Elem* rootElem = root->elem;
-		remove();
-		delete rootElem;
-		return;
-	}
 	// Save the root element to be deleted later
-	Elem* rootElem = root->elem;
-	// remove and reassign the last element to the root
-	root->elem = remove();
-	// Perform down-heap bubbling to maintain heap property
-	downHeapBubbling();
+	Elem* min = root->elem;
 
-	// Delete the root element that was removed
-	delete rootElem;
+	
+	if (n > 1) {
+		// remove and reassign the last element to the root
+		root->elem = remove();
+		// Perform down-heap bubbling to maintain heap property
+		downHeapBubbling();
+	}
+	else {
+		// If there's only one node, just remove it
+		remove();
+	}
+
+	// Delete the minimum element
+	delete min;
 }
 // PRECONDITION: the heap is not empty
 // POSTCONDITION: the up-heap bubbling operation is performed at the last node
