@@ -412,21 +412,29 @@ BT::Node*
 CompleteBT::getParentOfNewLastNode() {
 	// NAME: Logan Berk
 	// Your code here
+	int path = n + 1;  // Next insertion index
+	int mask = 1;      // Start with LSB
 
-	//store lastNode
-	Node* w = lastNode;
-	//if the lastNode is the root or if the root and last node are null return
-	if (w == root) return w;
-	//store the parent of the lastNode
-	Node* p = w->parent;
-	//if the lastnode is the left then return the parent
-	if (w == p->left) return p;
-	//otherwise store the first left ancestor of the lastNode
-	w = firstLeftAncestor(w);
-	//if the first left ancestor isnt found store the root, otherwise store the right node
-	w = (!w) ? root : w->right;
-	//return the last left descendant of w
-	return lastLeftDescendant(w);
+	// Find the MSB position (equivalent to log(n+1))
+	while (path >= (mask << 1)) {
+		mask <<= 1;  // Move left to find the highest 1-bit
+	}
+
+	// Traverse from the second MSB down to the LSB
+	Node* current = root;
+	mask >>= 1;  // Ignore the first 1 (since it represents the root)
+
+	while (mask > 1) {
+		if (path & mask) {
+			current = current->right;  // Go right if bit is 1
+		}
+		else {
+			current = current->left;   // Go left if bit is 0
+		}
+		mask >>= 1;  // Move to the next bit
+	}
+
+	return current;  // The parent of the new last node
 }
 // OUTPUT: the node in the BT that would become the last node of the complete BT
 //should the last node be removed
@@ -435,21 +443,32 @@ BT::Node*
 CompleteBT::getNewLastNode() {
 	// NAME: Logan Berk
 	// Your code here
-	
-	//store lastNode
-	Node* w = lastNode;
-	//if the lastNode is the root or if the root and last node are null return
-	if (w == root) return nullptr;
-	//store the parent of the lastNode
-	Node* p = w->parent;
-	//if the lastnode is to the right then return the left
-	if (w == p->right) return p->left;
-	//otherwise store the first right ancestor of the lastNode
-	w = firstRightAncestor(w);
-	//if the first right ancestor isnt found store the root, otherwise store the right node
-	w = (!w) ? root : w->right;
-	//return the last right descendant of w
-	return lastRightDescendant(w);
+	if (n <= 1) return nullptr;  // If tree has 0 or 1 nodes, no new last node
+
+	int path = n - 1;  // The position of what will be the last node after removal
+	int mask = 1;      // Start with LSB
+
+	// Find the MSB position (equivalent to log(n))
+	while (path >= (mask << 1)) {
+		mask <<= 1;  // Move left to find the highest 1-bit
+	}
+
+	// Traverse from the MSB down to the LSB to find the node
+	BT::Node* current = root;
+
+	mask >>= 1;  // Start from the second highest bit
+
+	while (mask > 0) {
+		if (path & mask) {
+			current = current->right;
+		}
+		else {
+			current = current->left;
+		}
+		mask >>= 1;
+	}
+
+	return current;
 }
 // INPUT: an element e
 // OUTPUT: the new node x in the complete BT containing e
