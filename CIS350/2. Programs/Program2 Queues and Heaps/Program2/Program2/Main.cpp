@@ -4,11 +4,6 @@
 based on heaps and
 a hash map to keep track of trade transaction records
 # Update: 10/30/2023 - Refactored
-
-*Modifier: Logan Berk
-*Modification: Implemented lastLeftDecendant, firstRightAncestor, getParentOfNewLastNode,
-getNewLastNode, add, remove, insert, min, removeMin, upHeapBubbling, downHeapBubbling functions
-#Modification Date: 3/22/2025
 */
 #include <iostream>
 #include <string>
@@ -43,8 +38,8 @@ struct Key {
 // OUPUT: true iff the price of x < price of y, or prices are equal but time stamp
 //of x < time stamp of y
 	// PRECONDITION: properly initialized keys
-	bool
-	operator < (const Key& x, const Key& y) {
+bool
+operator < (const Key& x, const Key& y) {
 	return ((x.price < y.price) || ((x.price == y.price) && (x.timeStamp <
 		y.timeStamp)));
 }
@@ -151,7 +146,7 @@ class BT {
 public:
 	// simple data structure used to create nodes for (linked-list)
 	//implementation of general BTs
-		struct Node {
+	struct Node {
 		Elem* elem;
 		Node* left;
 		Node* right;
@@ -384,7 +379,7 @@ BT::lastRightDescendant(Node* w) {
 // POSTCONDITON: the corresponding child of p is set to c, depending on the input;
 //if c is not NULL, then p becomes its parent
 void
-BT::makeChild(Node * p, Node * c, bool isLeft) {
+BT::makeChild(Node* p, Node* c, bool isLeft) {
 	if (p) {
 		if (isLeft) p->left = c;
 		else p->right = c;
@@ -403,7 +398,7 @@ public:
 private:
 	Node* getParentOfNewLastNode();
 	Node* getNewLastNode();
-	
+
 };
 
 // OUTPUT: the node in the complete BT where any new node inserted would be placed
@@ -475,15 +470,15 @@ CompleteBT::getNewLastNode() {
 // POSTCONDITION: x is inserted in the proper place in the complete BT and becomes
 //its last node; if the tree was empty, then x becomes the root; the size of the tree
 //increases by 1
-BT::Node *
-CompleteBT::add(Elem * e) {
+BT::Node*
+CompleteBT::add(Elem* e) {
 	// NAME: Logan Berk
 	// Your code here
 	Node* parent = getParentOfNewLastNode();
 	Node* x = new Node(e, nullptr, nullptr, parent);
 	if (!parent) root = x;
 	else {
-		if(!parent->left) parent->left = x;
+		if (!parent->left) parent->left = x;
 		else parent->right = x;
 	}
 	n++;
@@ -495,16 +490,24 @@ CompleteBT::add(Elem * e) {
 // POSTCONDITON: the last node of the complete BT is removed from the tree and the
 //last node is properly reset(to NULL if the tree becomes empty); the size of the
 //tree decreases by 1
-Elem *
+Elem*
 CompleteBT::remove() {
 	// NAME: Logan Berk
 	// Your code here
 	// Check if lastNode is null before proceeding
 	if (!lastNode) return nullptr;
+
 	// Save current lastNode
 	Node* oldLastNode = lastNode;
+
 	// Update lastNode before removing the node
-	lastNode = (n > 1) ? getNewLastNode() : nullptr;
+	if (n > 1) {
+		lastNode = getNewLastNode();
+	}
+	else {
+		// If we're removing the last element, set lastNode to nullptr
+		lastNode = nullptr;
+	}
 
 	return removeNode(oldLastNode);
 }
@@ -524,7 +527,7 @@ private:
 // POSTCONDITION: a proper heap (after the insertion of e); a new node containing e
 //is added to the heap, so that the size of the heap increases by 1
 void
-Heap::insert(Elem * e) {
+Heap::insert(Elem* e) {
 	// NAME: Logan Berk
 	// Your code here
 	// Add the element to the complete binary tree
@@ -537,7 +540,8 @@ Elem*
 Heap::min() {
 	// NAME: Logan Berk
 	// Your code here
-	return (empty()) ? nullptr : root->elem;  // Min element is at the root or NULL
+	if (empty()) return nullptr;  // If heap is empty, return nullptr
+	return root->elem;  // Min element is at the root
 }
 // POSTCONDITION: the minimum (highest priority) element (i.e., the element at the
 //root of the tree) is removed from the heap; the element of the last node is copied
@@ -549,23 +553,33 @@ Heap::removeMin() {
 	// NAME: Logan Berk
 	// Your code here
 	if (empty()) return;  // If heap is empty, nothing to remove
-	// Save the root element to be deleted later
-	Elem* min = root->elem;
 
-	
-	if (n > 1) {
-		// remove and reassign the last element to the root
-		root->elem = remove();
-		// Perform down-heap bubbling to maintain heap property
-		downHeapBubbling();
-	}
-	else {
-		// If there's only one node, just remove it
+	// If there's only one node, just remove it
+	if (n == 1) {
+		Elem* rootElem = root->elem;
 		remove();
+		delete rootElem;
+		return;
 	}
 
-	// Delete the minimum element
-	delete min;
+	// Save the root element to be deleted later
+	Elem* rootElem = root->elem;
+
+	// Move the last element to the root
+	root->elem = lastNode->elem;
+
+	// Set the last node's element to NULL to prevent it from being deleted
+	// when we call remove()
+	lastNode->elem = nullptr;
+
+	// Remove the last node
+	remove();
+
+	// Perform down-heap bubbling to maintain heap property
+	downHeapBubbling();
+
+	// Delete the root element that was removed
+	delete rootElem;
 }
 // PRECONDITION: the heap is not empty
 // POSTCONDITION: the up-heap bubbling operation is performed at the last node
@@ -596,22 +610,56 @@ void
 Heap::downHeapBubbling() {
 	// NAME: Logan Berk
 	// Your code here
-
-	// Early return for empty heap or single-node heap
-	if (empty() || n == 1) return;
+	if (empty() || n == 1 || !root) return;
 
 	Node* current = root;
-	while (current) {
-		// Get the child with the minimum key using the existing minChild function
-		Node* minC = minChild(current);
 
-		// If no children or current is already smaller than min child, we're done
-		if (!minC || *(current->elem) < *(minC->elem))
-			break;
+	bool done = false;
+	while (!done && current) {
+		// Find the minimum child
+		Node* left = current->left;
+		Node* right = current->right;
+		Node* smallerChild = nullptr;
 
-		// Swap elements and continue down the heap
-		swapElem(current, minC);
-		current = minC;
+		// Determine which child is smaller
+		if (left && right) {
+			// Both children exist, compare them
+			if (left->elem && right->elem) {
+				smallerChild = (*(left->elem) < *(right->elem)) ? left : right;
+			}
+			else {
+				smallerChild = (left->elem) ? left : right;
+			}
+		}
+		else if (left) {
+			smallerChild = left;
+		}
+		else if (right) {
+			smallerChild = right;
+		}
+		else {
+			// No children, we're at a leaf
+			done = true;
+			continue;
+		}
+
+		// If no smaller child was found, we're done
+		if (!smallerChild || !smallerChild->elem || !current->elem) {
+			done = true;
+			continue;
+		}
+
+		// If current is smaller than smallerChild, we're done
+		if (*(current->elem) < *(smallerChild->elem)) {
+			done = true;
+		}
+		else {
+			// Swap elements
+			swapElem(current, smallerChild);
+
+			// Move down
+			current = smallerChild;
+		}
 	}
 }
 // DO NOT CHANGE ANYTHING BELOW THIS LINE
@@ -665,7 +713,7 @@ private:
 	HashMap book;
 };
 void
-Ledger::printTransList(const TransList & L) const {
+Ledger::printTransList(const TransList& L) const {
 	cout << "(";
 	TransList::const_iterator it = L.cbegin();
 	if (it != L.cend()) {
@@ -676,7 +724,7 @@ Ledger::printTransList(const TransList & L) const {
 	cout << ")";
 }
 void
-Ledger::printRecord(const Record * r) const {
+Ledger::printRecord(const Record* r) const {
 	cout << r->id << ":" << r->balance << ":" << r->holdings << ":";
 	printTransList(r->buyTrans);
 	cout << ":";
@@ -697,8 +745,8 @@ Ledger::print() const {
 //	holdings / num of shares and balance / amount of money made or lost in all of the
 //	trader's transactions); the record for a new trader is created, and properly
 //	initialized, if this is the first transaction for the trader
-	void
-	Ledger::trans(Elem * e, bool isBuyTrans) {
+void
+Ledger::trans(Elem* e, bool isBuyTrans) {
 	double price = e->key->price;
 	int num = e->value->numShares;
 	int id = e->value->traderID;
@@ -719,7 +767,7 @@ Ledger::print() const {
 //amount of money the trader paid for the shares; if this is the first transaction
 //for the trader, a new record is created, and properly initialized
 void
-Ledger::buy(Elem * e) {
+Ledger::buy(Elem* e) {
 	trans(e, true);
 }
 // INPUT: an element e
@@ -729,7 +777,7 @@ Ledger::buy(Elem * e) {
 //the trader obtained for the shares; if this is the first transaction for the
 //trader, a new record is created, and properly initialized
 void
-Ledger::sell(Elem * e) {
+Ledger::sell(Elem* e) {
 	trans(e, false);
 }
 // Stock Market ADT
