@@ -4,7 +4,13 @@
 based on heaps and
 a hash map to keep track of trade transaction records
 # Update: 10/30/2023 - Refactored
+
+*Modifier: Logan Berk
+*Purpose: Implementation of lastLeftDescendant, firstRightAncestor, getParentOfNewLastNode, getNewLastNode,
+* add, remove, insert, min, removeMin, upHeapBubbling, and downHeapBubbling operations for proper heap maintenance.
+# Update: 3/30/2025
 */
+
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -407,29 +413,18 @@ BT::Node*
 CompleteBT::getParentOfNewLastNode() {
 	// NAME: Logan Berk
 	// Your code here
-	int path = n + 1;  // Next insertion index
-	int mask = 1;      // Start with LSB
+	
+	//assign variables for lastNode and root
+	Node* x = lastNode, * r = root;
+	if (!x || !x->parent) return r; //check base case (empty tree or no parent)
 
-	// Find the MSB position (equivalent to log(n+1))
-	while (path >= (mask << 1)) {
-		mask <<= 1;  // Move left to find the highest 1-bit
-	}
+	Node* y = x->parent; //assign variable to parent of lastNode
+	if (y->left == x) return y;  // If x is left child, return parent directly
 
-	// Traverse from the second MSB down to the LSB
-	Node* current = root;
-	mask >>= 1;  // Ignore the first 1 (since it represents the root)
-
-	while (mask > 1) {
-		if (path & mask) {
-			current = current->right;  // Go right if bit is 1
-		}
-		else {
-			current = current->left;   // Go left if bit is 0
-		}
-		mask >>= 1;  // Move to the next bit
-	}
-
-	return current;  // The parent of the new last node
+	// Find the next insertion point
+	x = firstLeftAncestor(x);
+	// check if the tree was full or not if full take the furthest left from the root 
+	return x ? lastLeftDescendant(x->right) : lastLeftDescendant(r);
 }
 // OUTPUT: the node in the BT that would become the last node of the complete BT
 //should the last node be removed
@@ -438,32 +433,19 @@ BT::Node*
 CompleteBT::getNewLastNode() {
 	// NAME: Logan Berk
 	// Your code here
-	if (n <= 1) return nullptr;  // If tree has 0 or 1 nodes, no new last node
+	
+	if (n < 2) return nullptr;  // Ensure proper handling of single-node cases
 
-	int path = n - 1;  // The position of what will be the last node after removal
-	int mask = 1;      // Start with LSB
+	//assign variables for lastNode and root and parent to lastNode
+	Node* x = lastNode, * r = root;
+	Node* y = x->parent;
 
-	// Find the MSB position (equivalent to log(n))
-	while (path >= (mask << 1)) {
-		mask <<= 1;  // Move left to find the highest 1-bit
-	}
+	if (y->right == x) return y->left;  // If x is right child, return its left sibling
 
-	// Traverse from the MSB down to the LSB to find the node
-	BT::Node* current = root;
-
-	mask >>= 1;  // Start from the second highest bit
-
-	while (mask > 0) {
-		if (path & mask) {
-			current = current->right;
-		}
-		else {
-			current = current->left;
-		}
-		mask >>= 1;
-	}
-
-	return current;
+	// Find the previous last node
+	x = firstRightAncestor(x);
+	// check if the tree was full or not if full take the furthest right from the root 
+	return x ? lastRightDescendant(x->left) : lastRightDescendant(r);
 }
 // INPUT: an element e
 // OUTPUT: the new node x in the complete BT containing e
@@ -474,15 +456,16 @@ BT::Node*
 CompleteBT::add(Elem* e) {
 	// NAME: Logan Berk
 	// Your code here
-	Node* parent = getParentOfNewLastNode();
-	Node* x = new Node(e, nullptr, nullptr, parent);
-	if (!parent) root = x;
+	Node* parent = getParentOfNewLastNode(); //find proper parent
+	Node* x = new Node(e, nullptr, nullptr, parent); //create node with proper parent
+	if (!parent) root = x; //check if there is no parent
 	else {
+		//check for first empty spot left to right and then assign proper child
 		if (!parent->left) parent->left = x;
 		else parent->right = x;
 	}
-	n++;
-	lastNode = x;
+	n++; //increase size of tree
+	lastNode = x; //reassign lastNode
 	return x;
 }
 // OUTPUT: the element of the last node of the complete BT (to be removed); NULL if
@@ -494,21 +477,8 @@ Elem*
 CompleteBT::remove() {
 	// NAME: Logan Berk
 	// Your code here
-	// Check if lastNode is null before proceeding
-	if (!lastNode) return nullptr;
-
-	// Save current lastNode
 	Node* oldLastNode = lastNode;
-
-	// Update lastNode before removing the node
-	if (n > 1) {
-		lastNode = getNewLastNode();
-	}
-	else {
-		// If we're removing the last element, set lastNode to nullptr
-		lastNode = nullptr;
-	}
-
+	lastNode = getNewLastNode();
 	return removeNode(oldLastNode);
 }
 // Heap data-structure implementation of a priority queue ADT
@@ -610,56 +580,16 @@ void
 Heap::downHeapBubbling() {
 	// NAME: Logan Berk
 	// Your code here
-	if (empty() || n == 1 || !root) return;
 
 	Node* current = root;
-
-	bool done = false;
-	while (!done && current) {
-		// Find the minimum child
-		Node* left = current->left;
-		Node* right = current->right;
-		Node* smallerChild = nullptr;
-
-		// Determine which child is smaller
-		if (left && right) {
-			// Both children exist, compare them
-			if (left->elem && right->elem) {
-				smallerChild = (*(left->elem) < *(right->elem)) ? left : right;
-			}
-			else {
-				smallerChild = (left->elem) ? left : right;
-			}
-		}
-		else if (left) {
-			smallerChild = left;
-		}
-		else if (right) {
-			smallerChild = right;
-		}
-		else {
-			// No children, we're at a leaf
-			done = true;
-			continue;
-		}
-
-		// If no smaller child was found, we're done
-		if (!smallerChild || !smallerChild->elem || !current->elem) {
-			done = true;
-			continue;
-		}
-
-		// If current is smaller than smallerChild, we're done
-		if (*(current->elem) < *(smallerChild->elem)) {
-			done = true;
-		}
-		else {
-			// Swap elements
-			swapElem(current, smallerChild);
-
-			// Move down
-			current = smallerChild;
-		}
+	Node* smallestChild = nullptr;
+	while (current) {
+		smallestChild = minChild(current);
+		//if minChild returns null break
+		if (!smallestChild) break;
+		//if current is smaller than smallest child swap
+		if(*(current->elem) > * (smallestChild->elem)) swapElem(current, smallestChild);
+		current = smallestChild;
 	}
 }
 // DO NOT CHANGE ANYTHING BELOW THIS LINE
