@@ -8,7 +8,7 @@ a hash map to keep track of trade transaction records
 *Modifier: Logan Berk
 *Purpose: Implementation of lastLeftDescendant, firstRightAncestor, getParentOfNewLastNode, getNewLastNode,
 * add, remove, insert, min, removeMin, upHeapBubbling, and downHeapBubbling operations for proper heap maintenance.
-# Update: 3/31/2025
+# Update: 3/32/2025
 */
 
 #include <iostream>
@@ -413,12 +413,13 @@ BT::Node*
 CompleteBT::getParentOfNewLastNode() {
 	// NAME: Logan Berk
 	// Your code here
-	
-	//assign variables for lastNode and root
-	Node* x = lastNode, * r = root;
-	if (empty() || n == 1) return r; //check base case (empty tree or one node)
 
-	Node* y = x->parent; //assign variable to parent of lastNode
+	if (n == 1) return root; // Ensure proper handling of single-node cases
+
+	//assign variables for lastNode and root and parent to lastNode
+	Node* x = lastNode, * r = root;
+	Node* y = x->parent;
+
 	if (y->left == x) return y;  // If x is left child, return parent directly
 
 	// Find the next insertion point
@@ -434,7 +435,7 @@ CompleteBT::getNewLastNode() {
 	// NAME: Logan Berk
 	// Your code here
 	
-	if (n < 2) return nullptr;  // Ensure proper handling of single-node cases
+	if (n == 1) return nullptr;  // Ensure proper handling of single-node cases
 
 	//assign variables for lastNode and root and parent to lastNode
 	Node* x = lastNode, * r = root;
@@ -456,11 +457,19 @@ BT::Node*
 CompleteBT::add(Elem* e) {
 	// NAME: Logan Berk
 	// Your code here
-	Node* par = getParentOfNewLastNode(); //find proper parent
-	Node* x = new Node(e, nullptr, nullptr, par); //create node with proper parent
-	if (empty()) root = x; // If tree was empty, set new node as root
-	else if (!par->left) par->left = x; // Assign as left child if available
-	else par->right = x; // Otherwise, assign as right child
+	Node* x;
+
+	if (empty()) {
+		x = new Node(e, nullptr, nullptr, nullptr);
+		root = x; // If tree was empty, set new node as root
+	}
+	else {
+		Node* par = getParentOfNewLastNode(); //find proper parent
+		x = new Node(e, nullptr, nullptr, par); //create node with proper parent
+
+		if (!par->left) par->left = x; // Assign as left child if available
+		else par->right = x; // Otherwise, assign as right child
+	}
 	
 	n++; //increase size of tree
 	lastNode = x; //reassign lastNode
@@ -475,6 +484,7 @@ Elem*
 CompleteBT::remove() {
 	// NAME: Logan Berk
 	// Your code here
+	if (empty()) return nullptr;
 	Node* oldLastNode = lastNode;
 	lastNode = getNewLastNode();
 	return removeNode(oldLastNode);
