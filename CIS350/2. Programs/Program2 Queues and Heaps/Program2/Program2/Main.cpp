@@ -8,7 +8,7 @@ a hash map to keep track of trade transaction records
 *Modifier: Logan Berk
 *Purpose: Implementation of lastLeftDescendant, firstRightAncestor, getParentOfNewLastNode, getNewLastNode,
 * add, remove, insert, min, removeMin, upHeapBubbling, and downHeapBubbling operations for proper heap maintenance.
-# Update: 3/30/2025
+# Update: 3/31/2025
 */
 
 #include <iostream>
@@ -416,7 +416,7 @@ CompleteBT::getParentOfNewLastNode() {
 	
 	//assign variables for lastNode and root
 	Node* x = lastNode, * r = root;
-	if (!x || !x->parent) return r; //check base case (empty tree or no parent)
+	if (empty() || n == 1) return r; //check base case (empty tree or one node)
 
 	Node* y = x->parent; //assign variable to parent of lastNode
 	if (y->left == x) return y;  // If x is left child, return parent directly
@@ -456,14 +456,12 @@ BT::Node*
 CompleteBT::add(Elem* e) {
 	// NAME: Logan Berk
 	// Your code here
-	Node* parent = getParentOfNewLastNode(); //find proper parent
-	Node* x = new Node(e, nullptr, nullptr, parent); //create node with proper parent
-	if (!parent) root = x; //check if there is no parent
-	else {
-		//check for first empty spot left to right and then assign proper child
-		if (!parent->left) parent->left = x;
-		else parent->right = x;
-	}
+	Node* par = getParentOfNewLastNode(); //find proper parent
+	Node* x = new Node(e, nullptr, nullptr, par); //create node with proper parent
+	if (empty()) root = x; // If tree was empty, set new node as root
+	else if (!par->left) par->left = x; // Assign as left child if available
+	else par->right = x; // Otherwise, assign as right child
+	
 	n++; //increase size of tree
 	lastNode = x; //reassign lastNode
 	return x;
@@ -510,8 +508,7 @@ Elem*
 Heap::min() {
 	// NAME: Logan Berk
 	// Your code here
-	if (empty()) return nullptr;  // If heap is empty, return nullptr
-	return root->elem;  // Min element is at the root
+	return empty() ? nullptr : root->elem;  // Min element is at the root or tree is empty
 }
 // POSTCONDITION: the minimum (highest priority) element (i.e., the element at the
 //root of the tree) is removed from the heap; the element of the last node is copied
@@ -522,34 +519,24 @@ void
 Heap::removeMin() {
 	// NAME: Logan Berk
 	// Your code here
-	if (empty()) return;  // If heap is empty, nothing to remove
 
-	// If there's only one node, just remove it
-	if (n == 1) {
-		Elem* rootElem = root->elem;
-		remove();
-		delete rootElem;
-		return;
-	}
+	//Handle empty heap case
+	if (empty()) return;
 
-	// Save the root element to be deleted later
-	Elem* rootElem = root->elem;
+	// Save the root element for deletion later
+	Elem* minElem = root->elem;
 
-	// Move the last element to the root
+	// Replace root with last element
 	root->elem = lastNode->elem;
-
-	// Set the last node's element to NULL to prevent it from being deleted
-	// when we call remove()
-	lastNode->elem = nullptr;
 
 	// Remove the last node
 	remove();
 
-	// Perform down-heap bubbling to maintain heap property
+	//restore heap order property
 	downHeapBubbling();
 
-	// Delete the root element that was removed
-	delete rootElem;
+	// Clean up the minimum element
+	delete minElem;
 }
 // PRECONDITION: the heap is not empty
 // POSTCONDITION: the up-heap bubbling operation is performed at the last node
@@ -558,19 +545,15 @@ void
 Heap::upHeapBubbling() {
 	// NAME: Logan Berk
 	// Your code here
-	if (!lastNode) return;  // If no last node, nothing to do
-
-	Node* current = lastNode;
-	Node* parent = current->parent;
-
+	if (n < 2) return;  // If heap is of size 0 or 1 do nothing
+	Node* cur = lastNode, *par = cur->parent;
 	// While current has a parent and current's elem is smaller than parent's elem
-	while (parent && *(current->elem) < *(parent->elem)) {
+	while (par && *(cur->elem) < *(par->elem)) {
 		// Swap elements
-		swapElem(current, parent);
-
+		swapElem(cur, par);
 		// Move up
-		current = parent;
-		parent = current->parent;
+		cur = par;
+		par = cur->parent;
 	}
 }
 // POSTCONDITION: the down-heap bubbling operation is performed at the root, if the
@@ -580,16 +563,14 @@ void
 Heap::downHeapBubbling() {
 	// NAME: Logan Berk
 	// Your code here
-
-	Node* current = root;
-	Node* smallestChild = nullptr;
-	while (current) {
-		smallestChild = minChild(current);
-		//if minChild returns null break
-		if (!smallestChild) break;
-		//if current is smaller than smallest child swap
-		if(*(current->elem) > * (smallestChild->elem)) swapElem(current, smallestChild);
-		current = smallestChild;
+	if (empty()) return; //If empty 
+	Node* cur = root, *minCh;
+	//Repeat when a minChild exits and the current element is less than its element
+	while ((minCh = minChild(cur)) && *(cur->elem) > *(minCh->elem)) {
+		// Swap elements
+		swapElem(cur, minCh);
+		// Move down
+		cur = minCh;
 	}
 }
 // DO NOT CHANGE ANYTHING BELOW THIS LINE
