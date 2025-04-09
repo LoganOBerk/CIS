@@ -9,6 +9,7 @@ a hash map to keep track of trade transaction records
 *Purpose: Implementation of lastLeftDescendant, firstRightAncestor, getParentOfNewLastNode, getNewLastNode,
 * add, remove, insert, min, removeMin, upHeapBubbling, and downHeapBubbling operations for proper heap maintenance.
 # Update: 3/32/2025
+# Update: 4/8/2025 - simplified child assignment in add function
 */
 
 #include <iostream>
@@ -457,18 +458,14 @@ BT::Node*
 CompleteBT::add(Elem* e) {
 	// NAME: Logan Berk
 	// Your code here
-	Node* x;
+	Node* x = new Node(e, nullptr, nullptr, nullptr);
 
 	if (empty()) {
-		x = new Node(e, nullptr, nullptr, nullptr);
 		root = x; // If tree was empty, set new node as root
 	}
 	else {
 		Node* par = getParentOfNewLastNode(); //find proper parent
-		x = new Node(e, nullptr, nullptr, par); //create node with proper parent
-
-		if (!par->left) par->left = x; // Assign as left child if available
-		else par->right = x; // Otherwise, assign as right child
+		makeChild(par, x, !par->left); //assign the child to the left if there is no left otherwise assign right
 	}
 	
 	n++; //increase size of tree
@@ -536,7 +533,7 @@ Heap::removeMin() {
 	// Save the root element for deletion later
 	Elem* minElem = root->elem;
 
-	// Replace root with last element
+	// Over last element
 	root->elem = lastNode->elem;
 
 	// Remove the last node
@@ -555,7 +552,7 @@ void
 Heap::upHeapBubbling() {
 	// NAME: Logan Berk
 	// Your code here
-	if (n < 2) return;  // If heap is of size 0 or 1 do nothing
+	if (n == 1) return;  // If heap is of size 1 do nothing
 	Node* cur = lastNode, *par = cur->parent;
 	// While current has a parent and current's elem is smaller than parent's elem
 	while (par && *(cur->elem) < *(par->elem)) {
