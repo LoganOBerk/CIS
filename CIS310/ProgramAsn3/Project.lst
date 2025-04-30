@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.42.34433.0	    03/10/25 13:50:14
+Microsoft (R) Macro Assembler Version 14.43.34809.0	    04/29/25 21:17:18
 Encryption.asm						     Page 1 - 1
 
 
@@ -120,7 +120,7 @@ Encryption.asm						     Page 1 - 1
  00000083  C3			ret
  00000084			TranslateBuffer ENDP
 				END main
-Microsoft (R) Macro Assembler Version 14.42.34433.0	    03/10/25 13:50:14
+Microsoft (R) Macro Assembler Version 14.43.34809.0	    04/29/25 21:17:18
 Encryption.asm						     Symbols 2 - 1
 
 

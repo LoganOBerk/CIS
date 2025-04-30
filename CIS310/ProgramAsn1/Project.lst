@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.42.34433.0	    03/09/25 19:03:46
+Microsoft (R) Macro Assembler Version 14.43.34809.0	    04/29/25 21:16:27
 ..\Project32_VS2022\PrintName.asm			     Page 1 - 1
 
 
@@ -69,16 +69,15 @@ Microsoft (R) Macro Assembler Version 14.42.34433.0	    03/09/25 19:03:46
 				    
  0000003E  BA 00000000 R	    mov edx, OFFSET str1     ; Load reversed string address
  00000043  E8 00000000 E	    call WriteString         ; Display reversed string
- 00000048  E8 00000000 E	    call dumpregs
 				    INVOKE ExitProcess,0
- 0000004D  6A 00	   *	    push   +000000000h
- 0000004F  E8 00000000 E   *	    call   ExitProcess
- 00000054			main ENDP
+ 00000048  6A 00	   *	    push   +000000000h
+ 0000004A  E8 00000000 E   *	    call   ExitProcess
+ 0000004F			main ENDP
 				END main
 
 
 				    
-Microsoft (R) Macro Assembler Version 14.42.34433.0	    03/09/25 19:03:46
+Microsoft (R) Macro Assembler Version 14.43.34809.0	    04/29/25 21:16:27
 ..\Project32_VS2022\PrintName.asm			     Symbols 2 - 1
 
 
@@ -173,7 +172,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 0000000F Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000054 Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000004F Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -280,7 +279,7 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 0000002A _TEXT	Length= 0000002A Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 0000002A _TEXT	Length= 00000025 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 reverseString  . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000002A Public STDCALL
   push_stack . . . . . . . . . .	L Near	 0000000B _TEXT	

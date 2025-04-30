@@ -555,7 +555,7 @@ node heights properly set
 */
 AVLTreeMap::Node*
 AVLTreeMap::rebalance(AVLTreeMap::Node* z) {
-	bool breakLeft = true;
+	bool breakLeft = height((AVLTreeMap::Node*)z->left) >= height((AVLTreeMap::Node*)z->right);
 	AVLTreeMap::Node* y = tallestChild(z, breakLeft);
 	AVLTreeMap::Node* x = tallestChild(y, breakLeft);
 	// Your code here
