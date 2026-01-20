@@ -45,3 +45,20 @@ while(num_cats <= 5):
     print("I would like to buy a cat.")
     num_cats = num_cats + 1
 
+#'continue' keyword will jump to beginning of loop
+
+#range(start, end, step) func
+
+range(12, 16) #12, 13, 14, 15, default step is 1
+range(5) #end is 5, this is because range start = 0 and step = 1 are defaulted 
+range(5, -1, -1)  #accepts backward steps, returns list of items
+
+#for loops, useful for predefined itteration segments
+for i in range(5) :
+    print ("I would like to buy a puppy.")
+print()
+
+total = 0
+for itervar in {3, 41, 12, 9, 74, 15} :
+    total += itervar
+print(str(total) + '\n')
