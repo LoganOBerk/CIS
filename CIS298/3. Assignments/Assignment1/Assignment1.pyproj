@@ -23,7 +23,7 @@
   <ItemGroup>
     <Compile Include="Assignment1.py" />
     <Compile Include="excercise11.py" />
-    <Compile Include="excercise7.py" />
+    <Compile Include="excercise13.py" />
     <Compile Include="excercise12.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
