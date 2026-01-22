@@ -19,4 +19,4 @@ def grossPay():
     return round(gross, 2)  #return gross rounded to 2 decimals
 
 
-print(grossPay)  #example function run to print gross output
+print(grossPay())  #example function run to print gross output
