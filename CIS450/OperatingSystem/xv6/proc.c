@@ -7,6 +7,7 @@
 #include "proc.h"
 #include "spinlock.h"
 
+
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -70,6 +71,10 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+  //**MY CHANGES**//
+  //Initializing queuetype and quantumsize and a print counter for debug
+  p->queuetype = 0;
+  p->quantumsize = 4;
   return p;
 }
 
@@ -283,6 +288,11 @@ scheduler(void)
       proc = p;
       switchuvm(p);
       p->state = RUNNING;
+
+      //***MY CHANGES***//  
+      cprintf("Process %s is of Process ID %d, Queue Type %d, and Quantum Size %d\n", p->name, p->pid, p->queuetype, p->quantumsize);
+  
+
       swtch(&cpu->scheduler, proc->context);
       switchkvm();
 
