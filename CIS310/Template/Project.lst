@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.43.34809.0	    04/29/25 21:21:04
+Microsoft (R) Macro Assembler Version 14.50.35723.0	    01/21/26 22:16:37
 AddTwo.asm						     Page 1 - 1
 
 
@@ -20,7 +20,7 @@ AddTwo.asm						     Page 1 - 1
  0000000A  E8 00000000 E   *	    call   ExitProcess
  0000000F			main endp
 				end main
-Microsoft (R) Macro Assembler Version 14.43.34809.0	    04/29/25 21:21:04
+Microsoft (R) Macro Assembler Version 14.50.35723.0	    01/21/26 22:16:37
 AddTwo.asm						     Symbols 2 - 1
 
 
