@@ -166,9 +166,12 @@ class Agent {
 private:
 	State init;
 	State goal;
+
+
 	std::priority_queue<State*, std::vector<State*>, State::Comparator> frontier;
-	std::stack<State*> solutionSet;
 	std::unordered_map<State*, int, State::StateHash> exploredSet;
+	std::stack<State*> solutionSet;
+
 	std::vector<State*> allocatedMem;
 	
 	int insertionIndex;
