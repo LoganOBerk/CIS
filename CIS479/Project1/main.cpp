@@ -1,5 +1,9 @@
 #include <iostream>
 #include <cmath>
+#include <vector>
+#include <queue>
+#include <stack>
+#include <unordered_map>
 
 int locX(int val, const int config[3][3]) {
 	for (int i = 0; i < 3; i++) {
@@ -46,10 +50,54 @@ private:
 public:
 	State(State* p, int l, int g, int h, int config[3][3]);
 	
-	void setConfig(int[3][3]);
+	void setConfig(const int[3][3]);
 	void printState();
 	const int(&getConfig() const)[3][3]{return config;}
+
+	State& operator=(const State& n);
+	bool operator==(const State& n) const;
+	bool operator!=(const State& n) const;
+	bool operator>(const State& n) const;
+	struct StateHash;
 };
+bool State::operator>(const State& n) const {
+	return f > n.f;
+}
+bool State::operator==(const State& n) const{
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (config[i][j] != n.config[i][j]) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+bool State::operator!=(const State& n) const{
+	return !(*this == n);
+}
+
+struct State::StateHash {
+	std::size_t operator()(const State& s) const {
+		std::size_t h = 0;
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
+				h = h * 31 + std::hash<int>()(s.getConfig()[i][j]);
+		return h;
+	}
+};
+
+State& State::operator=(const State& n) {
+	p = n.p;
+	l = n.l;
+	g = n.g;
+	h = n.h;
+	f = n.f;
+	setConfig(n.getConfig());
+	eX = n.eX;
+	eY = n.eY;
+	return *this;
+}
 
 State::State(State* p, int l, int g, int h, int config[3][3]) : p(p), l(l), g(g), h(h) {
 	setConfig(config);
@@ -62,7 +110,7 @@ State::State(State* p, int l, int g, int h, int config[3][3]) : p(p), l(l), g(g)
 
 
 
-void State::setConfig(int config[3][3]) {
+void State::setConfig(const int config[3][3]) {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			this->config[i][j] = config[i][j];
@@ -87,6 +135,9 @@ class Agent {
 private:
 	State* init;
 	State* goal;
+	std::priority_queue<State, std::vector<State>, std::greater<State>> frontier;
+	std::stack<State> solutionSet;
+	std::unordered_map<State, int, State::StateHash> exploredSet;
 	
 	int heuristic(int[3][3]);
 public:
