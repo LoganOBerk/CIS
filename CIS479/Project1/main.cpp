@@ -155,7 +155,7 @@ private:
 	State goal;
 	int stateCount;
 	std::priority_queue<State*, std::vector<State*>, State::Comparator> frontier;
-	std::stack<State> solutionSet;
+	std::stack<State*> solutionSet;
 	std::unordered_map<State*, int, State::StateHash> exploredSet;
 	std::vector<State*> allocatedMem;
 	
@@ -198,28 +198,24 @@ void Agent::findShortestPath() {
 	State* n = &init;
 	int expansionOrder = 1;
 	
-	while (*n != goal) {
+	while (true) {
 		n->expO = expansionOrder++;
-		if (n->eX > 1) {
-			genChild(n, "LEFT");
-		}
-		if (n->eX < 3) {
-			genChild(n, "RIGHT");
-		}
-		if (n->eY > 1) {
-			genChild(n, "UP");
-		}
-		if (n->eY < 3) {
-			genChild(n, "DOWN");
-		}
+
+		if (*n == goal) break;
+
+		if (n->eX > 1) genChild(n, "LEFT");
+		if (n->eX < 3) genChild(n, "RIGHT");
+		if (n->eY > 1) genChild(n, "UP");
+		if (n->eY < 3) genChild(n, "DOWN");
+
 		n = frontier.top();
 		frontier.pop();
 		
 		exploredSet[n] = n->g;
 	}
-	n->expO = expansionOrder++;
+
 	while (*n != init) {
-		solutionSet.push(*n);
+		solutionSet.push(n);
 		n = n->p;
 	}
 };
@@ -270,7 +266,7 @@ void Agent::genChild(State* p, std::string d) {
 void Agent::printSolutionSet() {
 	init.printState();
 	while (!solutionSet.empty()) {
-		solutionSet.top().printState();
+		solutionSet.top()->printState();
 		solutionSet.pop();
 	}
 };
