@@ -1,10 +1,14 @@
 #include <iostream>
-#include <cmath>
+
+#include <unordered_map>
 #include <vector>
 #include <queue>
 #include <stack>
-#include <unordered_map>
+
+#include <cmath>
 #include <cassert>
+
+
 
 enum CartesianDirection {
 	LEFT = -1,
@@ -273,30 +277,32 @@ int Agent::heuristic(int config[3][3]) {
 
 void Agent::genChild(State* p, std::string d) {
 	State* n = new State(*p);
+	int x = n->eX - 1;
+	int y = n->eY - 1;
 	n->ii = insertionIndex++;
 	n->p = p;
 	if (d == "LEFT") {
 		n->g++;
-		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1][n->eX - 1 + LEFT];
-		n->config[n->eY - 1][n->eX - 1 + LEFT] = 0;
+		n->config[y][x] = n->config[y][x + LEFT];
+		n->config[y][x + LEFT] = 0;
 		n->eX += LEFT;
 	}
 	if (d == "RIGHT") {
 		n->g += 3;
-		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1][n->eX - 1 + RIGHT];
-		n->config[n->eY - 1][n->eX - 1 + RIGHT] = 0;
+		n->config[y][x] = n->config[y][x + RIGHT];
+		n->config[y][x + RIGHT] = 0;
 		n->eX += RIGHT;
 	}
 	if (d == "UP") {
 		n->g += 2;
-		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1 + UP][n->eX - 1];
-		n->config[n->eY - 1 + UP][n->eX - 1] = 0;
+		n->config[y][x] = n->config[y + UP][x];
+		n->config[y + UP][x] = 0;
 		n->eY += UP;
 	}
 	if (d == "DOWN") {
 		n->g += 2;
-		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1 + DOWN][n->eX - 1];
-		n->config[n->eY - 1 + DOWN][n->eX - 1] = 0;
+		n->config[y][x] = n->config[y + DOWN][x];
+		n->config[y + DOWN][x] = 0;
 		n->eY += DOWN;
 	}
 
