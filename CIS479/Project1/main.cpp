@@ -49,6 +49,7 @@ private:
 	int ii;
 
 public:
+	State();
 	State(State* p, int l, int g, int h, int ii, int config[3][3]);
 	
 	void setConfig(const int[3][3]);
@@ -62,6 +63,7 @@ public:
 	struct Comparator;
 };
 
+State::State() : p(nullptr), l(0), g(0), h(0), f(0), config{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } }, eX(0), eY(0), ii(0) {};
 State::State(State* p, int l, int g, int h, int ii, int config[3][3]) : p(p), l(l), g(g), h(h), ii(ii) {
 	setConfig(config);
 	f = g + h;
@@ -143,34 +145,42 @@ void State::printState() {
 
 class Agent {
 private:
-	State* init;
-	State* goal;
+	State init;
+	State goal;
 	std::priority_queue<State, std::vector<State>, State::Comparator> frontier;
 	std::stack<State> solutionSet;
 	std::unordered_map<State, int, State::StateHash> exploredSet;
 	
 	int heuristic(int[3][3]);
 public:
-	State* getInit() {
-		return this->init;
-	};
-	State* getGoal() {
-		return this->goal;
-	};
+	Agent(int initConfig[3][3], int goalConfig[3][3]);
 
+	State getInit();
+	State getGoal();
 	void setInit(int[3][3]);
 	void setGoal(int[3][3]);
 };
 
+Agent::Agent(int initConfig[3][3], int goalConfig[3][3]) {
+	setGoal(goalConfig);
+	setInit(initConfig);
+}
+
+State Agent::getInit() {
+	return this->init;
+};
+State Agent::getGoal() {
+	return this->goal;
+};
 void Agent::setGoal(int goalConfig[3][3]) {
-	goal = new State(nullptr, 1, 0, 0, 0, goalConfig);
+	goal = State(nullptr, 1, 0, 0, 0, goalConfig);
 }
 void Agent::setInit(int initConfig[3][3]) {
-	init = new State(nullptr, 1, 0, heuristic(initConfig), 0, initConfig);
+	init = State(nullptr, 1, 0, heuristic(initConfig), 0, initConfig);
 }
 
 int Agent::heuristic(int config[3][3]) {
-	const int (& goalConfig)[3][3] = goal->getConfig();
+	const int (& goalConfig)[3][3] = goal.getConfig();
 	int totalManhattan = 0;
 	int x = 0;
 	int y = 0;
@@ -204,12 +214,10 @@ int Agent::heuristic(int config[3][3]) {
 int main() {
 	int initConfig[3][3] = { { 1,6,2 },{ 5,7,8 },{ 0,4,3 } };
 	int goalConfig[3][3] = { { 7,8,1 },{ 6,0,2 },{ 5,4,3 } };
-	Agent a;
-	a.setGoal(goalConfig);
-	a.setInit(initConfig);
+	Agent a(initConfig, goalConfig);
 
-	a.getInit()->printState();
-	a.getGoal()->printState();
+	a.getInit().printState();
+	a.getGoal().printState();
 	
 
 	return 0;
