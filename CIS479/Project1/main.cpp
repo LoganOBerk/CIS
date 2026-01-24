@@ -227,42 +227,34 @@ void Agent::findShortestPath() {
 void Agent::genChild(State* p, std::string d) {
 	State* n = new State(*p);
 	n->ii = stateCount++;
+	n->p = p;
 	if (d == "LEFT") {
-		n->p = p;
 		n->g++;
 		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1][n->eX - 1 + LEFT];
 		n->config[n->eY - 1][n->eX - 1 + LEFT] = 0;
-		n->h = heuristic(n->config);
 		n->eX += LEFT;
-		n->f = n->h + n->g;
 	}
 	if (d == "RIGHT") {
-		n->p = p;
 		n->g += 3;
 		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1][n->eX - 1 + RIGHT];
 		n->config[n->eY - 1][n->eX - 1 + RIGHT] = 0;
-		n->h = heuristic(n->config);
 		n->eX += RIGHT;
-		n->f = n->h + n->g;
 	}
 	if (d == "UP") {
-		n->p = p;
 		n->g += 2;
 		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1 + UP][n->eX - 1];
 		n->config[n->eY - 1 + UP][n->eX - 1] = 0;
-		n->h = heuristic(n->config);
 		n->eY += UP;
-		n->f = n->h + n->g;
 	}
 	if (d == "DOWN") {
-		n->p = p;
 		n->g += 2;
 		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1 + DOWN][n->eX - 1];
 		n->config[n->eY - 1 + DOWN][n->eX - 1] = 0;
-		n->h = heuristic(n->config);
 		n->eY += DOWN;
-		n->f = n->h + n->g;
 	}
+
+	n->h = heuristic(n->config);
+	n->f = n->h + n->g;
 
 	if (exploredSet.count(*n) && n->g >= exploredSet[*n]) {
 		delete n;
