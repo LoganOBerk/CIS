@@ -197,8 +197,9 @@ void Agent::setInit(int initConfig[3][3]) {
 void Agent::findShortestPath() {
 	State* n = &init;
 	int expansionOrder = 1;
+	
 	while (*n != goal) {
-		
+		n->expO = expansionOrder++;
 		if (n->eX > 1) {
 			genChild(n, "LEFT");
 		}
@@ -213,9 +214,10 @@ void Agent::findShortestPath() {
 		}
 		n = frontier.top();
 		frontier.pop();
-		n->expO = expansionOrder++;
+		
 		exploredSet[*n] = n->g;
 	}
+	n->expO = expansionOrder++;
 	while (*n != init) {
 		solutionSet.push(*n);
 		n = n->p;
@@ -232,6 +234,7 @@ void Agent::genChild(State* p, std::string d) {
 		n->config[n->eY - 1][n->eX - 1 + LEFT] = 0;
 		n->h = heuristic(n->config);
 		n->eX += LEFT;
+		n->f = n->h + n->g;
 	}
 	if (d == "RIGHT") {
 		n->p = p;
@@ -240,6 +243,7 @@ void Agent::genChild(State* p, std::string d) {
 		n->config[n->eY - 1][n->eX - 1 + RIGHT] = 0;
 		n->h = heuristic(n->config);
 		n->eX += RIGHT;
+		n->f = n->h + n->g;
 	}
 	if (d == "UP") {
 		n->p = p;
@@ -248,6 +252,7 @@ void Agent::genChild(State* p, std::string d) {
 		n->config[n->eY - 1 + UP][n->eX - 1] = 0;
 		n->h = heuristic(n->config);
 		n->eY += UP;
+		n->f = n->h + n->g;
 	}
 	if (d == "DOWN") {
 		n->p = p;
@@ -256,6 +261,7 @@ void Agent::genChild(State* p, std::string d) {
 		n->config[n->eY - 1 + DOWN][n->eX - 1] = 0;
 		n->h = heuristic(n->config);
 		n->eY += DOWN;
+		n->f = n->h + n->g;
 	}
 
 	if (exploredSet.count(*n) && n->g >= exploredSet[*n]) {
@@ -263,6 +269,7 @@ void Agent::genChild(State* p, std::string d) {
 		return;
 	}
 
+	
 	exploredSet[*n] = n->g;
 	frontier.push(n);
 	allocatedMem.push_back(n);
