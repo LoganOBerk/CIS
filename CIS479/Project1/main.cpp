@@ -82,11 +82,11 @@ State::State(State* p, int expO, int g, int h, int ii, int config[3][3]) : p(p),
 }
 
 struct State::StateHash {
-	std::size_t operator()(const State& s) const {
+	std::size_t operator()(const State* s) const {
 		std::size_t h = 0;
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++)
-				h = h * 31 + std::hash<int>()(s.getConfig()[i][j]);
+				h = h * 31 + std::hash<int>()(s->getConfig()[i][j]);
 		return h;
 	}
 };
@@ -156,7 +156,7 @@ private:
 	int stateCount;
 	std::priority_queue<State*, std::vector<State*>, State::Comparator> frontier;
 	std::stack<State> solutionSet;
-	std::unordered_map<State, int, State::StateHash> exploredSet;
+	std::unordered_map<State*, int, State::StateHash> exploredSet;
 	std::vector<State*> allocatedMem;
 	
 	int heuristic(int[3][3]);
@@ -215,7 +215,7 @@ void Agent::findShortestPath() {
 		n = frontier.top();
 		frontier.pop();
 		
-		exploredSet[*n] = n->g;
+		exploredSet[n] = n->g;
 	}
 	n->expO = expansionOrder++;
 	while (*n != init) {
@@ -256,13 +256,13 @@ void Agent::genChild(State* p, std::string d) {
 	n->h = heuristic(n->config);
 	n->f = n->h + n->g;
 
-	if (exploredSet.count(*n) && n->g >= exploredSet[*n]) {
+	if (exploredSet.count(n) && n->g >= exploredSet[n]) {
 		delete n;
 		return;
 	}
 
 	
-	exploredSet[*n] = n->g;
+	exploredSet[n] = n->g;
 	frontier.push(n);
 	allocatedMem.push_back(n);
 	
