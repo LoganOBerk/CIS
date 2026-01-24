@@ -4,7 +4,14 @@
 #include <queue>
 #include <stack>
 #include <unordered_map>
+#include <cassert>
 
+enum CartesianDirection {
+	LEFT = -1,
+	RIGHT = 1,
+	UP = -1,
+	DOWN = 1
+};
 int locX(int val, const int config[3][3]) {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -13,6 +20,7 @@ int locX(int val, const int config[3][3]) {
 			}
 		}
 	}
+	assert(false);
 };
 int locY(int val, const int config[3][3]) {
 	for (int i = 0; i < 3; i++) {
@@ -22,6 +30,7 @@ int locY(int val, const int config[3][3]) {
 			}
 		}
 	}
+	assert(false);
 };
 
 int tilesOutOfPlace(const int config[3][3], const int goalConfig[3][3]) {
@@ -37,9 +46,10 @@ int tilesOutOfPlace(const int config[3][3], const int goalConfig[3][3]) {
 };
 
 class State {
+	friend class Agent;
 private:
 	State* p;
-	int l;
+	int expO;
 	int g;
 	int h;
 	int f;
@@ -47,10 +57,9 @@ private:
 	int eX;
 	int eY;
 	int ii;
-
 public:
 	State();
-	State(State* p, int l, int g, int h, int ii, int config[3][3]);
+	State(State* p, int expO, int g, int h, int ii, int config[3][3]);
 	
 	void setConfig(const int[3][3]);
 	void printState();
@@ -61,10 +70,11 @@ public:
 	bool operator!=(const State& n) const;
 	struct StateHash;
 	struct Comparator;
+
 };
 
-State::State() : p(nullptr), l(0), g(0), h(0), f(0), config{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } }, eX(0), eY(0), ii(0) {};
-State::State(State* p, int l, int g, int h, int ii, int config[3][3]) : p(p), l(l), g(g), h(h), ii(ii) {
+State::State() : p(nullptr), expO(0), g(0), h(0), f(0), config{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } }, eX(0), eY(0), ii(0) {};
+State::State(State* p, int expO, int g, int h, int ii, int config[3][3]) : p(p), expO(expO), g(g), h(h), ii(ii) {
 	setConfig(config);
 	f = g + h;
 	eX = locX(0, config);
@@ -82,8 +92,8 @@ struct State::StateHash {
 };
 
 struct State::Comparator {
-	bool operator()(const State& a, const State& b) const {
-		return (a.f == b.f) ? a.ii > b.ii : a.f > b.f;
+	bool operator()(const State* a, const State* b) const {
+		return (a->f == b->f) ? a->ii > b->ii : a->f > b->f;
 	}
 };
 
@@ -106,7 +116,7 @@ bool State::operator!=(const State& n) const{
 
 State& State::operator=(const State& n) {
 	p = n.p;
-	l = n.l;
+	expO = n.expO;
 	g = n.g;
 	h = n.h;
 	f = n.f;
@@ -115,11 +125,6 @@ State& State::operator=(const State& n) {
 	eY = n.eY;
 	return *this;
 }
-
-
-
-
-
 
 
 void State::setConfig(const int config[3][3]) {
@@ -137,7 +142,8 @@ void State::printState() {
 		std::cout << std::endl;
 	}
 	std::cout << g << " | " << h << std::endl;
-	std::cout << " #" << l << std::endl;
+	std::cout << " #" << expO << std::endl;
+	std::cout << std::endl;
 };
 
 
@@ -147,25 +153,33 @@ class Agent {
 private:
 	State init;
 	State goal;
-	std::priority_queue<State, std::vector<State>, State::Comparator> frontier;
+	std::priority_queue<State*, std::vector<State*>, State::Comparator> frontier;
 	std::stack<State> solutionSet;
 	std::unordered_map<State, int, State::StateHash> exploredSet;
+	std::vector<State*> allocatedMem;
 	
 	int heuristic(int[3][3]);
 public:
 	Agent(int initConfig[3][3], int goalConfig[3][3]);
-
+	~Agent();
+	void findShortestPath();
+	void genChild(State* p, std::string d);
 	State getInit();
 	State getGoal();
 	void setInit(int[3][3]);
 	void setGoal(int[3][3]);
+	void printSolutionSet();
 };
 
 Agent::Agent(int initConfig[3][3], int goalConfig[3][3]) {
 	setGoal(goalConfig);
 	setInit(initConfig);
 }
-
+Agent::~Agent() {
+	for (State* alloc : allocatedMem) {
+		delete alloc;
+	}
+}
 State Agent::getInit() {
 	return this->init;
 };
@@ -179,6 +193,89 @@ void Agent::setInit(int initConfig[3][3]) {
 	init = State(nullptr, 1, 0, heuristic(initConfig), 0, initConfig);
 }
 
+void Agent::findShortestPath() {
+	State* n = &init;
+	int expansionOrder = 1;
+	while (*n != goal) {
+		n->expO = expansionOrder++;
+		if (n->eX > 1) {
+			genChild(n, "LEFT");
+		}
+		if (n->eX < 3) {
+			genChild(n, "RIGHT");
+		}
+		if (n->eY > 1) {
+			genChild(n, "UP");
+		}
+		if (n->eY < 3) {
+			genChild(n, "DOWN");
+		}
+		n = frontier.top();
+		frontier.pop();
+		exploredSet[*n] = n->g;
+	}
+	while (*n != init) {
+		solutionSet.push(*n);
+		n = n->p;
+	}
+};
+
+void Agent::genChild(State* p, std::string d) {
+	State* n = new State(*p);
+	if (d == "LEFT") {
+		n->p = p;
+		n->g++;
+		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1][n->eX - 1 + LEFT];
+		n->config[n->eY - 1][n->eX - 1 + LEFT] = 0;
+		n->h = heuristic(n->config);
+		n->eX += LEFT;
+		n->ii++;
+	}
+	if (d == "RIGHT") {
+		n->p = p;
+		n->g += 3;
+		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1][n->eX - 1 + RIGHT];
+		n->config[n->eY - 1][n->eX - 1 + RIGHT] = 0;
+		n->h = heuristic(n->config);
+		n->eX += RIGHT;
+		n->ii++;
+	}
+	if (d == "UP") {
+		n->p = p;
+		n->g += 2;
+		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1 + UP][n->eX - 1];
+		n->config[n->eY - 1 + UP][n->eX - 1] = 0;
+		n->h = heuristic(n->config);
+		n->eY += UP;
+		n->ii++;
+	}
+	if (d == "DOWN") {
+		n->p = p;
+		n->g += 2;
+		n->config[n->eY - 1][n->eX - 1] = n->config[n->eY - 1 + DOWN][n->eX - 1];
+		n->config[n->eY - 1 + DOWN][n->eX - 1] = 0;
+		n->h = heuristic(n->config);
+		n->eY += DOWN;
+		n->ii++;
+	}
+
+	if (exploredSet.count(*n) && n->g >= exploredSet[*n]) {
+		delete n;
+		return;
+	}
+
+	exploredSet[*n] = n->g;
+	frontier.push(n);
+	allocatedMem.push_back(n);
+	
+}
+void Agent::printSolutionSet() {
+	init.printState();
+	while (!solutionSet.empty()) {
+		solutionSet.top().printState();
+		solutionSet.pop();
+	}
+};
 int Agent::heuristic(int config[3][3]) {
 	const int (& goalConfig)[3][3] = goal.getConfig();
 	int totalManhattan = 0;
@@ -216,8 +313,8 @@ int main() {
 	int goalConfig[3][3] = { { 7,8,1 },{ 6,0,2 },{ 5,4,3 } };
 	Agent a(initConfig, goalConfig);
 
-	a.getInit().printState();
-	a.getGoal().printState();
+	a.findShortestPath();
+	a.printSolutionSet();
 	
 
 	return 0;
