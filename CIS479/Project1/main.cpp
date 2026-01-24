@@ -56,9 +56,10 @@ private:
 public:
 	State();
 	State(State*, int, int, int, int, int[3][3]);
-	
+
+	const int(&getConfig() const)[3][3];
 	void setConfig(const int[3][3]);
-	const int(&getConfig() const)[3][3]{return config;}
+	
 	void printState();
 
 	State& operator=(const State& n);
@@ -66,6 +67,22 @@ public:
 	bool operator!=(const State& n) const;
 	struct StateHash;
 	struct Comparator;
+};
+
+
+
+const int(&State::getConfig() const)[3][3]{
+	return config; 
+}
+
+
+
+void State::setConfig(const int config[3][3]) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			this->config[i][j] = config[i][j];
+		}
+	}
 };
 
 
@@ -133,16 +150,6 @@ State& State::operator=(const State& n) {
 	eY = n.eY;
 	return *this;
 }
-
-
-
-void State::setConfig(const int config[3][3]) {
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			this->config[i][j] = config[i][j];
-		}
-	}
-};
 
 
 
