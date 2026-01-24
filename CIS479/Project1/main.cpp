@@ -12,6 +12,9 @@ enum CartesianDirection {
 	UP = -1,
 	DOWN = 1
 };
+
+
+
 int locX(int val, const int config[3][3]) {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -22,6 +25,9 @@ int locX(int val, const int config[3][3]) {
 	}
 	assert(false);
 };
+
+
+
 int locY(int val, const int config[3][3]) {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -33,17 +39,7 @@ int locY(int val, const int config[3][3]) {
 	assert(false);
 };
 
-int tilesOutOfPlace(const int config[3][3], const int goalConfig[3][3]) {
-	int outOfPlace = 0;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			if (config[i][j] != goalConfig[i][j] && config[i][j] != 0) {
-				outOfPlace++;
-			}
-		}
-	}
-	return outOfPlace;
-};
+
 
 class State {
 	friend class Agent;
@@ -62,24 +58,30 @@ public:
 	State(State*, int, int, int, int, int[3][3]);
 	
 	void setConfig(const int[3][3]);
-	void printState();
 	const int(&getConfig() const)[3][3]{return config;}
+	void printState();
 
 	State& operator=(const State& n);
 	bool operator==(const State& n) const;
 	bool operator!=(const State& n) const;
 	struct StateHash;
 	struct Comparator;
-
 };
 
+
+
 State::State() : p(nullptr), expO(0), g(0), h(0), f(0), config{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } }, eX(0), eY(0), ii(0) {};
+
+
+
 State::State(State* p, int expO, int g, int h, int ii, int config[3][3]) : p(p), expO(expO), g(g), h(h), ii(ii) {
 	setConfig(config);
 	f = g + h;
 	eX = locX(0, config);
 	eY = locY(0, config);
 }
+
+
 
 struct State::StateHash {
 	std::size_t operator()(const State* s) const {
@@ -91,11 +93,14 @@ struct State::StateHash {
 	}
 };
 
+
+
 struct State::Comparator {
 	bool operator()(const State* a, const State* b) const {
 		return (a->f == b->f) ? a->ii > b->ii : a->f > b->f;
 	}
 };
+
 
 
 bool State::operator==(const State& n) const{
@@ -108,6 +113,9 @@ bool State::operator==(const State& n) const{
 	}
 	return true;
 }
+
+
+
 bool State::operator!=(const State& n) const{
 	return !(*this == n);
 }
@@ -127,6 +135,7 @@ State& State::operator=(const State& n) {
 }
 
 
+
 void State::setConfig(const int config[3][3]) {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -134,6 +143,9 @@ void State::setConfig(const int config[3][3]) {
 		}
 	}
 };
+
+
+
 void State::printState() {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -149,6 +161,7 @@ void State::printState() {
 
 
 
+
 class Agent {
 private:
 	State init;
@@ -159,6 +172,7 @@ private:
 	std::vector<State*> allocatedMem;
 	
 	int insertionIndex;
+	int tilesOutOfPlace(const int[3][3], const int[3][3]);
 	int heuristic(int[3][3]);
 public:
 	Agent(int[3][3], int[3][3]);
@@ -170,15 +184,48 @@ public:
 	void printSolutionSet();
 };
 
+
+
+void Agent::setGoal(int goalConfig[3][3]) {
+	goal = State(nullptr, 1, 0, 0, 0, goalConfig);
+}
+
+
+
+void Agent::setInit(int initConfig[3][3]) {
+	init = State(nullptr, 1, 0, heuristic(initConfig), 0, initConfig);
+}
+
+
+
 Agent::Agent(int initConfig[3][3], int goalConfig[3][3]) {
 	setGoal(goalConfig);
 	setInit(initConfig);
 }
+
+
+
 Agent::~Agent() {
 	for (State* alloc : allocatedMem) {
 		delete alloc;
 	}
 }
+
+
+
+int Agent::tilesOutOfPlace(const int config[3][3], const int goalConfig[3][3]) {
+	int outOfPlace = 0;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (config[i][j] != goalConfig[i][j] && config[i][j] != 0) {
+				outOfPlace++;
+			}
+		}
+	}
+	return outOfPlace;
+};
+
+
 
 int Agent::heuristic(int config[3][3]) {
 	const int(&goalConfig)[3][3] = goal.getConfig();
@@ -212,12 +259,7 @@ int Agent::heuristic(int config[3][3]) {
 	return totalManhattan + tilesOutOfPlace(config, goalConfig);
 };
 
-void Agent::setGoal(int goalConfig[3][3]) {
-	goal = State(nullptr, 1, 0, 0, 0, goalConfig);
-}
-void Agent::setInit(int initConfig[3][3]) {
-	init = State(nullptr, 1, 0, heuristic(initConfig), 0, initConfig);
-}
+
 
 void Agent::genChild(State* p, std::string d) {
 	State* n = new State(*p);
@@ -264,6 +306,7 @@ void Agent::genChild(State* p, std::string d) {
 }
 
 
+
 void Agent::findShortestPath() {
 	State* n = &init;
 	int expansionOrder = 1;
@@ -271,7 +314,10 @@ void Agent::findShortestPath() {
 	while (true) {
 		n->expO = expansionOrder++;
 
-		if (*n == goal) break;
+		if (*n == goal) { 
+			goal = *n; 
+			break; 
+		}
 
 		if (n->eX > 1) genChild(n, "LEFT");
 		if (n->eX < 3) genChild(n, "RIGHT");
@@ -289,6 +335,8 @@ void Agent::findShortestPath() {
 		n = n->p;
 	}
 };
+
+
 
 void Agent::printSolutionSet() {
 	init.printState();
