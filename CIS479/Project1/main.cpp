@@ -153,6 +153,7 @@ class Agent {
 private:
 	State init;
 	State goal;
+	int stateCount;
 	std::priority_queue<State*, std::vector<State*>, State::Comparator> frontier;
 	std::stack<State> solutionSet;
 	std::unordered_map<State, int, State::StateHash> exploredSet;
@@ -223,6 +224,7 @@ void Agent::findShortestPath() {
 
 void Agent::genChild(State* p, std::string d) {
 	State* n = new State(*p);
+	n->ii = stateCount++;
 	if (d == "LEFT") {
 		n->p = p;
 		n->g++;
@@ -230,7 +232,6 @@ void Agent::genChild(State* p, std::string d) {
 		n->config[n->eY - 1][n->eX - 1 + LEFT] = 0;
 		n->h = heuristic(n->config);
 		n->eX += LEFT;
-		n->ii++;
 	}
 	if (d == "RIGHT") {
 		n->p = p;
@@ -239,7 +240,6 @@ void Agent::genChild(State* p, std::string d) {
 		n->config[n->eY - 1][n->eX - 1 + RIGHT] = 0;
 		n->h = heuristic(n->config);
 		n->eX += RIGHT;
-		n->ii++;
 	}
 	if (d == "UP") {
 		n->p = p;
@@ -248,7 +248,6 @@ void Agent::genChild(State* p, std::string d) {
 		n->config[n->eY - 1 + UP][n->eX - 1] = 0;
 		n->h = heuristic(n->config);
 		n->eY += UP;
-		n->ii++;
 	}
 	if (d == "DOWN") {
 		n->p = p;
@@ -257,7 +256,6 @@ void Agent::genChild(State* p, std::string d) {
 		n->config[n->eY - 1 + DOWN][n->eX - 1] = 0;
 		n->h = heuristic(n->config);
 		n->eY += DOWN;
-		n->ii++;
 	}
 
 	if (exploredSet.count(*n) && n->g >= exploredSet[*n]) {
