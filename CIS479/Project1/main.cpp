@@ -197,7 +197,7 @@ void Agent::findShortestPath() {
 	State* n = &init;
 	int expansionOrder = 1;
 	while (*n != goal) {
-		n->expO = expansionOrder++;
+		
 		if (n->eX > 1) {
 			genChild(n, "LEFT");
 		}
@@ -212,6 +212,7 @@ void Agent::findShortestPath() {
 		}
 		n = frontier.top();
 		frontier.pop();
+		n->expO = expansionOrder++;
 		exploredSet[*n] = n->g;
 	}
 	while (*n != init) {
