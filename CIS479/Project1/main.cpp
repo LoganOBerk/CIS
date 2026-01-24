@@ -46,9 +46,10 @@ private:
 	int config[3][3];
 	int eX;
 	int eY;
+	int ii;
 
 public:
-	State(State* p, int l, int g, int h, int config[3][3]);
+	State(State* p, int l, int g, int h, int ii, int config[3][3]);
 	
 	void setConfig(const int[3][3]);
 	void printState();
@@ -57,12 +58,34 @@ public:
 	State& operator=(const State& n);
 	bool operator==(const State& n) const;
 	bool operator!=(const State& n) const;
-	bool operator>(const State& n) const;
 	struct StateHash;
+	struct Comparator;
 };
-bool State::operator>(const State& n) const {
-	return f > n.f;
+
+State::State(State* p, int l, int g, int h, int ii, int config[3][3]) : p(p), l(l), g(g), h(h), ii(ii) {
+	setConfig(config);
+	f = g + h;
+	eX = locX(0, config);
+	eY = locY(0, config);
 }
+
+struct State::StateHash {
+	std::size_t operator()(const State& s) const {
+		std::size_t h = 0;
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
+				h = h * 31 + std::hash<int>()(s.getConfig()[i][j]);
+		return h;
+	}
+};
+
+struct State::Comparator {
+	bool operator()(const State& a, const State& b) const {
+		return (a.f == b.f) ? a.ii > b.ii : a.f > b.f;
+	}
+};
+
+
 bool State::operator==(const State& n) const{
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -77,15 +100,7 @@ bool State::operator!=(const State& n) const{
 	return !(*this == n);
 }
 
-struct State::StateHash {
-	std::size_t operator()(const State& s) const {
-		std::size_t h = 0;
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++)
-				h = h * 31 + std::hash<int>()(s.getConfig()[i][j]);
-		return h;
-	}
-};
+
 
 State& State::operator=(const State& n) {
 	p = n.p;
@@ -99,12 +114,7 @@ State& State::operator=(const State& n) {
 	return *this;
 }
 
-State::State(State* p, int l, int g, int h, int config[3][3]) : p(p), l(l), g(g), h(h) {
-	setConfig(config);
-	f = g + h;
-	eX = locX(0, config);
-	eY = locY(0, config);
-}
+
 
 
 
@@ -135,7 +145,7 @@ class Agent {
 private:
 	State* init;
 	State* goal;
-	std::priority_queue<State, std::vector<State>, std::greater<State>> frontier;
+	std::priority_queue<State, std::vector<State>, State::Comparator> frontier;
 	std::stack<State> solutionSet;
 	std::unordered_map<State, int, State::StateHash> exploredSet;
 	
@@ -153,10 +163,10 @@ public:
 };
 
 void Agent::setGoal(int goalConfig[3][3]) {
-	goal = new State(nullptr, 1, 0, 0, goalConfig);
+	goal = new State(nullptr, 1, 0, 0, 0, goalConfig);
 }
 void Agent::setInit(int initConfig[3][3]) {
-	init = new State(nullptr, 1, 0, heuristic(initConfig), initConfig);
+	init = new State(nullptr, 1, 0, heuristic(initConfig), 0, initConfig);
 }
 
 int Agent::heuristic(int config[3][3]) {
