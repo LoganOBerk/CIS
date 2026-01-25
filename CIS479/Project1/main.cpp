@@ -8,9 +8,9 @@
 #include <cmath>
 #include <cassert>
 
-
-const unsigned int yAxis = 3;
-const unsigned int xAxis = 3;
+//Board Dimentions, extensibility is limited to 3x3 due to memory limitations of A*
+static const unsigned int yAxis = 3;
+static const unsigned int xAxis = 3;
 
 //Defines movement in cartesian directions
 enum CartesianDirection {
