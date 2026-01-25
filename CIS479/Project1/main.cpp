@@ -9,6 +9,8 @@
 #include <cassert>
 
 
+const unsigned int yAxis = 3;
+const unsigned int xAxis = 3;
 
 enum CartesianDirection {
 	LEFT = -1,
@@ -19,9 +21,9 @@ enum CartesianDirection {
 
 
 
-int locX(int val, const int config[3][3]) {
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
+int locX(int val, const int config[yAxis][xAxis]) {
+	for (int i = 0; i < yAxis; i++) {
+		for (int j = 0; j < xAxis; j++) {
 			if (config[i][j] == val) {
 				return j + 1;
 			}
@@ -32,9 +34,9 @@ int locX(int val, const int config[3][3]) {
 
 
 
-int locY(int val, const int config[3][3]) {
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
+int locY(int val, const int config[yAxis][xAxis]) {
+	for (int i = 0; i < yAxis; i++) {
+		for (int j = 0; j < xAxis; j++) {
 			if (config[i][j] == val) {
 				return i + 1;
 			}
@@ -53,16 +55,16 @@ private:
 	int g;
 	int h;
 	int f;
-	int config[3][3];
+	int config[yAxis][xAxis];
 	int eX;
 	int eY;
 	int ii;
 public:
 	State();
-	State(State*, int, int, int, int, int[3][3]);
+	State(State*, int, int, int, int, int[yAxis][xAxis]);
 
-	const int(&getConfig() const)[3][3];
-	void setConfig(const int[3][3]);
+	const int(&getConfig() const)[yAxis][xAxis];
+	void setConfig(const int[yAxis][xAxis]);
 	
 	void printState();
 
@@ -75,15 +77,15 @@ public:
 
 
 
-const int(&State::getConfig() const)[3][3]{
+const int(&State::getConfig() const)[yAxis][xAxis]{
 	return config; 
 }
 
 
 
-void State::setConfig(const int config[3][3]) {
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
+void State::setConfig(const int config[yAxis][xAxis]) {
+	for (int i = 0; i < yAxis; i++) {
+		for (int j = 0; j < xAxis; j++) {
 			this->config[i][j] = config[i][j];
 		}
 	}
@@ -95,7 +97,7 @@ State::State() : p(nullptr), expO(0), g(0), h(0), f(0), config{ { 0, 0, 0 }, { 0
 
 
 
-State::State(State* p, int expO, int g, int h, int ii, int config[3][3]) : p(p), expO(expO), g(g), h(h), ii(ii) {
+State::State(State* p, int expO, int g, int h, int ii, int config[yAxis][xAxis]) : p(p), expO(expO), g(g), h(h), ii(ii) {
 	setConfig(config);
 	f = g + h;
 	eX = locX(0, config);
@@ -107,8 +109,8 @@ State::State(State* p, int expO, int g, int h, int ii, int config[3][3]) : p(p),
 struct State::StateHash {
 	std::size_t operator()(const State* s) const {
 		std::size_t h = 0;
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++)
+		for (int i = 0; i < yAxis; i++)
+			for (int j = 0; j < xAxis; j++)
 				h = h * 31 + std::hash<int>()(s->getConfig()[i][j]);
 		return h;
 	}
@@ -125,8 +127,8 @@ struct State::Comparator {
 
 
 bool State::operator==(const State& n) const{
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
+	for (int i = 0; i < yAxis; i++) {
+		for (int j = 0; j < xAxis; j++) {
 			if (config[i][j] != n.config[i][j]) {
 				return false;
 			}
@@ -158,8 +160,8 @@ State& State::operator=(const State& n) {
 
 
 void State::printState() {
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
+	for (int i = 0; i < yAxis; i++) {
+		for (int j = 0; j < xAxis; j++) {
 			(config[i][j] == 0) ? std::cout << "-" : std::cout << config[i][j]; std::cout << " ";
 		}
 		std::cout << std::endl;
@@ -186,33 +188,33 @@ private:
 	std::vector<State*> allocatedMem;
 	
 	int insertionIndex;
-	int tilesOutOfPlace(const int[3][3], const int[3][3]);
-	int heuristic(int[3][3]);
+	int tilesOutOfPlace(const int[yAxis][xAxis], const int[yAxis][xAxis]);
+	int heuristic(int[yAxis][xAxis]);
 public:
-	Agent(int[3][3], int[3][3]);
+	Agent(int[yAxis][xAxis], int[yAxis][xAxis]);
 	~Agent();
 	void findShortestPath();
 	void genChild(State*, std::string);
-	void setInit(int[3][3]);
-	void setGoal(int[3][3]);
+	void setInit(int[yAxis][xAxis]);
+	void setGoal(int[yAxis][xAxis]);
 	void printSolutionSet();
 };
 
 
 
-void Agent::setGoal(int goalConfig[3][3]) {
+void Agent::setGoal(int goalConfig[yAxis][xAxis]) {
 	goal = State(nullptr, 1, 0, 0, 0, goalConfig);
 }
 
 
 
-void Agent::setInit(int initConfig[3][3]) {
+void Agent::setInit(int initConfig[yAxis][xAxis]) {
 	init = State(nullptr, 1, 0, heuristic(initConfig), 0, initConfig);
 }
 
 
 
-Agent::Agent(int initConfig[3][3], int goalConfig[3][3]) {
+Agent::Agent(int initConfig[yAxis][xAxis], int goalConfig[yAxis][xAxis]) {
 	setGoal(goalConfig);
 	setInit(initConfig);
 }
@@ -227,10 +229,10 @@ Agent::~Agent() {
 
 
 
-int Agent::tilesOutOfPlace(const int config[3][3], const int goalConfig[3][3]) {
+int Agent::tilesOutOfPlace(const int config[yAxis][xAxis], const int goalConfig[yAxis][xAxis]) {
 	int outOfPlace = 0;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
+	for (int i = 0; i < yAxis; i++) {
+		for (int j = 0; j < xAxis; j++) {
 			if (config[i][j] != goalConfig[i][j] && config[i][j] != 0) {
 				outOfPlace++;
 			}
@@ -241,16 +243,16 @@ int Agent::tilesOutOfPlace(const int config[3][3], const int goalConfig[3][3]) {
 
 
 
-int Agent::heuristic(int config[3][3]) {
-	const int(&goalConfig)[3][3] = goal.getConfig();
+int Agent::heuristic(int config[yAxis][xAxis]) {
+	const int(&goalConfig)[yAxis][xAxis] = goal.getConfig();
 	int totalManhattan = 0;
 	int x = 0;
 	int y = 0;
 	int againstWind = 3;
 	int withWind = 1;
 	int sideWind = 2;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
+	for (int i = 0; i < yAxis; i++) {
+		for (int j = 0; j < xAxis; j++) {
 			if (config[i][j] == 0) continue;
 			x = locX(config[i][j], goalConfig) - locX(config[i][j], config);
 			y = locY(config[i][j], goalConfig) - locY(config[i][j], config);
@@ -336,9 +338,9 @@ void Agent::findShortestPath() {
 		}
 
 		if (n->eX > 1) genChild(n, "LEFT");
-		if (n->eX < 3) genChild(n, "RIGHT");
+		if (n->eX < xAxis) genChild(n, "RIGHT");
 		if (n->eY > 1) genChild(n, "UP");
-		if (n->eY < 3) genChild(n, "DOWN");
+		if (n->eY < yAxis) genChild(n, "DOWN");
 
 		n = frontier.top();
 		frontier.pop();
@@ -365,8 +367,8 @@ void Agent::printSolutionSet() {
 
 
 int main() {
-	int initConfig[3][3] = { { 1,6,2 },{ 5,7,8 },{ 0,4,3 } };
-	int goalConfig[3][3] = { { 7,8,1 },{ 6,0,2 },{ 5,4,3 } };
+	int initConfig[yAxis][xAxis] = { { 1,6,2 },{ 5,7,8 },{ 0,4,3 } };
+	int goalConfig[yAxis][xAxis] = { { 7,8,1 },{ 6,0,2 },{ 5,4,3 } };
 
 	Agent a(initConfig, goalConfig);
 	a.findShortestPath();
