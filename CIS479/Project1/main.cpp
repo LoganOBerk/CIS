@@ -1,3 +1,10 @@
+/*
+# Author: Logan Berk
+# Creation Date : 1 / 23 / 2026
+# Modification Date : 1 / 24 / 2026
+# Purpose : Code for Simple Agent used to solve Windy 8-Puzzle Problem with A*
+# NOTE: All assignment criterion are listed as /*******ASSIGNMENT CRITERION (3-6)**************/
+
 #include <iostream>
 
 #include <unordered_map>
@@ -122,14 +129,14 @@ struct State::StateHash {
 };
 
 
-
+/*****************************ASSIGNMENT CRITERION 6**************************************************/
 struct State::Comparator {
 	bool operator()(const State* a, const State* b) const {
-		//If states are equal break tie with FIFO otherwise order in minheap fashion
+		//If states are equal break tie with FIFO otherwise order in minheap fashion based on smallest f(n)
 		return (a->f == b->f) ? a->ii > b->ii : a->f > b->f;
 	}
 };
-
+/*****************************ASSIGNMENT CRITERION 6**************************************************/
 
 
 bool State::operator==(const State& n) const{
@@ -186,9 +193,12 @@ private:
 	State init;
 	State goal;
 
+	/*****************************ASSIGNMENT CRITERION 3**************************************************/
 	//Storage for search space
 	std::priority_queue<State*, std::vector<State*>, State::Comparator> frontier; //next states to explore
 	std::unordered_map<State*, int, State::StateHash> exploredSet; //states already explored
+	/*****************************ASSIGNMENT CRITERION 3**************************************************/
+
 	std::stack<State*> solutionSet; //final storage for solution set, for ease of printing since stack is LIFO
 
 	//Storage vector to keep track of all memory on heap
@@ -337,9 +347,11 @@ void Agent::genChild(State* p, std::string d) {
 		n->eY += DOWN;
 	}
 
+	/*****************************ASSIGNMENT CRITERION 4**************************************************/
 	//Update all childrens heuristic based on new configuration and also update their f(n)
 	n->h = heuristic(n->config);
 	n->f = n->h + n->g;
+	/*****************************ASSIGNMENT CRITERION 4**************************************************/
 
 	//If the generated child is in the explored set and the path cost
 	//for the current child, g(n), is greater than or equal to the old child 
@@ -349,11 +361,12 @@ void Agent::genChild(State* p, std::string d) {
 		return;
 	}
 
+	/*****************************ASSIGNMENT CRITERION 5**************************************************/
 	//Update the explored set, frontier, and keep track of memory allocated
 	exploredSet[n] = n->g;
 	frontier.push(n);
 	allocatedMem.push_back(n);
-	
+	/*****************************ASSIGNMENT CRITERION 5**************************************************/
 }
 
 
