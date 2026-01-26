@@ -10,19 +10,20 @@ clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName,serverPort))
 
 running = True
+
+name = input('Input Name:')
 while (running):
     #input receiver
-    name = input('Input Name:')
     n = int(input('Input Integer between 1 and 100 :'))
         
-    clientSocket.send((name + '|' + str(n)).encode()) #Send pair of objects seperated by '|'       
+    clientSocket.send((name + ',' + str(n)).encode()) #Send pair of objects seperated by ','       
     data = clientSocket.recv(1024)
-    name, n, s, tSum, sSum = data.decode().split('|') #Expects to recieve five objects seperated by '|' and assigns them
 
     #Validate n was determined in range by server
-    if(n == 'OUT_OF_RANGE'):
-        print(n)
+    if(data.decode() == 'OUT_OF_RANGE'): 
+        print(data) 
         break
+    name, n, s, tSum, sSum = data.decode().split(',') #Expects to recieve five objects seperated by ',' and assigns them
 
     #Formatted data
     print('Client Name:', name)

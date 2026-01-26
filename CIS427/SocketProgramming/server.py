@@ -23,11 +23,11 @@ def clientProcess(connectionSocket, addr):
         data = connectionSocket.recv(1024).decode() #Server expects to receive an object and decodes it 
         if (data == ''):
             break
-        name, n = data.split('|') #Object data is expected to come in a pair seperated by '|'
+        name, n = data.split(',') #Object data is expected to come in a pair seperated by ','
         n = int(n)
 
         if (n > 100 or n < 1) :
-            connectionSocket.send('|OUT_OF_RANGE|||'.encode()) # OUT_OF_RANGE is sent with four '|' because client expects to recieve 5 objects 
+            connectionSocket.send('OUT_OF_RANGE'.encode()) # OUT_OF_RANGE is sent
             connectionSocket.close()
             break
 
@@ -36,7 +36,7 @@ def clientProcess(connectionSocket, addr):
         sSum += n #Update the client running total
 
         #All server side data is sent to client
-        connectionSocket.send((name + '|' + str(n) + '|' + str(s) + '|' + str(s+n) + '|' + str(sSum)).encode())
+        connectionSocket.send(f"{name}, {n}, {s}, {s + n}, {sSum}".encode())
 
         #Server Logs
         print('Client Name:', name)
