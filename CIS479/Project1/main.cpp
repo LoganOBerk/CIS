@@ -92,7 +92,9 @@ void State::setConfig(const int config[yAxis][xAxis]) {
 			this->config[i][j] = config[i][j];
 		}
 	}
-};
+}
+
+
 
 void State::setCoords(const int config[yAxis][xAxis]) {
 	for (int i = 0; i < yAxis; i++) {
@@ -101,9 +103,17 @@ void State::setCoords(const int config[yAxis][xAxis]) {
 			tileY[config[i][j]] = (i + 1);
 		}
 	}
-};
+}
 
-State::State() : p(nullptr), expO(0), g(0), h(0), f(0), config{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } }, eX(0), eY(0), ii(0), tileX{1,2,3,1,2,3,1,2,3}, tileY{ 1,2,3,1,2,3,1,2,3 } {};
+
+
+State::State() 
+	: p(nullptr), expO(0), g(0), h(0), f(0),
+	eX(0), eY(0), ii(0),
+	config{ {0,0,0}, {0,0,0}, {0,0,0} },
+	tileX{ 1,2,3,1,2,3,1,2,3 },
+	tileY{ 1,2,3,1,2,3,1,2,3 }
+{}
 
 
 
@@ -117,16 +127,17 @@ State::State(State* p, int expO, int g, int h, int ii, int config[yAxis][xAxis])
 
 
 
-struct State::StateHash { 
-	std::size_t operator()(const State& s) const { 
-		std::size_t h = 0; 
+struct State::StateHash {
+	std::size_t operator()(const State& s) const {
+		std::size_t h = 0;
 		for (int t = 1; t < nTiles; t++) { // skip empty tile
 			h = h * 31 + std::hash<int>()(s.tileX[t]);
 			h = h * 31 + std::hash<int>()(s.tileY[t]);
 		}
 		return h;
-	} 
+	}
 };
+
 
 
 /*****************************ASSIGNMENT CRITERION 6**************************************************/
@@ -137,6 +148,7 @@ struct State::Comparator {
 	}
 };
 /*****************************ASSIGNMENT CRITERION 6**************************************************/
+
 
 
 bool State::operator==(const State& n) const{
@@ -181,7 +193,7 @@ void State::printState() {
 	std::cout << g << " | " << h << std::endl;
 	std::cout << " #" << expO << std::endl;
 	std::cout << std::endl;
-};
+}
 
 
 
@@ -230,16 +242,18 @@ public:
 	void printSolutionSet();
 };
 
+
+
 //Function used for locating x coordinate in cartesian representation (1 based indexing)
 int Agent::locX(int val, State& s) {
 	return s.tileX[val];
-};
+}
 
 
 //Function used for locating y coordinate in cartesian representation (1 based indexing)
 int Agent::locY(int val, State& s) {
 	return s.tileY[val];
-};
+}
 
 void Agent::setGoal(int goalConfig[yAxis][xAxis]) {
 	goal = State(nullptr, 1, 0, 0, 0, goalConfig);
@@ -277,7 +291,7 @@ int Agent::tilesOutOfPlace(const State& curr, const State& goal) {
 		}
 	}
 	return outOfPlace;
-};
+}
 
 
 
@@ -306,7 +320,7 @@ int Agent::heuristic(State& s) {
 			totalManhattan += (x + y);
 	}
 	return totalManhattan + tilesOutOfPlace(s, goal);
-};
+}
 
 
 
@@ -417,7 +431,7 @@ void Agent::findShortestPath() {
 		solutionSet.push(n);
 		n = n->p;
 	}
-};
+}
 
 
 
@@ -427,7 +441,7 @@ void Agent::printSolutionSet() {
 		solutionSet.top()->printState();
 		solutionSet.pop();
 	}
-};
+}
 
 
 
