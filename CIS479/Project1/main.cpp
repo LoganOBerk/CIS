@@ -271,11 +271,9 @@ Agent::~Agent() {
 
 int Agent::tilesOutOfPlace(const State& curr, const State& goal) {
 	int outOfPlace = 0;
-	for (int i = 0; i < yAxis; i++) {
-		for (int j = 0; j < xAxis; j++) {
-			if (curr.config[i][j] != goal.config[i][j] && curr.config[i][j] != 0) {
-				outOfPlace++;
-			}
+	for (int i = 1; i < nTiles; i++) {
+		if (curr.tileX[i] != goal.tileX[i] || curr.tileY[i] != goal.tileY[i]) {
+			outOfPlace++;
 		}
 	}
 	return outOfPlace;
