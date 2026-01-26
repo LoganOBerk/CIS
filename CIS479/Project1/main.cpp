@@ -3,11 +3,15 @@
 # Creation Date : 1 / 23 / 2026
 # Modification Date : 1 / 24 / 2026
 # Purpose : Code for Simple Agent used to solve Windy 8-Puzzle Problem with A*
-# NOTE: All assignment criterion are listed as /*******ASSIGNMENT CRITERION (3-6)**************
+# 
 # Modification Date : 1 / 25 / 2026
 # Purpose : Modified State class to have arrays that contain x and y coordinates to reduce
 # time complexity of locX and locY functions from O(N^2) to O(1), and in turn giving ability
 # to reduce the time complexity of tilesOutOfPlace function from O(N^2) to O(N)
+#
+#################################################################################################
+# NOTE: All assignment criterion are listed as /*********ASSIGNMENT CRITERION (3-6)**************
+#################################################################################################
 */
 
 #include <iostream>
