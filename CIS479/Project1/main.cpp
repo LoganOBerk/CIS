@@ -3,7 +3,11 @@
 # Creation Date : 1 / 23 / 2026
 # Modification Date : 1 / 24 / 2026
 # Purpose : Code for Simple Agent used to solve Windy 8-Puzzle Problem with A*
-# NOTE: All assignment criterion are listed as /*******ASSIGNMENT CRITERION (3-6)**************/
+# NOTE: All assignment criterion are listed as /*******ASSIGNMENT CRITERION (3-6)**************
+# Modification Date : 1 / 26 / 2026
+# Purpose : Modified State class to have arrays that contain x and y coordinates to reduce
+# time complexity of locX and locY functions from O(N^2) to O(1)
+*/
 
 #include <iostream>
 
@@ -18,6 +22,10 @@
 //Board Dimentions, extensibility is limited to 3x3 due to memory limitations of A*
 static const unsigned int yAxis = 3;
 static const unsigned int xAxis = 3;
+
+//Define the max numbering range for board eg.. 9 (0-8) 
+static const unsigned int nTiles = xAxis*yAxis;
+
 
 //Defines movement in cartesian directions
 enum CartesianDirection {
@@ -37,14 +45,18 @@ class State {
 private:
 	State* p;                 //Parent game state
 	int expO;                 //Order of expansion, when popped from queue
+	int config[yAxis][xAxis]; //Current board configuration
+	int tileX[nTiles];        //Array is indexed as tile numbers, with the value inside being corresponding x coordinate
+	int tileY[nTiles];        //Array is indexed as tile numbers, with the value inside being corresponding y coordinate
+
 	int g;                    //g(n), the total path cost so far
 	int h;                    //h(n), the current heuristic for configuration
 	int f;					  //Evaluation function f(n) = h(n) + g(n) used for priority sorting
-	int config[yAxis][xAxis]; //Current board configuration
+	
 	int eX;                   //Empty space X coordinate
 	int eY;                   //Empty space Y coordinate
 	int ii;                   //Insertion index, identifies the order for FIFO in ties (tie breaker)
-	std::unordered_map<int, std::pair<int, int>> coords;
+	
 public:
 	//Constructors
 	State();
@@ -84,13 +96,13 @@ void State::setConfig(const int config[yAxis][xAxis]) {
 void State::setCoords(const int config[yAxis][xAxis]) {
 	for (int i = 0; i < yAxis; i++) {
 		for (int j = 0; j < xAxis; j++) {
-			coords[config[i][j]].first = (j + 1);
-			coords[config[i][j]].second = (i + 1);
+			tileX[config[i][j]] = (j + 1);
+			tileY[config[i][j]] = (i + 1);
 		}
 	}
 };
 
-State::State() : p(nullptr), expO(0), g(0), h(0), f(0), config{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } }, eX(0), eY(0), ii(0) {};
+State::State() : p(nullptr), expO(0), g(0), h(0), f(0), config{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } }, eX(0), eY(0), ii(0), tileX{1,2,3,1,2,3,1,2,3}, tileY{ 1,2,3,1,2,3,1,2,3 } {};
 
 
 
@@ -98,18 +110,18 @@ State::State(State* p, int expO, int g, int h, int ii, int config[yAxis][xAxis])
 	setConfig(config);
 	setCoords(config);
 	f = g + h;
-	eX = coords[0].first;
-	eY = coords[0].second;
+	eX = tileX[0];
+	eY = tileY[0];
 }
 
 
 
 struct State::StateHash {
-	std::size_t operator()(const State* s) const {
+	std::size_t operator()(const State& s) const {
 		std::size_t h = 0;
 		for (int i = 0; i < yAxis; i++)
 			for (int j = 0; j < xAxis; j++)
-				h = h * 31 + std::hash<int>()(s->getConfig()[i][j]);
+				h = h * 31 + std::hash<int>()(s.getConfig()[i][j]);
 		return h;
 	}
 };
@@ -183,7 +195,7 @@ private:
 	/*****************************ASSIGNMENT CRITERION 3**************************************************/
 	//Storage for search space
 	std::priority_queue<State*, std::vector<State*>, State::Comparator> frontier; //next states to explore
-	std::unordered_map<State*, int, State::StateHash> exploredSet; //states already explored
+	std::unordered_map<State, int, State::StateHash> exploredSet; //states already explored
 	/*****************************ASSIGNMENT CRITERION 3**************************************************/
 
 	std::stack<State*> solutionSet; //final storage for solution set, for ease of printing since stack is LIFO
@@ -220,13 +232,13 @@ public:
 
 //Function used for locating x coordinate in cartesian representation (1 based indexing)
 int Agent::locX(int val, State& s) {
-	return s.coords[val].first;
+	return s.tileX[val];
 };
 
 
 //Function used for locating y coordinate in cartesian representation (1 based indexing)
 int Agent::locY(int val, State& s) {
-	return s.coords[val].second;
+	return s.tileY[val];
 };
 
 void Agent::setGoal(int goalConfig[yAxis][xAxis]) {
@@ -314,48 +326,47 @@ void Agent::genChild(State* p, std::string d) {
 	int x = n->eX - 1;
 	int y = n->eY - 1;
 
-	
 	//increment current states insertion index and assign its parent
 	n->ii = insertionIndex++;
 	n->p = p;
 
-	int* currVal = &n->config[y][x];
-	std::pair<int, int>* currValCoord = &n->coords[*currVal];
-	int* valToSwap = currVal;
-	std::pair<int, int>* valToSwapCoord = currValCoord;
+	//Assigning values we want to change
+	int* oldVal = &n->config[y][x];
+	int* oldX = &n->tileX[*oldVal];
+	int* oldY = &n->tileY[*oldVal];
+	int* newVal = oldVal; //Temp assign for newVal
+
 	//Direction handlers updating internal state of the copied pointer to represent new child
 	if (d == "LEFT") {
 		n->g++;
 		n->eX += LEFT;
-
-		valToSwap = &n->config[y][x + LEFT];
-		valToSwapCoord = &n->coords[n->config[y][x + LEFT]];
+		newVal = &n->config[y][x + LEFT];
 	}
 	if (d == "RIGHT") {
 		n->g += 3;
 		n->eX += RIGHT;
-
-		valToSwap = &n->config[y][x + RIGHT];
-		valToSwapCoord = &n->coords[n->config[y][x + RIGHT]];
+		newVal = &n->config[y][x + RIGHT];
 	}
 	if (d == "UP") {
 		n->g += 2;
 		n->eY += UP;
-
-		valToSwap = &n->config[y + UP][x];
-		valToSwapCoord = &n->coords[n->config[y + UP][x]];
+		newVal = &n->config[y + UP][x];
 	}
 	if (d == "DOWN") {
 		n->g += 2;
 		n->eY += DOWN;
-
-		valToSwap = &n->config[y + DOWN][x];
-		valToSwapCoord = &n->coords[n->config[y + DOWN][x]];
+		newVal = &n->config[y + DOWN][x];	
 	}
 
-	//Swap values and update their coordinates
-	std::swap(*currValCoord, *valToSwapCoord);
-	std::swap(*currVal, *valToSwap);
+	//Get newX and newY coordinates from our new Value
+	int* newX = &n->tileX[*newVal];
+	int* newY = &n->tileY[*newVal];
+
+	//Swap values and their coordinates
+	std::swap(*oldX, *newX);
+	std::swap(*oldY, *newY);
+	std::swap(*oldVal, *newVal);
+
 
 	/*****************************ASSIGNMENT CRITERION 4**************************************************/
 	//Update all childrens heuristic based on new configuration and also update their f(n)
@@ -366,14 +377,14 @@ void Agent::genChild(State* p, std::string d) {
 	//If the generated child is in the explored set and the path cost
 	//for the current child, g(n), is greater than or equal to the old child 
 	//delete it and skip it 
-	if (exploredSet.count(n) && n->g >= exploredSet[n]) {
+	if (exploredSet.count(*n) && n->g >= exploredSet[*n]) {
 		delete n;
 		return;
 	}
 
 	/*****************************ASSIGNMENT CRITERION 5**************************************************/
 	//Update the explored set, frontier, and keep track of memory allocated
-	exploredSet[n] = n->g;
+	exploredSet[*n] = n->g;
 	frontier.push(n);
 	allocatedMem.push_back(n);
 	/*****************************ASSIGNMENT CRITERION 5**************************************************/
@@ -406,7 +417,7 @@ void Agent::findShortestPath() {
 		//Remove from frontier
 		frontier.pop();
 		//Update explored set
-		exploredSet[n] = n->g;
+		exploredSet[*n] = n->g;
 	}
 
 	//Once we hit our goal we want to push the solution path into the solutionSet
