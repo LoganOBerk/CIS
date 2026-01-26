@@ -4,7 +4,7 @@
 # Modification Date : 1 / 24 / 2026
 # Purpose : Code for Simple Agent used to solve Windy 8-Puzzle Problem with A*
 # NOTE: All assignment criterion are listed as /*******ASSIGNMENT CRITERION (3-6)**************
-# Modification Date : 1 / 26 / 2026
+# Modification Date : 1 / 25 / 2026
 # Purpose : Modified State class to have arrays that contain x and y coordinates to reduce
 # time complexity of locX and locY functions from O(N^2) to O(1), and in turn giving ability
 # to reduce the time complexity of tilesOutOfPlace function from O(N^2) to O(N)
@@ -27,6 +27,12 @@ static const unsigned int xAxis = 3;
 //Define the max numbering range for board eg.. 9 (0-8) 
 static const unsigned int nTiles = xAxis*yAxis;
 
+//Defines wind strength weights
+enum windStrength {
+	WITHWIND = 1,
+	SIDEWIND = 2,
+	AGAINSTWIND = 3,
+};
 
 //Defines movement in cartesian directions
 enum CartesianDirection {
@@ -63,10 +69,10 @@ public:
 	State();
 	State(State*, int, int, int, int, int[yAxis][xAxis]);
 
-	//Getter and setter for board configuration
-	const int(&getConfig() const)[yAxis][xAxis];
+	//Setters for board configuration	
 	void setConfig(const int[yAxis][xAxis]);
 	void setCoords(const int[yAxis][xAxis]);
+
 	//Prints gamestate values including board config in predefined manner
 	void printState();
 
@@ -77,12 +83,6 @@ public:
 	struct StateHash;  //Used to avoid collisions in unordered_map using a simple hash
 	struct Comparator; //Used to define minheap ordering and FIFO in ties
 };
-
-
-
-const int(&State::getConfig() const)[yAxis][xAxis]{
-	return config; 
-}
 
 
 
@@ -117,14 +117,15 @@ State::State(State* p, int expO, int g, int h, int ii, int config[yAxis][xAxis])
 
 
 
-struct State::StateHash {
-	std::size_t operator()(const State& s) const {
-		std::size_t h = 0;
-		for (int i = 0; i < yAxis; i++)
-			for (int j = 0; j < xAxis; j++)
-				h = h * 31 + std::hash<int>()(s.getConfig()[i][j]);
+struct State::StateHash { 
+	std::size_t operator()(const State& s) const { 
+		std::size_t h = 0; 
+		for (int t = 1; t < nTiles; t++) { // skip empty tile
+			h = h * 31 + std::hash<int>()(s.tileX[t]);
+			h = h * 31 + std::hash<int>()(s.tileY[t]);
+		}
 		return h;
-	}
+	} 
 };
 
 
@@ -139,11 +140,9 @@ struct State::Comparator {
 
 
 bool State::operator==(const State& n) const{
-	for (int i = 0; i < yAxis; i++) {
-		for (int j = 0; j < xAxis; j++) {
-			if (config[i][j] != n.config[i][j]) {
-				return false;
-			}
+	for (int t = 1; t < nTiles; t++) {
+		if (tileX[t] != n.tileX[t] || tileY[t] != n.tileY[t]) {
+			return false;
 		}
 	}
 	return true;
@@ -163,8 +162,8 @@ State& State::operator=(const State& n) {
 	g = n.g;
 	h = n.h;
 	f = n.f;
-	setConfig(n.getConfig());
-	setCoords(n.getConfig());
+	setConfig(n.config);
+	setCoords(n.config);
 	eX = n.eX;
 	eY = n.eY;
 	return *this;
@@ -272,8 +271,8 @@ Agent::~Agent() {
 
 int Agent::tilesOutOfPlace(const State& curr, const State& goal) {
 	int outOfPlace = 0;
-	for (int i = 1; i < nTiles; i++) {
-		if (curr.tileX[i] != goal.tileX[i] || curr.tileY[i] != goal.tileY[i]) {
+	for (int t = 1; t < nTiles; t++) {
+		if (curr.tileX[t] != goal.tileX[t] || curr.tileY[t] != goal.tileY[t]) {
 			outOfPlace++;
 		}
 	}
@@ -286,31 +285,25 @@ int Agent::heuristic(State& s) {
 	int totalManhattan = 0;
 	int x = 0;
 	int y = 0;
-	int againstWind = 3;
-	int withWind = 1;
-	int sideWind = 2;
-	for (int i = 0; i < yAxis; i++) {
-		for (int j = 0; j < xAxis; j++) {
-			if (s.config[i][j] == 0) continue; //Skip empty space
-			x = locX(s.config[i][j], goal) - locX(s.config[i][j], s); //find x param of manhattan before absolute value
-			y = locY(s.config[i][j], goal) - locY(s.config[i][j], s); //find y param of manhattan before absolute value
+	for(int t = 1; t < nTiles; t++){
+			x = locX(t, goal) - locX(t, s); //calculate x param of manhattan before absolute value
+			y = locY(t, goal) - locY(t, s); //calculate y param of manhattan before absolute value
 
 			//Identify if the difference is negative, this gives an idea of direction
 			if (x < 0) {
 				x = abs(x);
-				x *= withWind;
+				x *= WITHWIND;
 			}
 			else if (x > 0) {
-				x *= againstWind;
+				x *= AGAINSTWIND;
 			}
 
 			//Since vertical distance is the same cost UP or DOWN there is only one handler
 			if (y != 0) {
 				y = abs(y);
-				y *= sideWind;
+				y *= SIDEWIND;
 			}
 			totalManhattan += (x + y);
-		}
 	}
 	return totalManhattan + tilesOutOfPlace(s, goal);
 };
@@ -337,22 +330,22 @@ void Agent::genChild(State* p, std::string d) {
 
 	//Direction handlers updating internal state of the copied pointer to represent new child
 	if (d == "LEFT") {
-		n->g++;
+		n->g += WITHWIND;
 		n->eX += LEFT;
 		newVal = &n->config[y][x + LEFT];
 	}
 	if (d == "RIGHT") {
-		n->g += 3;
+		n->g += AGAINSTWIND;
 		n->eX += RIGHT;
 		newVal = &n->config[y][x + RIGHT];
 	}
 	if (d == "UP") {
-		n->g += 2;
+		n->g += SIDEWIND;
 		n->eY += UP;
 		newVal = &n->config[y + UP][x];
 	}
 	if (d == "DOWN") {
-		n->g += 2;
+		n->g += SIDEWIND;
 		n->eY += DOWN;
 		newVal = &n->config[y + DOWN][x];	
 	}
