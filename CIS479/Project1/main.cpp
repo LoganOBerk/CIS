@@ -28,30 +28,7 @@ enum CartesianDirection {
 };
 
 
-//Function used for locating x coordinate in cartesian representation (1 based indexing)
-int locX(int val, const int config[yAxis][xAxis]) {
-	for (int i = 0; i < yAxis; i++) {
-		for (int j = 0; j < xAxis; j++) {
-			if (config[i][j] == val) {
-				return j + 1;
-			}
-		}
-	}
-	assert(false); //Program ends if unexpected behavior occurs, eg.. a programmer is searching for a val that DNE
-};
 
-
-//Function used for locating y coordinate in cartesian representation (1 based indexing)
-int locY(int val, const int config[yAxis][xAxis]) {
-	for (int i = 0; i < yAxis; i++) {
-		for (int j = 0; j < xAxis; j++) {
-			if (config[i][j] == val) {
-				return i + 1;
-			}
-		}
-	}
-	assert(false); //Program ends if unexpected behavior occurs, eg.. a programmer is searching for a val that DNE
-};
 
 
 //State class used to represent the state of the game currently
@@ -67,6 +44,7 @@ private:
 	int eX;                   //Empty space X coordinate
 	int eY;                   //Empty space Y coordinate
 	int ii;                   //Insertion index, identifies the order for FIFO in ties (tie breaker)
+	std::unordered_map<int, std::pair<int, int>> coords;
 public:
 	//Constructors
 	State();
@@ -75,7 +53,7 @@ public:
 	//Getter and setter for board configuration
 	const int(&getConfig() const)[yAxis][xAxis];
 	void setConfig(const int[yAxis][xAxis]);
-	
+	void setCoords(const int[yAxis][xAxis]);
 	//Prints gamestate values including board config in predefined manner
 	void printState();
 
@@ -103,7 +81,14 @@ void State::setConfig(const int config[yAxis][xAxis]) {
 	}
 };
 
-
+void State::setCoords(const int config[yAxis][xAxis]) {
+	for (int i = 0; i < yAxis; i++) {
+		for (int j = 0; j < xAxis; j++) {
+			coords[config[i][j]].first = (j + 1);
+			coords[config[i][j]].second = (i + 1);
+		}
+	}
+};
 
 State::State() : p(nullptr), expO(0), g(0), h(0), f(0), config{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } }, eX(0), eY(0), ii(0) {};
 
@@ -111,9 +96,10 @@ State::State() : p(nullptr), expO(0), g(0), h(0), f(0), config{ { 0, 0, 0 }, { 0
 
 State::State(State* p, int expO, int g, int h, int ii, int config[yAxis][xAxis]) : p(p), expO(expO), g(g), h(h), ii(ii) {
 	setConfig(config);
+	setCoords(config);
 	f = g + h;
-	eX = locX(0, config);
-	eY = locY(0, config);
+	eX = coords[0].first;
+	eY = coords[0].second;
 }
 
 
@@ -165,6 +151,7 @@ State& State::operator=(const State& n) {
 	h = n.h;
 	f = n.f;
 	setConfig(n.getConfig());
+	setCoords(n.getConfig());
 	eX = n.eX;
 	eY = n.eY;
 	return *this;
@@ -206,12 +193,13 @@ private:
 	
 	//Index used to keep track of when a state was inserted for tie breaks
 	int insertionIndex;
-
+	int locX(int val, State& s);
+	int locY(int val, State& s);
 	//tilesOutOfPlace helper function used inside heuristic to find all tiles currently not in correct spot
-	int tilesOutOfPlace(const int[yAxis][xAxis], const int[yAxis][xAxis]);
+	int tilesOutOfPlace(const State& curr, const State& goal);
 
 	//Calculates provided heuristic formula based on board configuration
-	int heuristic(int[yAxis][xAxis]);
+	int heuristic(State& s);
 public:
 	//Agent constructor, and destructor
 	Agent(int[yAxis][xAxis], int[yAxis][xAxis]);
@@ -230,7 +218,16 @@ public:
 	void printSolutionSet();
 };
 
+//Function used for locating x coordinate in cartesian representation (1 based indexing)
+int Agent::locX(int val, State& s) {
+	return s.coords[val].first;
+};
 
+
+//Function used for locating y coordinate in cartesian representation (1 based indexing)
+int Agent::locY(int val, State& s) {
+	return s.coords[val].second;
+};
 
 void Agent::setGoal(int goalConfig[yAxis][xAxis]) {
 	goal = State(nullptr, 1, 0, 0, 0, goalConfig);
@@ -239,7 +236,8 @@ void Agent::setGoal(int goalConfig[yAxis][xAxis]) {
 
 
 void Agent::setInit(int initConfig[yAxis][xAxis]) {
-	init = State(nullptr, 1, 0, heuristic(initConfig), 0, initConfig);
+	init = State(nullptr, 1, 0, 0, 0, initConfig);
+	init.h = heuristic(init);
 }
 
 
@@ -259,11 +257,11 @@ Agent::~Agent() {
 
 
 
-int Agent::tilesOutOfPlace(const int config[yAxis][xAxis], const int goalConfig[yAxis][xAxis]) {
+int Agent::tilesOutOfPlace(const State& curr, const State& goal) {
 	int outOfPlace = 0;
 	for (int i = 0; i < yAxis; i++) {
 		for (int j = 0; j < xAxis; j++) {
-			if (config[i][j] != goalConfig[i][j] && config[i][j] != 0) {
+			if (curr.config[i][j] != goal.config[i][j] && curr.config[i][j] != 0) {
 				outOfPlace++;
 			}
 		}
@@ -273,8 +271,7 @@ int Agent::tilesOutOfPlace(const int config[yAxis][xAxis], const int goalConfig[
 
 
 
-int Agent::heuristic(int config[yAxis][xAxis]) {
-	const int(&goalConfig)[yAxis][xAxis] = goal.getConfig();
+int Agent::heuristic(State& s) {
 	int totalManhattan = 0;
 	int x = 0;
 	int y = 0;
@@ -283,9 +280,9 @@ int Agent::heuristic(int config[yAxis][xAxis]) {
 	int sideWind = 2;
 	for (int i = 0; i < yAxis; i++) {
 		for (int j = 0; j < xAxis; j++) {
-			if (config[i][j] == 0) continue; //Skip empty space
-			x = locX(config[i][j], goalConfig) - locX(config[i][j], config); //find x param of manhattan before absolute value
-			y = locY(config[i][j], goalConfig) - locY(config[i][j], config); //find y param of manhattan before absolute value
+			if (s.config[i][j] == 0) continue; //Skip empty space
+			x = locX(s.config[i][j], goal) - locX(s.config[i][j], s); //find x param of manhattan before absolute value
+			y = locY(s.config[i][j], goal) - locY(s.config[i][j], s); //find y param of manhattan before absolute value
 
 			//Identify if the difference is negative, this gives an idea of direction
 			if (x < 0) {
@@ -304,7 +301,7 @@ int Agent::heuristic(int config[yAxis][xAxis]) {
 			totalManhattan += (x + y);
 		}
 	}
-	return totalManhattan + tilesOutOfPlace(config, goalConfig);
+	return totalManhattan + tilesOutOfPlace(s, goal);
 };
 
 
@@ -317,39 +314,52 @@ void Agent::genChild(State* p, std::string d) {
 	int x = n->eX - 1;
 	int y = n->eY - 1;
 
+	
 	//increment current states insertion index and assign its parent
 	n->ii = insertionIndex++;
 	n->p = p;
 
+	int* currVal = &n->config[y][x];
+	std::pair<int, int>* currValCoord = &n->coords[*currVal];
+	int* valToSwap = currVal;
+	std::pair<int, int>* valToSwapCoord = currValCoord;
 	//Direction handlers updating internal state of the copied pointer to represent new child
 	if (d == "LEFT") {
 		n->g++;
-		n->config[y][x] = n->config[y][x + LEFT];
-		n->config[y][x + LEFT] = 0;
 		n->eX += LEFT;
+
+		valToSwap = &n->config[y][x + LEFT];
+		valToSwapCoord = &n->coords[n->config[y][x + LEFT]];
 	}
 	if (d == "RIGHT") {
 		n->g += 3;
-		n->config[y][x] = n->config[y][x + RIGHT];
-		n->config[y][x + RIGHT] = 0;
 		n->eX += RIGHT;
+
+		valToSwap = &n->config[y][x + RIGHT];
+		valToSwapCoord = &n->coords[n->config[y][x + RIGHT]];
 	}
 	if (d == "UP") {
 		n->g += 2;
-		n->config[y][x] = n->config[y + UP][x];
-		n->config[y + UP][x] = 0;
 		n->eY += UP;
+
+		valToSwap = &n->config[y + UP][x];
+		valToSwapCoord = &n->coords[n->config[y + UP][x]];
 	}
 	if (d == "DOWN") {
 		n->g += 2;
-		n->config[y][x] = n->config[y + DOWN][x];
-		n->config[y + DOWN][x] = 0;
 		n->eY += DOWN;
+
+		valToSwap = &n->config[y + DOWN][x];
+		valToSwapCoord = &n->coords[n->config[y + DOWN][x]];
 	}
+
+	//Swap values and update their coordinates
+	std::swap(*currValCoord, *valToSwapCoord);
+	std::swap(*currVal, *valToSwap);
 
 	/*****************************ASSIGNMENT CRITERION 4**************************************************/
 	//Update all childrens heuristic based on new configuration and also update their f(n)
-	n->h = heuristic(n->config);
+	n->h = heuristic(*n);
 	n->f = n->h + n->g;
 	/*****************************ASSIGNMENT CRITERION 4**************************************************/
 
