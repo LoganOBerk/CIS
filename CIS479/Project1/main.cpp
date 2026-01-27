@@ -71,7 +71,7 @@ private:
 public:
 	//Constructors
 	State();
-	State(int[yAxis][xAxis], State*, int);
+	State(int[yAxis][xAxis], State* p = nullptr, int g = 0);
 
 	//Setters for board configuration	
 	void setConfig(const int[yAxis][xAxis]);
@@ -120,7 +120,7 @@ State::State() : p(nullptr), expO(0), g(0), h(0), f(0), eX(0), eY(0), ii(0), con
 
 
 
-State::State(int config[yAxis][xAxis], State* p = nullptr, int g = 0) : p(p), g(g) {
+State::State(int config[yAxis][xAxis], State* p, int g) : p(p), g(g) {
 	setConfig(config);
 	setCoords(config);
 	eX = tileX[0];
