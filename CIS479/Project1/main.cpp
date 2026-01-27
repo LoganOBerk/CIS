@@ -15,14 +15,11 @@
 */
 
 #include <iostream>
-
 #include <unordered_map>
 #include <vector>
 #include <queue>
 #include <stack>
-
 #include <cmath>
-#include <cassert>
 
 //Board Dimentions, extensibility is limited to 3x3 due to memory limitations of A*
 static const unsigned int yAxis = 3;
