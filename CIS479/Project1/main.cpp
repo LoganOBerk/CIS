@@ -134,7 +134,7 @@ State::State(State* p, int expO, int g, int h, int ii, int config[yAxis][xAxis])
 struct State::StateHash {
 	std::size_t operator()(const State& s) const {
 		std::size_t h = 0;
-		for (int t = 1; t < nTiles; t++) { // skip empty tile
+		for (int t = 0; t < nTiles; t++) {
 			h = h * 31 + std::hash<int>()(s.tileX[t]);
 			h = h * 31 + std::hash<int>()(s.tileY[t]);
 		}
@@ -336,39 +336,38 @@ void Agent::genChild(State* p, std::string d) {
 	int x = n->eX - 1;
 	int y = n->eY - 1;
 
-	//increment current states insertion index and assign its parent
-	n->ii = insertionIndex++;
-	n->p = p;
+
+	int h = 0; //horizontal direction offset
+	int v = 0; //vertical direction offset
+	int w = 0; //wind cost
+	
 
 	//Assigning values we want to change
 	int* oldVal = &n->config[y][x];
 	int* oldX = &n->tileX[*oldVal];
 	int* oldY = &n->tileY[*oldVal];
-	int* newVal = oldVal; //Temp assign for newVal
+	
 
 	//Direction handlers updating internal state of the copied pointer to represent new child
 	if (d == "LEFT") {
-		n->g += WITHWIND;
-		n->eX += LEFT;
-		newVal = &n->config[y][x + LEFT];
+		h = LEFT;
+		w = WITHWIND;
 	}
 	if (d == "RIGHT") {
-		n->g += AGAINSTWIND;
-		n->eX += RIGHT;
-		newVal = &n->config[y][x + RIGHT];
+		h = RIGHT;
+		w = AGAINSTWIND;
 	}
 	if (d == "UP") {
-		n->g += SIDEWIND;
-		n->eY += UP;
-		newVal = &n->config[y + UP][x];
+		v = UP;
+		w = SIDEWIND;
 	}
 	if (d == "DOWN") {
-		n->g += SIDEWIND;
-		n->eY += DOWN;
-		newVal = &n->config[y + DOWN][x];	
+		v = DOWN;
+		w = SIDEWIND;
 	}
 
-	//Get newX and newY coordinates from our new Value
+	//Assign our new value to swap, find its x and y coordinates
+	int* newVal = &n->config[y + v][x + h];
 	int* newX = &n->tileX[*newVal];
 	int* newY = &n->tileY[*newVal];
 
@@ -377,11 +376,17 @@ void Agent::genChild(State* p, std::string d) {
 	std::swap(*oldY, *newY);
 	std::swap(*oldVal, *newVal);
 
-
+	
 	/*****************************ASSIGNMENT CRITERION 4**************************************************/
-	//Update all childrens heuristic based on new configuration and also update their f(n)
-	n->h = heuristic(*n);
-	n->f = n->h + n->g;
+	n->p = p;                 //Update Parent
+	
+	n->g += w;                //Update pathcost based on wind
+	n->h = heuristic(*n);     //Update Heuristic
+	n->f = n->h + n->g;       //Recalculate f(n)
+
+	n->eX += h;               //Shift x based on horizontal direction
+	n->eY += v;				  //Shift y based on vertical direction
+	n->ii = insertionIndex++; //Update order of insertion
 	/*****************************ASSIGNMENT CRITERION 4**************************************************/
 
 	//If the generated child is in the explored set and the path cost
