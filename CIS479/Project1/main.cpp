@@ -73,7 +73,8 @@ public:
 	//Setters for board configuration	
 	void setConfig(const int[yAxis][xAxis]);
 	void setCoords(const int[yAxis][xAxis]);
-
+	void moveTile(int, int);
+	void updateState(State*, int, int, int);
 	//Prints gamestate values including board config in predefined manner
 	void printState();
 
@@ -107,6 +108,29 @@ void State::setCoords(const int config[yAxis][xAxis]) {
 }
 
 
+void State::moveTile(int dx, int dy) {
+	// reassign standard cartesian indexing to 0 based indexing
+	int x = eX - 1;
+	int y = eY - 1;
+
+	//Assigning values we want to change
+	int* oldVal = &config[y][x];
+	int* oldX = &tileX[*oldVal];
+	int* oldY = &tileY[*oldVal];
+
+	//Assign our new value to swap, find its x and y coordinates
+	int* newVal = &config[y + dy][x + dx];
+	int* newX = &tileX[*newVal];
+	int* newY = &tileY[*newVal];
+
+	//Swap values and their coordinates
+	std::swap(*oldX, *newX);
+	std::swap(*oldY, *newY);
+	std::swap(*oldVal, *newVal);
+
+	eX += dx;               //Shift x based on horizontal direction
+	eY += dy;				  //Shift y based on vertical direction
+}
 
 State::State() : p(nullptr), expO(0), g(0), h(0), f(0), eX(0), eY(0), ii(0), config{ {0} } {
 	for (int t = 0; t < nTiles; t++) {
@@ -125,7 +149,15 @@ State::State(int config[yAxis][xAxis], State* p, int g) : p(p), g(g) {
 }
 
 
-
+void State::updateState(State* p, int w, int h, int ii) {
+	/*****************************ASSIGNMENT CRITERION 4**************************************************/
+	this->p = p;                 //Update Parent
+	this->g += w;                //Update pathcost based on wind
+	this->h = h;                 //Update Heuristic
+	this->f = h + g;             //Recalculate f(n)
+	this->ii = ii;               //Update order of insertion
+	/*****************************ASSIGNMENT CRITERION 4**************************************************/
+}
 struct State::StateHash {
 	std::size_t operator()(const State& s) const {
 		std::size_t h = 0;
@@ -232,7 +264,7 @@ public:
 	void findShortestPath();
 	//Child generation function handles which child to generate and when to skip
 	void genChild(State*, std::string);
-
+	
 	//Setters for Agent constructor parameters allowing setting of various inital and goal states
 	void setInit(int[yAxis][xAxis]);
 	void setGoal(int[yAxis][xAxis]);
@@ -242,6 +274,7 @@ public:
 };
 
 
+	
 
 //Function used for locating x coordinate in cartesian representation (1 based indexing)
 int Agent::locX(int val, State& s) {
@@ -327,62 +360,30 @@ void Agent::genChild(State* p, std::string d) {
 	//make a pointer that is a copy of the passed in parent
 	State* n = new State(*p); 
 
-	// reassign standard cartesian indexing to 0 based indexing
-	int x = n->eX - 1;
-	int y = n->eY - 1;
-
-
-	int h = 0; //horizontal direction offset
-	int v = 0; //vertical direction offset
+	int dx = 0; //horizontal direction offset
+	int dy = 0; //vertical direction offset
 	int w = 0; //wind cost
 	
-
-	//Assigning values we want to change
-	int* oldVal = &n->config[y][x];
-	int* oldX = &n->tileX[*oldVal];
-	int* oldY = &n->tileY[*oldVal];
-	
-
 	//Direction handlers updating internal state of the copied pointer to represent new child
 	if (d == "LEFT") {
-		h = LEFT;
+		dx = LEFT;
 		w = WITHWIND;
 	}
 	if (d == "RIGHT") {
-		h = RIGHT;
+		dx = RIGHT;
 		w = AGAINSTWIND;
 	}
 	if (d == "UP") {
-		v = UP;
+		dy = UP;
 		w = SIDEWIND;
 	}
 	if (d == "DOWN") {
-		v = DOWN;
+		dy = DOWN;
 		w = SIDEWIND;
 	}
-
-	//Assign our new value to swap, find its x and y coordinates
-	int* newVal = &n->config[y + v][x + h];
-	int* newX = &n->tileX[*newVal];
-	int* newY = &n->tileY[*newVal];
-
-	//Swap values and their coordinates
-	std::swap(*oldX, *newX);
-	std::swap(*oldY, *newY);
-	std::swap(*oldVal, *newVal);
-
 	
-	/*****************************ASSIGNMENT CRITERION 4**************************************************/
-	n->p = p;                 //Update Parent
-	
-	n->g += w;                //Update pathcost based on wind
-	n->h = heuristic(*n);     //Update Heuristic
-	n->f = n->h + n->g;       //Recalculate f(n)
-
-	n->eX += h;               //Shift x based on horizontal direction
-	n->eY += v;				  //Shift y based on vertical direction
-	n->ii = insertionIndex++; //Update order of insertion
-	/*****************************ASSIGNMENT CRITERION 4**************************************************/
+	n->moveTile(dx, dy);
+	n->updateState(p, w, heuristic(*n), insertionIndex++);
 
 	//If the generated child is in the explored set and the path cost
 	//for the current child, g(n), is greater than or equal to the old child 
