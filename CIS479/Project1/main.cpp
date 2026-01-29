@@ -114,19 +114,15 @@ void State::moveTile(int dx, int dy) {
 	int y = eY - 1;
 
 	//Assigning values we want to change
-	int* oldVal = &config[y][x];
-	int* oldX = &tileX[*oldVal];
-	int* oldY = &tileY[*oldVal];
+	int& oldVal = config[y][x];
 
 	//Assign our new value to swap, find its x and y coordinates
-	int* newVal = &config[y + dy][x + dx];
-	int* newX = &tileX[*newVal];
-	int* newY = &tileY[*newVal];
+	int& newVal = config[y + dy][x + dx];
 
 	//Swap values and their coordinates
-	std::swap(*oldX, *newX);
-	std::swap(*oldY, *newY);
-	std::swap(*oldVal, *newVal);
+	std::swap(tileX[oldVal], tileX[newVal]);
+	std::swap(tileY[oldVal], tileY[newVal]);
+	std::swap(oldVal, newVal);
 
 	eX += dx;               //Shift x based on horizontal direction
 	eY += dy;				  //Shift y based on vertical direction
