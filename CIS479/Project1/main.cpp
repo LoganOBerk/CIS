@@ -20,6 +20,7 @@
 #include <queue>
 #include <stack>
 #include <cmath>
+#include <chrono>
 
 //Board Dimentions, extensibility is limited to 3x3 due to memory limitations of A*
 static const unsigned int yAxis = 3;
@@ -451,6 +452,8 @@ void Agent::printSolutionSet() {
 
 
 int main() {
+	auto start = std::chrono::high_resolution_clock::now();
+
 	int initConfig[yAxis][xAxis] = { { 1,6,2 },{ 5,7,8 },{ 0,4,3 } };
 	int goalConfig[yAxis][xAxis] = { { 7,8,1 },{ 6,0,2 },{ 5,4,3 } };
 
@@ -458,6 +461,10 @@ int main() {
 	a.findShortestPath();
 	a.printSolutionSet();
 	
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double, std::milli> duration = end - start;
+
+	std::cout << "Runtime: " << duration.count() << " ms" << std::endl;
 
 	return 0;
 }
