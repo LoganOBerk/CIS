@@ -286,15 +286,15 @@ scheduler(void)
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       proc = p;
-      switchuvm(p);
+      switchuvm(p); //switch to user space
       p->state = RUNNING;
 
       //***MY CHANGES***//  
       cprintf("Process %s is of Process ID %d, Queue Type %d, and Quantum Size %d\n", p->name, p->pid, p->queuetype, p->quantumsize);
   
 
-      swtch(&cpu->scheduler, proc->context);
-      switchkvm();
+      swtch(&cpu->scheduler, proc->context); //context switch, process starts running here only returns after timer interupt
+      switchkvm(); //switch to kernel mode
 
       // Process is done running for now.
       // It should have changed its p->state before coming back.
